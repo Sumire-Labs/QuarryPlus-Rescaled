@@ -33,7 +33,8 @@ import net.minecraftforge.fluids.capability.templates.EmptyFluidHandler
 import net.minecraftforge.fml.common.Loader
 import org.apache.logging.log4j.{Marker, MarkerManager}
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.*
+import scala.compiletime.uninitialized
 
 class TileQuarry2 extends APowerTile()
   with IEnchantableTile
@@ -49,7 +50,7 @@ class TileQuarry2 extends APowerTile()
   import TileQuarry2._
 
   var modules: List[IModule] = Nil
-  var attachments: Map[IAttachment.Attachments[_], EnumFacing] = Map.empty
+  var attachments: Map[IAttachment.Attachments[?], EnumFacing] = Map.empty
   var enchantments = noEnch
   var area = zeroArea
   var action: QuarryAction = QuarryAction.none
@@ -71,7 +72,8 @@ class TileQuarry2 extends APowerTile()
       // Quarry action
       val faster = Config.content.fastQuarryHeadMove
       var i = 0
-      do {
+      var keepGoing = true
+      while (keepGoing) {
         action.action(target)
         if (action.canGoNext(self)) {
           action = action.nextAction(self)
@@ -82,7 +84,8 @@ class TileQuarry2 extends APowerTile()
         }
         target = action.nextTarget()
         i += 1
-      } while (i < enchantments.efficiency + 1 && faster)
+        keepGoing = i < enchantments.efficiency + 1 && faster
+      }
       val nowState = world.getBlockState(pos)
       if (nowState.getValue(ADismCBlock.ACTING) ^ isWorking) {
         if (isWorking) {
@@ -194,7 +197,7 @@ class TileQuarry2 extends APowerTile()
     * @param simulate   true to avoid having side effect.
     * @return true if the attachment is (will be) successfully connected.
     */
-  override def connectAttachment(facing: EnumFacing, attachment: IAttachment.Attachments[_ <: APacketTile], simulate: Boolean) = {
+  override def connectAttachment(facing: EnumFacing, attachment: IAttachment.Attachments[? <: APacketTile], simulate: Boolean) = {
     val tile = world.getTileEntity(pos.offset(facing))
     if (!attachments.get(attachment).exists(_ != facing) && attachment.test(tile)) {
       if (!simulate) {
@@ -211,7 +214,7 @@ class TileQuarry2 extends APowerTile()
     * @param attachments that you're trying to add.
     * @return whether this machine can accept the attachment.
     */
-  override def isValidAttachment(attachments: IAttachment.Attachments[_ <: APacketTile]) = IAttachment.Attachments.ALL.contains(attachments)
+  override def isValidAttachment(attachments: IAttachment.Attachments[? <: APacketTile]) = IAttachment.Attachments.ALL.contains(attachments)
 
   def refreshModules(): Unit = {
     val attachmentModules = attachments.flatMap { case (kind, facing) => kind.module(world.getTileEntity(pos.offset(facing))).asScala }.toList
@@ -232,7 +235,7 @@ class TileQuarry2 extends APowerTile()
     * @return True if succeeded.
     */
   def breakBlock(world: World, pos: BlockPos): (Boolean, Int) = {
-    import scala.collection.JavaConverters._
+    import scala.jdk.CollectionConverters.*
     if (pos.getX % 6 == 0 && pos.getZ % 6 == 0) {
       // Gather items
       val aabb = new AxisAlignedBB(pos.getX - 8, pos.getY - 3, pos.getZ - 8, pos.getX + 8, pos.getY + 5, pos.getZ + 8)
@@ -278,7 +281,7 @@ class TileQuarry2 extends APowerTile()
               list
             }
 
-            drops.asScala.groupBy(ItemDamage.apply).mapValues(_.map(_.getCount).sum).map { case (damage, i) => damage.toStack(i) }.foreach(storage.addItem)
+            drops.asScala.groupBy(ItemDamage.apply).view.mapValues(_.map(_.getCount).sum).toMap.map { case (damage, i) => damage.toStack(i) }.foreach(storage.addItem)
             (true, event.getExpToDrop) // true means work is finished.
           } else {
             (true, event.getExpToDrop) // Block is replaced to air.
@@ -295,7 +298,7 @@ class TileQuarry2 extends APowerTile()
   }
 
   def gatherDrops(world: World, aabb: AxisAlignedBB): Unit = {
-    import scala.collection.JavaConverters._
+    import scala.jdk.CollectionConverters.*
     world.getEntitiesWithinAABB[EntityItem](classOf[EntityItem], aabb, EntitySelectors.IS_ALIVE)
       .asScala.foreach { e =>
       this.storage.addItem(e.getItem)
@@ -342,7 +345,7 @@ class TileQuarry2 extends APowerTile()
 
   override def getStorage = storage
 
-  private[this] var chunkTicket: ForgeChunkManager.Ticket = _
+  private var chunkTicket: ForgeChunkManager.Ticket = uninitialized
 
   override def requestTicket(): Unit = {
     if (this.chunkTicket != null) return
@@ -358,7 +361,7 @@ class TileQuarry2 extends APowerTile()
 
   override protected def getSymbol = TileQuarry2.SYMBOL
 
-  override def hasCapability(capability: Capability[_], facing: EnumFacing) =
+  override def hasCapability(capability: Capability[?], facing: EnumFacing) =
     capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY || super.hasCapability(capability, facing)
 
   override def getCapability[T](capability: Capability[T], facing: EnumFacing) = {
@@ -471,13 +474,13 @@ object TileQuarry2 {
 
   //---------- NBT ----------
   type NBTLoad[A] = (NBTTagCompound, String) => A
-  private[this] final val MARKER: Marker = MarkerManager.getMarker("QUARRY_NBT")
-  private[this] final val NBT_X_MIN = "xMin"
-  private[this] final val NBT_X_MAX = "xMax"
-  private[this] final val NBT_Y_MIN = "yMin"
-  private[this] final val NBT_Y_MAX = "yMax"
-  private[this] final val NBT_Z_MIN = "zMin"
-  private[this] final val NBT_Z_MAX = "zMax"
+  private final val MARKER: Marker = MarkerManager.getMarker("QUARRY_NBT")
+  private final val NBT_X_MIN = "xMin"
+  private final val NBT_X_MAX = "xMax"
+  private final val NBT_Y_MIN = "yMin"
+  private final val NBT_Y_MAX = "yMax"
+  private final val NBT_Z_MIN = "zMin"
+  private final val NBT_Z_MAX = "zMax"
 
   def getEnchantmentMap(enchantments: EnchantmentHolder): Map[Int, Int] = {
     Map(
@@ -488,11 +491,11 @@ object TileQuarry2 {
     ) ++ enchantments.other
   }
 
-  implicit val enchantmentHolderToNbt: EnchantmentHolder NBTWrapper NBTTagCompound = enchantments => {
+  implicit val enchantmentHolderToNbt: NBTWrapper[EnchantmentHolder, NBTTagCompound] = enchantments => {
     val enchantmentsMap = getEnchantmentMap(enchantments)
     enchantmentsMap.filter(_._2 > 0).foldLeft(new NBTTagCompound) { case (nbt, (id, level)) => nbt.setInteger(id.toString, level); nbt }
   }
-  implicit val areaToNbt: Area NBTWrapper NBTTagCompound = area => {
+  implicit val areaToNbt: NBTWrapper[Area, NBTTagCompound] = area => {
     val nbt = new NBTTagCompound
     nbt.setInteger(NBT_X_MIN, area.xMin)
     nbt.setInteger(NBT_X_MAX, area.xMax)
@@ -502,7 +505,7 @@ object TileQuarry2 {
     nbt.setInteger(NBT_Z_MAX, area.zMax)
     nbt
   }
-  implicit val modeToNbt: Mode NBTWrapper NBTTagString = mode => {
+  implicit val modeToNbt: NBTWrapper[Mode, NBTTagString] = mode => {
     new NBTTagString(mode.toString)
   }
   val enchantmentHolderLoad: NBTLoad[EnchantmentHolder] = {

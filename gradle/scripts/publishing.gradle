@@ -1,0 +1,42 @@
+publishing {
+    repositories {
+        if (publish_to_maven.toBoolean()) {
+            maven {
+                name = maven_name.replaceAll('\\s', '')
+                url = uri(maven_url)
+                credentials {
+                    username = project.findProperty('azureUserName') ?:
+                        project.findProperty('mavenUser') ?:
+                        System.getenv('AZURE_USER_NAME') ?:
+                        System.getenv('MAVEN_USER') ?: ''
+                    password = project.findProperty('azureToken') ?:
+                        project.findProperty('mavenPassword') ?:
+                        System.getenv('AZURE_TOKEN') ?:
+                        System.getenv('MAVEN_PASS') ?: ''
+                }
+            }
+        }
+    }
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java // Publish with standard artifacts
+            setGroupId(root_package)// Publish with root package as maven group
+            setArtifactId(mod_id) // Publish artifacts with mod id as the artifact id
+
+            // Custom artifact:
+            // If you want to publish a different artifact to the one outputted when building normally
+            // Create a different gradle task (Jar task), in extra.gradle
+            // Remove the 'from components.java' line above
+            // Add this line (change the task name):
+            // artifacts task_name
+            artifact(tasks.named(project.ext.remapTaskName).flatMap { it.archiveFile })
+            version = project.version
+        }
+    }
+}
+
+if (publish_to_local_maven.toBoolean()) {
+    tasks.named('build').configure {
+        finalizedBy(tasks.named('publishToMavenLocal'))
+    }
+}

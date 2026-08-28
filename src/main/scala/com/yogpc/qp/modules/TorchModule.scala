@@ -12,7 +12,7 @@ class TorchModule(val y: () => Int) extends IModule {
 
   override val calledWhen: Set[IModule.ModuleType] = Set(IModule.TypeAfterBreak)
 
-  private[this] var lastPlaced = 0L
+  private var lastPlaced = 0L
 
   /**
     * @return false if work hasn't finished.

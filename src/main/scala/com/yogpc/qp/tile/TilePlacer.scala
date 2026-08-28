@@ -30,22 +30,22 @@ import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.items.CapabilityItemHandler
 import net.minecraftforge.items.wrapper.InvWrapper
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.*
 
 class TilePlacer extends TileEntity with HasInv {
   tile =>
-  private[this] val inventory = NonNullList.withSize(getSizeInventory, com.yogpc.qp.version.VersionUtil.empty())
-  private[this] val handler = new InvWrapper(this)
-  private[this] val isAir = (world: World, pos: BlockPos) => {
+  private val inventory = NonNullList.withSize(getSizeInventory, com.yogpc.qp.version.VersionUtil.empty())
+  private val handler = new InvWrapper(this)
+  private val isAir = (world: World, pos: BlockPos) => {
     val state = world.getBlockState(pos)
     state.getBlock.isAir(state, world, pos)
   }
-  private[this] lazy val fakePlayer = QuarryFakePlayer.get(getWorld.asInstanceOf[WorldServer], getPos)
+  private lazy val fakePlayer = QuarryFakePlayer.get(getWorld.asInstanceOf[WorldServer], getPos)
 
   def updateTick(): Unit = {
     val facing = getWorld.getBlockState(getPos).getValue(ADismCBlock.FACING)
-    val facing1 = EnumFacing.getFront(facing.getIndex + 2)
-    val facing2 = EnumFacing.getFront(facing.getIndex + 4)
+    val facing1 = EnumFacing.byIndex(facing.getIndex + 2)
+    val facing2 = EnumFacing.byIndex(facing.getIndex + 4)
     val playerInvCopy = new PlayerInvCopy(fakePlayer.inventory)
     playerInvCopy.setItems(tile)
     var lastIndex = 0
@@ -62,7 +62,7 @@ class TilePlacer extends TileEntity with HasInv {
           if (onItemUseFirst(facing))
             return true
           if (!Config.content.placerOnlyPlaceFront) {
-            if (facingList exists onItemUseFirst)
+            if (facingList.exists(onItemUseFirst))
               return true
           }
         }
@@ -81,7 +81,7 @@ class TilePlacer extends TileEntity with HasInv {
           if (onItemUse(facing)) true
           //Do you want to place block on non-facing side?
           else if (!Config.content.placerOnlyPlaceFront)
-            if (facingList exists onItemUse) true
+            if (facingList.exists(onItemUse)) true
             else false
           else
             false
@@ -137,13 +137,13 @@ class TilePlacer extends TileEntity with HasInv {
 
   override def getName = TranslationKeys.placer
 
-  override def isUsableByPlayer(player: EntityPlayer) = getWorld.getTileEntity(getPos) eq this
+  override def isUsableByPlayer(player: EntityPlayer) = getWorld.getTileEntity(getPos).eq(this)
 
-  override def hasCapability(capability: Capability[_], @Nullable facing: EnumFacing): Boolean =
-    (capability eq CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) || super.hasCapability(capability, facing)
+  override def hasCapability(capability: Capability[?], @Nullable facing: EnumFacing): Boolean =
+    capability.eq(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) || super.hasCapability(capability, facing)
 
   @Nullable override def getCapability[T](capability: Capability[T], @Nullable facing: EnumFacing): T =
-    if (capability eq CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(handler)
+    if (capability.eq(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)) CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(handler)
     else super.getCapability(capability, facing)
 }
 

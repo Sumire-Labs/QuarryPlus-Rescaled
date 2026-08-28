@@ -12,12 +12,13 @@ import org.apache.commons.io.FilenameUtils
 
 import java.nio.file.{Files, Path}
 import java.util.Collections
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.*
+import scala.jdk.OptionConverters.*
 import scala.collection.mutable
 import scala.util.{Failure, Success, Try}
 
 abstract class WorkbenchRecipe(val key: ItemDamage, val energy: Double, val showInJEI: Boolean = true) {
-  val microEnergy = (energy * APowerTile.MJToMicroMJ).toLong
+  val microEnergy = (energy * APowerTile.MJToMicroMJ.toDouble).toLong
   val size: Int
 
   def inputs: Seq[Seq[IngredientWithCount]]
@@ -95,12 +96,12 @@ private final class R1(o: ItemDamage, e: Double, s: Boolean = true, seq: Seq[Int
 
 object WorkbenchRecipe extends RecipeSearcher {
 
-  private[this] val recipes = mutable.Map.empty[ResourceLocation, WorkbenchRecipe]
+  private val recipes = mutable.Map.empty[ResourceLocation, WorkbenchRecipe]
 
   val dummyRecipe: WorkbenchRecipe = new WorkbenchRecipe(ItemDamage.invalid, energy = 0, showInJEI = false) {
     override val inputs = Nil
     override val microEnergy = 0L
-    override val inputsJ: java.util.List[java.util.List[IngredientWithCount]] = Collections.emptyList()
+    override def inputsJ(): java.util.List[java.util.List[IngredientWithCount]] = Collections.emptyList()
     override val size: Int = 0
     override val toString: String = "WorkbenchRecipe NoRecipe"
     override val hasContent: Boolean = false
@@ -108,13 +109,14 @@ object WorkbenchRecipe extends RecipeSearcher {
     override val getOutput = ItemStack.EMPTY
   }
 
-  implicit val recipeOrdering: Ordering[WorkbenchRecipe] = Ordering.comparatorToOrdering(
-    Ordering.by((a: WorkbenchRecipe) => a.energy) thenComparing Ordering.by((a: WorkbenchRecipe) => a.key)
-  )
+  implicit val recipeOrdering: Ordering[WorkbenchRecipe] = Ordering.fromLessThan { (left, right) =>
+    val energyComparison = java.lang.Double.compare(left.energy, right.energy)
+    energyComparison < 0 || (energyComparison == 0 && left.key.compare(right.key) < 0)
+  }
 
   def recipeSize: Int = recipes.size
 
-  def removeRecipe(output: ItemDamage): Unit = recipes.retain { case (_, r) => r.key != output }
+  def removeRecipe(output: ItemDamage): Unit = recipes.filterInPlace { case (_, r) => r.key != output }
 
   def removeRecipe(location: ResourceLocation): Unit = recipes.remove(location)
 
@@ -131,25 +133,25 @@ object WorkbenchRecipe extends RecipeSearcher {
 
   private def addRecipe(recipe: WorkbenchRecipe): Unit = {
     if (recipe.energy > 0)
-      recipes put(recipe.location, recipe)
+      recipes.put(recipe.location, recipe)
     else
       QuarryPlus.LOGGER.error(s"Energy of Workbench Recipe is less than 0. $recipe")
   }
 
   def addSeqRecipe(output: ItemDamage, energy: Int, inputs: Seq[Int => ItemStack], name: Symbol = Symbol(""), showInJEI: Boolean = true, unit: EnergyUnit = EnergyUnit.MJ): Unit = {
     val hasCondition = name != Symbol("")
-    val newRecipe = new R1(output, unit.multiple * energy, showInJEI, inputs, if (!hasCondition) Symbol(output.toStack().getUnlocalizedName) else name, hasCondition)
+    val newRecipe = new R1(output, unit.multiple * energy, showInJEI, inputs, if (!hasCondition) Symbol(output.toStack().getTranslationKey) else name, hasCondition)
     addRecipe(newRecipe)
   }
 
   def addListRecipe(location: ResourceLocation, output: ItemDamage, energy: Int, inputs: java.util.List[java.util.function.IntFunction[ItemStack]],
                     showInJEI: Boolean, unit: EnergyUnit): Unit = {
-    val recipeInput = inputs.asScala.map(_.apply(Config.content.recipe)).filter(VersionUtil.nonEmpty).map(IngredientWithCount.getSeq)
+    val recipeInput = inputs.asScala.map(_.apply(Config.content.recipe)).filter(VersionUtil.nonEmpty).map(IngredientWithCount.getSeq).toSeq
     addIngredientRecipe(location, output.toStack(), unit.multiple * energy, recipeInput, hardCode = false, showInJEI = showInJEI)
   }
 
   def addIngredientRecipe(location: ResourceLocation, output: ItemStack, energy: Double, inputs: java.util.List[java.util.List[IngredientWithCount]], hardCode: Boolean): Unit = {
-    addIngredientRecipe(location, output, energy, inputs.asScala.map(_.asScala.toSeq), hardCode, showInJEI = true)
+    addIngredientRecipe(location, output, energy, inputs.asScala.map(_.asScala.toSeq).toSeq, hardCode, showInJEI = true)
   }
 
   def addIngredientRecipe(location: ResourceLocation, output: ItemStack, energy: Double, inputs: Seq[Seq[IngredientWithCount]], hardCode: Boolean, showInJEI: Boolean): Unit = {
@@ -167,18 +169,18 @@ object WorkbenchRecipe extends RecipeSearcher {
   def getRecipeFromResult(stack: ItemStack): java.util.Optional[WorkbenchRecipe] = {
     if (VersionUtil.isEmpty(stack)) return java.util.Optional.empty()
     val key = ItemDamage(stack)
-    recipes.find { case (_, r) => r.key == key }.map(_._2).asJava
+    recipes.find { case (_, r) => r.key == key }.map(_._2).toJava
   }
 
   def registerJsonRecipe(path: java.util.List[Path]): Unit = {
-    recipes.retain { case (_, r) => r.hardCode }
+    recipes.filterInPlace { case (_, r) => r.hardCode }
     //    val pathFilter: Path => Boolean = path => !startWith("_")(path) && endWith(".json")(path)
     val ctx = new JsonContext(QuarryPlus.modID)
     val gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping.create
     load(path.asScala
       .filterNot(startWith("_"))
-      .map(p => pathToJson(p, gson)), ctx)
-      .foreach(r => recipes put(r.location, r))
+      .map(p => pathToJson(p, gson)).toSeq, ctx)
+      .foreach(r => recipes.put(r.location, r))
   }
 
   private def pathToJson(p: Path, gson: Gson): JsonObject = {

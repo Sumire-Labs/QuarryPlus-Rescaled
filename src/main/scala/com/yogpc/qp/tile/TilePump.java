@@ -115,12 +115,12 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         this.fortune = nbt.getByte("fortune");
         this.unbreaking = nbt.getByte("unbreaking");
         if (nbt.hasKey("connectTo")) {
-            setConnectTo(EnumFacing.getFront(nbt.getByte("connectTo")));
+            setConnectTo(EnumFacing.byIndex(nbt.getByte("connectTo")));
             preFacing = this.connectTo;
         }
         if (nbt.getTag("mapping0") instanceof NBTTagList)
             for (int i = 0; i < this.mapping.size(); i++)
-                readStringCollection(nbt.getTagList("mapping" + i, Constants.NBT.TAG_STRING), this.mapping.get(EnumFacing.getFront(i)));
+                readStringCollection(nbt.getTagList("mapping" + i, Constants.NBT.TAG_STRING), this.mapping.get(EnumFacing.byIndex(i)));
         this.range = nbt.getByte("range");
         this.quarryRange = nbt.getBoolean("quarryRange");
         this.autoChangedRange = nbt.getBoolean("autoChangedRange");
@@ -145,7 +145,7 @@ public class TilePump extends APacketTile implements IEnchantableTile, ITickable
         if (connectTo != null)
             nbt.setByte("connectTo", (byte) this.connectTo.ordinal());
         for (int i = 0; i < this.mapping.size(); i++)
-            nbt.setTag("mapping" + i, writeStringCollection(this.mapping.get(EnumFacing.getFront(i))));
+            nbt.setTag("mapping" + i, writeStringCollection(this.mapping.get(EnumFacing.byIndex(i))));
         nbt.setByte("range", this.range);
         nbt.setBoolean("quarryRange", this.quarryRange);
         nbt.setBoolean("autoChangedRange", this.autoChangedRange);

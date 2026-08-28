@@ -80,7 +80,7 @@ public class BlockBreaker extends ADismCBlock {
             blockState.getBlock().onBlockHarvested(worldIn, pos1, blockState, player);
             SoundType type = blockState.getBlock().getSoundType(state, worldIn, pos1, player);
             if (blockState.getBlock().removedByPlayer(blockState, worldIn, pos1, player, true)) {
-                blockState.getBlock().onBlockDestroyedByPlayer(worldIn, pos1, blockState);
+                blockState.getBlock().onPlayerDestroy(worldIn, pos1, blockState);
                 worldIn.playSound(player, pos1, type.getBreakSound(), SoundCategory.BLOCKS, (type.getVolume() + 1.0F) / 2.0F, type.getPitch() * 0.8F);
             } else {
                 return;
@@ -195,7 +195,7 @@ public class BlockBreaker extends ADismCBlock {
     @Override
     @SuppressWarnings("deprecation")
     public IBlockState getStateFromMeta(int meta) {
-        return getDefaultState().withProperty(FACING, EnumFacing.getFront(meta & 7)).withProperty(POWERED, (meta & 8) == 8);
+        return getDefaultState().withProperty(FACING, EnumFacing.byIndex(meta & 7)).withProperty(POWERED, (meta & 8) == 8);
     }
 
     @Override

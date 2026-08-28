@@ -11,11 +11,13 @@ import net.minecraft.util.EnumFacing
 import net.minecraftforge.fluids.FluidStack
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
+import scala.compiletime.uninitialized
+
 @SideOnly(Side.CLIENT)
 class GuiAdvQuarryFluid(tile: TileAdvQuarry, player: EntityPlayer, val facing: EnumFacing) extends GuiScreenA(null) {
 
   val filter = tile.fluidExtractFacings(facing)
-  var fluidList: FluidSlot = _
+  var fluidList: FluidSlot = uninitialized
 
   val DONE_ID = 0
   val ADD_FROM_LIST_ID = 2
@@ -70,11 +72,13 @@ class GuiAdvQuarryFluid(tile: TileAdvQuarry, player: EntityPlayer, val facing: E
 
     override def drawSlot(slotIndex: Int, xPos: Int, yPos: Int, heightIn: Int, mouseXIn: Int, mouseYIn: Int, partialTicks: Float): Unit = {
       filter.map(_.getLocalizedName).foreach(name =>
-        mc.fontRenderer.drawStringWithShadow(name, (GuiAdvQuarryFluid.this.width * 3 / 5 - mc.fontRenderer.getStringWidth(name)) / 2, yPos + 2, 0xFFFFFF)
+        mc.fontRenderer.drawStringWithShadow(name,
+          ((GuiAdvQuarryFluid.this.width * 3 / 5 - mc.fontRenderer.getStringWidth(name)) / 2).toFloat,
+          (yPos + 2).toFloat, 0xFFFFFF)
       )
     }
 
-    override def isSelected(slotIndex: Int): Boolean = current contains slotIndex
+    override def isSelected(slotIndex: Int): Boolean = current.contains(slotIndex)
 
     override def getSize: Int = filter.size
   }
@@ -84,7 +88,7 @@ class GuiAdvQuarryFluid(tile: TileAdvQuarry, player: EntityPlayer, val facing: E
 private class SelectFluid(parentAdv: GuiAdvQuarryFluid, tile: TileAdvQuarry) extends GuiScreenA(parentAdv) {
   val DONE_ID = 0
   val CANCEL_ID: Int = 1
-  var fluidList: FluidSlot = _
+  var fluidList: FluidSlot = uninitialized
 
   override def initGui(): Unit = {
     super.initGui()
@@ -120,7 +124,7 @@ private class SelectFluid(parentAdv: GuiAdvQuarryFluid, tile: TileAdvQuarry) ext
     private val addable = {
       tile.fluidStacks.keySet.diff(parentAdv.filter).toSeq
     }
-    var currentFluid: FluidStack = _
+    var currentFluid: FluidStack = uninitialized
 
     override def drawBackground(): Unit = parentAdv.drawDefaultBackground()
 
@@ -128,7 +132,9 @@ private class SelectFluid(parentAdv: GuiAdvQuarryFluid, tile: TileAdvQuarry) ext
 
     override def drawSlot(slotIndex: Int, xPos: Int, yPos: Int, heightIn: Int, mouseXIn: Int, mouseYIn: Int, partialTicks: Float): Unit = {
       val name = addable(slotIndex).getLocalizedName
-      mc.fontRenderer.drawStringWithShadow(name, (SelectFluid.this.width - mc.fontRenderer.getStringWidth(name)) / 2, yPos + 2, 0xFFFFFF)
+      mc.fontRenderer.drawStringWithShadow(name,
+        ((SelectFluid.this.width - mc.fontRenderer.getStringWidth(name)) / 2).toFloat,
+        (yPos + 2).toFloat, 0xFFFFFF)
     }
 
     override def isSelected(slotIndex: Int): Boolean = addable(slotIndex) == currentFluid

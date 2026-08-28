@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import scala.collection.JavaConverters;
+import scala.jdk.javaapi.CollectionConverters;
 import scala.collection.Map;
 
 import static jp.t2v.lab.syntax.MapStreamSyntax.entryToMap;
@@ -38,8 +38,8 @@ public class CopiedRecipeSearcher implements RecipeSearcher {
 
     @Override
     public Map<ResourceLocation, WorkbenchRecipe> getRecipeMap() {
-        return JavaConverters.mapAsScalaMapConverter(recipes.stream()
+        return CollectionConverters.asScala(recipes.stream()
             .map(toEntry(WorkbenchRecipe::location, Function.<WorkbenchRecipe>identity()))
-            .collect(entryToMap())).asScala();
+            .collect(entryToMap()));
     }
 }

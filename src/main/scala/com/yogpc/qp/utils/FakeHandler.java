@@ -52,7 +52,7 @@ import net.minecraftforge.common.util.FakePlayer;
 public class FakeHandler extends NetHandlerPlayServer {
 
     public FakeHandler(FakePlayer fakePlayer) {
-        super(fakePlayer.mcServer, new FakeNetworkManager(), fakePlayer);
+        super(fakePlayer.server, new FakeNetworkManager(), fakePlayer);
     }
 
     /**
@@ -137,7 +137,7 @@ public class FakeHandler extends NetHandlerPlayServer {
         }
 
         @Override
-        public void checkDisconnected() {
+        public void handleDisconnection() {
         }
 
         @Override

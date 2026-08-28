@@ -39,7 +39,7 @@ object BuiltinRecipes {
       TileReplacer.SYMBOL -> (ItemDamage(blockReplacer), 6400000, Seq(F(WATER_BUCKET, 16), F(LAVA_BUCKET, 16), F(IRON_INGOT, 8), F(GOLD_INGOT, 16), F(REDSTONE, 8), F(ENDER_PEARL, 2), F(ENDER_EYE, 6), F(net.minecraft.init.Items.SKULL, 24d / 25d, 5), F(NETHER_STAR, 4), F(STONE, 512))),
       TileFiller.SYMBOL -> (ItemDamage(blockFiller), 160000, Seq(F(IRON_INGOT, 16), F(LADDER, 16), F(IRON_AXE, 3)))
     )
-    map.filterKeys(Config.content.enableMap).foreach {
+    map.filter { case (key, _) => Config.content.enableMap(key) }.foreach {
       case (s, (item, energy, recipe)) => WorkbenchRecipe.addSeqRecipe(item, energy, recipe, name = s)
     }
     if (Config.content.enableMap.contains(TileQuarry.SYMBOL) &&

@@ -49,7 +49,7 @@ public class BlockController extends Block implements IDismantleable {
 
     public BlockController() {
         super(Material.CIRCUITS);
-        setUnlocalizedName(QuarryPlus.Names.controller);
+        setTranslationKey(QuarryPlus.Names.controller);
         setRegistryName(QuarryPlus.modID, QuarryPlus.Names.controller);
         setHardness(1.0f);
         setCreativeTab(QuarryPlusI.creativeTab());

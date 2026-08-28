@@ -1,44 +1,69 @@
-# QuarryPlus for 1.12.2
-===========
+# QuarryPlus(Additional Enchanted Miner) Rescaled 
 
-Advanced machines for minecraft. Forked from https://github.com/yogpstop/QuarryPlus
+QuarryPlus Rescaled adds advanced quarries and related machines. This branch is
+for [CleanroomLoader](https://github.com/CleanroomMC/Cleanroom) only and is not
+compatible with legacy Forge installations.
 
-Jar files are available on ~~https://github.com/Kotori316/QuarryPlus/releases~~
-See [CurseForge][1.12.2-dl] for 1.12.2 version.
+The project uses Java 25, Scala 3, Scalar, Unimined, and MCP stable_39. Scalar
+is a required runtime mod and is declared as a mandatory dependency.
 
-(Additional Enchanted Miner)
-Minecraft CurseForge - https://www.curseforge.com/minecraft/mc-mods/additional-enchanted-miner
+## Building
 
-[1.12.2-dl]: [https://www.curseforge.com/minecraft/mc-mods/additional-enchanted-miner/files/all?filter-status=1&filter-game-version=2020709689%3A6756]
+Install a Java 25 JDK, then run:
 
----
-This program is licensed under GNU LESSER GENERAL PUBLIC LICENSE.  
-Copyright (C) 2012, 2013 yogpstop  
-Copyright (C) 2017-2021 Kotori316
----
+```shell
+./gradlew build
+```
 
-Supported API
--------------
+On Windows:
 
-* BuildCraft API
-* ~~CofhLib API~~
-* CoFHCore API
-* RedstoneFlux API
-* IC2 API
-* JEI API
-* Forge Energy API (net.minecraftforge.energy.IEnergyStorage)
-* Forge ItemHandler API (net.minecraftforge.items.IItemHandler)
-* Forge FluidHandler API (net.minecraftforge.fluids.capability.IFluidHandler)
+```powershell
+.\gradlew.bat build
+```
 
-Build with...
--------------
+The remapped distribution jar is written to `build/libs` without a classifier.
+Use `runClient` or `runServer` for development runs and `genSources` when IDE
+Minecraft sources are needed.
 
-* ~~BuildCraft [MC1.11.2] 7.99.7~~
-* BuildCraft [[MC1.12.2](https://www.curseforge.com/minecraft/mc-mods/buildcraft)] buildcraft-main-7.99.24.5.jar
-* IC2\_experimental [[MC1.12](http://jenkins.ic2.player.to/job/IC2_112/)] industrialcraft-2-2.8.194-ex112-api.jar
-* ~~CoFHLib [MC1.11.2] CoFHLib-1.11.2-1.8.0.1~~
-* CoFHCore [[MC1.12.2](https://www.curseforge.com/minecraft/mc-mods/cofhcore)] CoFHCore-1.12.2-4.6.2.25.jar
-* RedstoneFlux [[MC1.12.2](https://www.curseforge.com/minecraft/mc-mods/redstone-flux)] RedstoneFlux-1.12-2.1.0.6.jar
-* JEI [[MC1.12.2](https://www.curseforge.com/minecraft/mc-mods/jei)] jei_1.12.2-4.13.0.219.jar
-* Mekanism:1.12.2-9.4.4.330+0b21085
-* team.chisel.ctm:CTM:MC1.12-0.2.3.13
+## Cleanroom development notes
+
+This project uses a custom [Unimined fork](https://github.com/kappa-maintainer/Unimined)
+([original](https://github.com/unimined/Unimined)). Report impossible field
+names or impossible Scala compiler errors to this project or the Unimined fork.
+
+If you are using IntelliJ, **DO NOT** use the `Minecraft Client` configuration
+with a blue icon. Use the `2. Run Client` Gradle task.
+
+Mod dependencies belong in `gradle/scripts/dependencies.gradle`. Use
+`modImplementation` or `modRuntimeOnly` for mods that must be remapped, and
+`modLibrary` for libraries or mods that must remain unmapped. The `contain` and
+`shadow` configurations are available for non-mod dependencies as described in
+that file.
+
+Access transformers must use MCP names; Unimined remaps them to SRG names in
+the artifact. Access transformers are currently disabled for QuarryPlus.
+
+Run `genSources` to generate commented vanilla sources. If it does not produce
+a `-sources.jar` on the first run, run the task again.
+
+## Binary compatibility
+
+Add-ons compiled against the former Scala 2 build must be rebuilt against this
+Scala 3/Cleanroom branch because Scala types exposed by the mod have a new ABI.
+
+## Supported integrations
+
+- BuildCraft
+- CoFH Core and Redstone Flux
+- IndustrialCraft 2
+- JEI
+- CraftTweaker
+- Mekanism
+- Forge Energy, ItemHandler, and FluidHandler APIs
+
+## LICENSE
+
+Licensed under the LGPL-3.0
+
+## Credits
+

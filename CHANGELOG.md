@@ -1,3 +1,8 @@
+# [13.0.0] Maintenance by Sumire Lab 
+
+- Complete rewrite from Scalar 2 to Scalar 3
+- Migrate MCP to 39-1.12
+
 # Version 12.5.7
 
 * Fixed - JEI doesn't show more than 18 items.

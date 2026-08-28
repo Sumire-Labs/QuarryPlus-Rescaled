@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.yogpc.qp.QuarryPlus;
+import com.yogpc.qp.QuarryPlusTags;
 import crafttweaker.CraftTweakerAPI;
 import crafttweaker.IAction;
 import javax.annotation.Nullable;
@@ -13,7 +14,7 @@ import net.minecraftforge.fml.common.ModMetadata;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
-@Mod(modid = QuarryPlus.modID + "_ct", name = QuarryPlus.Mod_Name + "_CT", version = "${version}", certificateFingerprint = "@FINGERPRINT@")
+@Mod(modid = QuarryPlus.modID + "_ct", name = QuarryPlus.Mod_Name + "_CT", version = QuarryPlusTags.VERSION)
 public class CT {
 
     public static final String CRAFT_TWEAKER_ID = "crafttweaker";

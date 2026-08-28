@@ -1,5 +1,6 @@
 package com.yogpc.qp.tile
 
+import java.lang.{Boolean => JBool}
 import java.util
 
 import com.yogpc.qp._
@@ -9,6 +10,7 @@ import com.yogpc.qp.gui.TranslationKeys
 import com.yogpc.qp.packet.PacketHandler
 import com.yogpc.qp.packet.exppump.ExpPumpMessage
 import javax.annotation.Nullable
+import net.minecraft.block.properties.IProperty
 import net.minecraft.entity.item.EntityXPOrb
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.nbt.NBTTagCompound
@@ -17,15 +19,17 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.util.text.TextComponentString
 import net.minecraft.world.World
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.*
+import scala.compiletime.uninitialized
 
 class TileExpPump extends APacketTile with IEnchantableTile with IDebugSender with IAttachment {
-  private[this] var mConnectTo: EnumFacing = _
-  private[this] var loading = false
+  private val ACTING: IProperty[JBool] = ADismCBlock.ACTING
+  private var mConnectTo: EnumFacing = uninitialized
+  private var loading = false
 
-  private[this] var fortune = 0
-  private[this] var unbreaking = 0
-  private[this] var silktouch = false
+  private var fortune = 0
+  private var unbreaking = 0
+  private var silktouch = false
   private val module: ExpPumpModule = new ExpPumpModule((_: Long) => true, () => this.unbreaking, Option(_ => updateState()))
 
   override protected def getSymbol: Symbol = BlockExpPump.SYMBOL
@@ -49,7 +53,7 @@ class TileExpPump extends APacketTile with IEnchantableTile with IDebugSender wi
 
   private def refreshConnection(): Unit = {
     if (hasWorld && !world.isRemote) {
-      val entry = EnumFacing.VALUES
+      val entry = EnumFacing.VALUES.iterator
         .map(f => (f, getWorld.getTileEntity(getPos.offset(f))))
         .collectFirst {
           case (f: EnumFacing, t: IAttachable) if t.connect(f.getOpposite, IAttachment.Attachments.EXP_PUMP) => f -> t
@@ -61,7 +65,7 @@ class TileExpPump extends APacketTile with IEnchantableTile with IDebugSender wi
     }
   }
 
-  override def setConnectTo(@Nullable connectTo: EnumFacing) {
+  override def setConnectTo(@Nullable connectTo: EnumFacing) = {
     this.mConnectTo = connectTo
     if (hasWorld) {
       val state = getWorld.getBlockState(getPos)
@@ -83,8 +87,8 @@ class TileExpPump extends APacketTile with IEnchantableTile with IDebugSender wi
   }
 
   private def updateState(): Unit = {
-    if (module.xp > 0 ^ getWorld.getBlockState(getPos).getValue(ADismCBlock.ACTING)) {
-      val state = getWorld.getBlockState(getPos).withProperty(ADismCBlock.ACTING, Boolean.box(module.xp > 0))
+    if (module.xp > 0 ^ getWorld.getBlockState(getPos).getValue[JBool](ACTING)) {
+      val state = getWorld.getBlockState(getPos).withProperty(ACTING, Boolean.box(module.xp > 0))
       InvUtils.setNewState(getWorld, getPos, this, state)
     }
   }
@@ -145,7 +149,7 @@ class TileExpPump extends APacketTile with IEnchantableTile with IDebugSender wi
   override def readFromNBT(compound: NBTTagCompound): Unit = {
     super.readFromNBT(compound)
     val connectID = compound.getByte("mConnectTo")
-    mConnectTo = if (connectID < 0) null else EnumFacing.getFront(connectID)
+    mConnectTo = if (connectID < 0) null else EnumFacing.byIndex(connectID)
     module.xp = compound.getInteger("xpAmount")
     this.silktouch = compound.getBoolean("silktouch")
     this.fortune = compound.getByte("fortune")
@@ -161,11 +165,11 @@ class TileExpPump extends APacketTile with IEnchantableTile with IDebugSender wi
     * @return debug info of valid machine.
     */
   override def getDebugMessages: util.List[TextComponentString] = Seq(
-    "Connection -> " + mConnectTo,
-    "Unbreaking -> " + unbreaking,
-    "Fortune -> " + fortune,
-    "Silktouch -> " + silktouch,
-    "XpAmount -> " + module.xp
+    s"Connection -> $mConnectTo",
+    s"Unbreaking -> $unbreaking",
+    s"Fortune -> $fortune",
+    s"Silktouch -> $silktouch",
+    s"XpAmount -> ${module.xp}"
   ).map(toComponentString).asJava
 
   def writeToPacket(message: ExpPumpMessage): ExpPumpMessage = {
@@ -178,7 +182,7 @@ class TileExpPump extends APacketTile with IEnchantableTile with IDebugSender wi
 
   def onMessage(message: ExpPumpMessage): Unit = {
     mConnectTo = Some(message.facingOrdinal).collect {
-      case i if i >= 0 => EnumFacing.getFront(i)
+      case i if i >= 0 => EnumFacing.byIndex(i)
       case _ => null
     }.get
     module.xp = message.xpAmount

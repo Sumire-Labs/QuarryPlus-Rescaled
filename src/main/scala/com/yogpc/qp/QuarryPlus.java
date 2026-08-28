@@ -51,7 +51,6 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLFingerprintViolationEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -63,7 +62,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.ItemHandlerHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import scala.collection.JavaConverters;
+import scala.jdk.javaapi.CollectionConverters;
 
 import static com.yogpc.qp.QuarryPlusI.blockBookMover;
 import static com.yogpc.qp.QuarryPlusI.blockBreaker;
@@ -105,11 +104,9 @@ import static com.yogpc.qp.QuarryPlusI.torchModule;
 @Mod(
     modid = QuarryPlus.modID,
     name = QuarryPlus.Mod_Name,
-    version = "${version}",
+    version = QuarryPlusTags.VERSION,
     guiFactory = QuarryPlus.Optionals.configFactory,
-    updateJSON = QuarryPlus.Optionals.updateJson,
-    certificateFingerprint = "@FINGERPRINT@",
-    dependencies = "required:forge@[14.23.4.2705,);"
+    dependencies = "required:forge@[14.23.4.2705,);required-after:scalar;"
 )
 public class QuarryPlus {
 
@@ -118,8 +115,8 @@ public class QuarryPlus {
     public static final QuarryPlus INSTANCE;
     public static final VersionDiff DIFF;
 
-    public static final String Mod_Name = "QuarryPlus";
-    public static final String modID = "quarryplus";
+    public static final String Mod_Name = QuarryPlusTags.MOD_NAME;
+    public static final String modID = QuarryPlusTags.MOD_ID;
     private static final String prefix = modID + ":";
     public static final Logger LOGGER = LogManager.getLogger(Mod_Name);
     public boolean inDev;
@@ -187,7 +184,7 @@ public class QuarryPlus {
         event.getRegistry().registerAll(
             blockList().toArray(new Block[0])
         );
-        JavaConverters.mapAsJavaMapConverter(tileIdMap()).asJava().forEach(GameRegistry::registerTileEntity);
+        CollectionConverters.asJava(tileIdMap()).forEach(GameRegistry::registerTileEntity);
     }
 
     @SubscribeEvent
@@ -291,15 +288,6 @@ public class QuarryPlus {
         });
     }
 
-    @Mod.EventHandler
-    public void onFingerprintViolation(FMLFingerprintViolationEvent event) {
-        if (!event.isDirectory()) {
-            LOGGER.warn("Invalid fingerprint detected! The file " + event.getSource().getName() +
-                " may have been tampered with. This version will NOT be supported by the author!" + System.lineSeparator() +
-                "Download: https://www.curseforge.com/minecraft/mc-mods/additional-enchanted-miner");
-        }
-    }
-
     @SuppressWarnings({"unused", "WeakerAccess", "SpellCheckingInspection"})
     public static class Optionals {
         public static final String Buildcraft_modID = "buildcraftlib";
@@ -322,7 +310,6 @@ public class QuarryPlus {
         public static final String clientProxy = "com.yogpc.qp.ProxyClient";
         public static final String configFactory = "com.yogpc.qp.gui.GuiFactory";
         public static final String serverProxy = "com.yogpc.qp.ProxyCommon";
-        public static final String updateJson = "https://raw.githubusercontent.com/Kotori316/QuarryPlus/1.12/update.json";
     }
 
     @SuppressWarnings("SpellCheckingInspection")

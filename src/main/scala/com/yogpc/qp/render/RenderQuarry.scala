@@ -9,29 +9,29 @@ import net.minecraftforge.client.model.animation.FastTESR
 object RenderQuarry extends FastTESR[TileQuarry] {
   val instance = this
 
-  private[this] final val d1 = 1d / 16d
-  private[this] final val d4 = 4d / 16d
-  private lazy val spriteV = Sprites.getMap('stripes_v)
-  private lazy val spriteH = Sprites.getMap('stripes_h)
-  private lazy val boxStripe = Sprites.getMap('stripes_b)
+  private final val d1 = 1d / 16d
+  private final val d4 = 4d / 16d
+  private lazy val spriteV = Sprites.getMap(Symbol("stripes_v"))
+  private lazy val spriteH = Sprites.getMap(Symbol("stripes_h"))
+  private lazy val boxStripe = Sprites.getMap(Symbol("stripes_b"))
   private lazy val drillStripe = Sprites.getMap(LaserType.DRILL.symbol)
   private lazy val headSprite = Sprites.getMap(LaserType.DRILL_HEAD.symbol)
-  private[this] final val plusF: (Double, Double) => Double = (double1, double2) => double1 + double2
-  private[this] final val minusF: (Double, Double) => Double = (double1, double2) => double1 - double2
-  private[this] var bufferInstance = new Buffer(null)
+  private final val plusF: (Double, Double) => Double = (double1, double2) => double1 + double2
+  private final val minusF: (Double, Double) => Double = (double1, double2) => double1 - double2
+  private var bufferInstance = new Buffer(null)
 
   override def renderTileEntityFast(quarry: TileQuarry, distanceX: Double, distanceY: Double, distanceZ: Double,
                                     partialTicks: Float, destroyStage: Int, partial: Float, bufferBuilder: BufferBuilder):Unit = {
     val pos = quarry.getPos
-    if (!(bufferInstance bufferEq bufferBuilder)) {
+    if (!bufferInstance.bufferEq(bufferBuilder)) {
       bufferInstance = new Buffer(bufferBuilder)
     }
     val buffer = bufferInstance
 
-    Minecraft.getMinecraft.mcProfiler.startSection("quarryplus")
-    Minecraft.getMinecraft.mcProfiler.startSection("quarry")
+    Minecraft.getMinecraft.profiler.startSection("quarryplus")
+    Minecraft.getMinecraft.profiler.startSection("quarry")
     if ((quarry.G_getNow == TileQuarry.Mode.NOT_NEED_BREAK || quarry.G_getNow == TileQuarry.Mode.MAKE_FRAME) && quarry.yMax != Integer.MIN_VALUE) {
-      Minecraft.getMinecraft.mcProfiler.startSection("frame")
+      Minecraft.getMinecraft.profiler.startSection("frame")
       bufferBuilder.setTranslation(distanceX - pos.getX + .5, distanceY - pos.getY + .5, distanceZ - pos.getZ + .5)
       val minPos = quarry.getMinPos
       val maxPos = quarry.getMaxPos
@@ -42,7 +42,7 @@ object RenderQuarry extends FastTESR[TileQuarry] {
       val maxY = maxPos.getY
       val maxZ = maxPos.getZ
 
-      val subtract = quarry.getMaxPos subtract quarry.getMinPos
+      val subtract = quarry.getMaxPos.subtract(quarry.getMinPos)
 
       val mXm = minX - d1
       val mXP = minX + d1
@@ -411,11 +411,11 @@ object RenderQuarry extends FastTESR[TileQuarry] {
       buffer.pos(MXP, MYP, MZm).colored().tex(B_minU, B_maxV).lightedAndEnd()
 
       bufferBuilder.setTranslation(0, 0, 0)
-      Minecraft.getMinecraft.mcProfiler.endSection()
+      Minecraft.getMinecraft.profiler.endSection()
     }
 
     if (quarry.G_getNow() == TileQuarry.Mode.BREAK_BLOCK || quarry.G_getNow() == TileQuarry.Mode.MOVE_HEAD) {
-      Minecraft.getMinecraft.mcProfiler.startSection("drill")
+      Minecraft.getMinecraft.profiler.startSection("drill")
       bufferBuilder.setTranslation(distanceX - pos.getX + .5, distanceY - pos.getY + .5, distanceZ - pos.getZ + .5)
       //render crossed frame
       val D_minU = drillStripe.getMinU
@@ -660,11 +660,11 @@ object RenderQuarry extends FastTESR[TileQuarry] {
       yLine(y_floor, y_length)
 
       bufferBuilder.setTranslation(0, 0, 0)
-      Minecraft.getMinecraft.mcProfiler.endSection()
+      Minecraft.getMinecraft.profiler.endSection()
     }
 
-    Minecraft.getMinecraft.mcProfiler.endSection()
-    Minecraft.getMinecraft.mcProfiler.endSection()
+    Minecraft.getMinecraft.profiler.endSection()
+    Minecraft.getMinecraft.profiler.endSection()
   }
 
   override def isGlobalRenderer(te: TileQuarry): Boolean = true

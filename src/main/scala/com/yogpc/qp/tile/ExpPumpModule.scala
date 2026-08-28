@@ -6,6 +6,8 @@ import com.yogpc.qp.{PowerManager, QuarryPlus}
 import com.yogpc.qp.tile.IModule.{Done, NoAction, Result}
 import net.minecraft.entity.item.EntityXPOrb
 
+import scala.compiletime.uninitialized
+
 final class ExpPumpModule(useEnergy: Long => Boolean, unbreaking: () => Int, consumer: Option[Int => Unit]) extends IModule {
   def this(powerTile: APowerTile, consumer: Option[IntConsumer]) = {
     this(e => PowerManager.useEnergy(powerTile, e, EnergyUsage.PUMP_EXP),
@@ -18,7 +20,7 @@ final class ExpPumpModule(useEnergy: Long => Boolean, unbreaking: () => Int, con
 
   override val calledWhen: Set[IModule.ModuleType] = Set(IModule.TypeCollectItem, IModule.TypeAfterBreak)
 
-  var xp: Int = _
+  var xp: Int = uninitialized
 
   override def action(when: IModule.CalledWhen): Result = {
     val (xp, r) = when match {

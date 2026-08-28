@@ -7,7 +7,7 @@ import net.minecraft.item.crafting.Ingredient
 import net.minecraft.network.PacketBuffer
 import net.minecraft.util.ResourceLocation
 
-import scala.collection.JavaConverters.setAsJavaSetConverter
+import scala.jdk.CollectionConverters.*
 
 class CopiedRecipe(o: ItemStack,
                    e: Double,
@@ -69,5 +69,5 @@ object CopiedRecipe {
     new StacksIngredient(stacks)
   }
 
-  private class StacksIngredient(stacks: Seq[ItemStack]) extends Ingredient(stacks: _*)
+  private class StacksIngredient(stacks: Seq[ItemStack]) extends Ingredient(stacks*)
 }

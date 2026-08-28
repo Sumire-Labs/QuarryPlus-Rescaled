@@ -15,6 +15,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.io.File
 import java.nio.file.{Files, Path}
 import java.{lang, util}
+import scala.compiletime.uninitialized
 import scala.util.Try
 import scala.util.control.NonFatal
 
@@ -22,8 +23,8 @@ object Config {
   final val NO_DIG_BLOCK_PATH = "quarryplus_noDigBlocks.json"
   final val RECIPE_DIRECTORY = "recipes"
 
-  private[this] var mContent: Content = _
-  private[this] var configuration: Configuration = _
+  private var mContent: Content = uninitialized
+  private var configuration: Configuration = uninitialized
 
   @SubscribeEvent
   def onChange(configChangedEvent: ConfigChangedEvent.OnConfigChangedEvent): Unit = {
@@ -87,27 +88,27 @@ object Config {
   def content: Content = mContent
 
   private val Disables = Set(
-    'SpawnerController,
-    'ChunkDestroyer,
-    'AdvancedPump,
-    'BreakerPlus,
-    'MiningwellPlus,
-    'MagicMirror,
-    'EnchantMover,
-    'EnchantMoverFromBook,
-    'PlacerPlus,
-    'PumpPlus,
-    'ExpPump,
-    'MarkerPlus,
-    'QuarryPlus,
-    'WorkbenchPlus,
-    'SolidFuleQuarry,
-    'Replacer,
-    'NewQuarry,
-    'Filler) ++ QuarryPlusI.itemDisableInfo.map(_.getSymbol)
+    Symbol("SpawnerController"),
+    Symbol("ChunkDestroyer"),
+    Symbol("AdvancedPump"),
+    Symbol("BreakerPlus"),
+    Symbol("MiningwellPlus"),
+    Symbol("MagicMirror"),
+    Symbol("EnchantMover"),
+    Symbol("EnchantMoverFromBook"),
+    Symbol("PlacerPlus"),
+    Symbol("PumpPlus"),
+    Symbol("ExpPump"),
+    Symbol("MarkerPlus"),
+    Symbol("QuarryPlus"),
+    Symbol("WorkbenchPlus"),
+    Symbol("SolidFuleQuarry"),
+    Symbol("Replacer"),
+    Symbol("NewQuarry"),
+    Symbol("Filler")) ++ QuarryPlusI.itemDisableInfo.map(_.getSymbol)
   private val DisableBC = Map(
-    'LaserPlus -> QuarryPlus.Optionals.Buildcraft_silicon_modID,
-    'RefineryPlus -> QuarryPlus.Optionals.Buildcraft_factory_modID
+    Symbol("LaserPlus") -> QuarryPlus.Optionals.Buildcraft_silicon_modID,
+    Symbol("RefineryPlus") -> QuarryPlus.Optionals.Buildcraft_factory_modID
   )
 
   private final val TickDelayMachines: Seq[Symbol] = Seq(
@@ -116,7 +117,7 @@ object Config {
     Symbol("NewQuarry")
   )
 
-  private val defaultDisables = Set('EnchantMoverFromBook, 'Replacer, 'Filler) ++
+  private val defaultDisables = Set(Symbol("EnchantMoverFromBook"), Symbol("Replacer"), Symbol("Filler")) ++
     QuarryPlusI.itemDisableInfo.collect { case m if m.defaultDisableMachine => m.getSymbol }
 
   final val CATEGORY_MACHINES = "machines"
@@ -144,7 +145,7 @@ object Config {
 
   class Content {
 
-    import scala.collection.JavaConverters._
+    import scala.jdk.CollectionConverters.*
 
     val enableMap: Map[Symbol, Boolean] = (Disables.map(s => {
       val key = "Disable" + s.name
@@ -157,7 +158,7 @@ object Config {
     val disableMapJ: util.Map[Symbol, lang.Boolean] = enableMap.map { case (s, b) => (s, Boolean.box(!b)) }.asJava
 
     val spawnerBlacklist: util.Set[ResourceLocation] = configuration.get(Configuration.CATEGORY_GENERAL, SpawnerControllerEntityBlackList_key, Array("minecraft:ender_dragon", "minecraft:wither"), "Spawner Blacklist")
-      .getStringList.map(new ResourceLocation(_)).toSet.asJava
+      .getStringList.iterator.map(name => new ResourceLocation(name)).toSet.asJava
     configuration.getCategory(Configuration.CATEGORY_GENERAL).remove(RecipeDifficulty_key)
     val recipe: Int = configuration.getInt(Recipe_key, Configuration.CATEGORY_GENERAL, 2, 1, Short.MaxValue, Recipe_key)
 
@@ -202,7 +203,7 @@ object Config {
     val manuallyDefinedHidden: Boolean = configuration.hasCategory(CATEGORY_HIDDEN)
     val collectBedrock: Boolean = configuration.get(CATEGORY_HIDDEN, CollectBedrock_key, false, CollectBedrock_key).setShowInGui(false).getBoolean
 
-    import scala.collection.JavaConverters._
+    import scala.jdk.CollectionConverters.*
 
     private val path: Path = configuration.getConfigFile.toPath.getParent.resolve(NO_DIG_BLOCK_PATH)
     val noDigBLOCKS: Set[BlockWrapper] = if (Files.exists(path)) {

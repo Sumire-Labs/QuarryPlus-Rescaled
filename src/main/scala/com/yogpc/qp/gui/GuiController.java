@@ -27,7 +27,7 @@ public class GuiController extends GuiScreen {
         this.xc = x;
         this.yc = y;
         this.zc = z;
-        names = l.stream().sorted(Comparator.comparing(ResourceLocation::getResourceDomain)).map(ResourceLocation::toString).collect(Collectors.toList());
+        names = l.stream().sorted(Comparator.comparing(ResourceLocation::getNamespace)).map(ResourceLocation::toString).collect(Collectors.toList());
     }
 
     @Override

@@ -271,7 +271,7 @@ public abstract class TileBasic extends APowerTile implements IEnchantableTile, 
      */
     @SuppressWarnings({"ConstantConditions", "deprecation"})
     public static void getDrops(World world, BlockPos pos, IBlockState state, Block block, int fortuneLevel, NonNullList<ItemStack> list) {
-        if (QuarryPlus.Optionals.Thaumcraft_modID.equals(block.getRegistryName().getResourceDomain())) {
+        if (QuarryPlus.Optionals.Thaumcraft_modID.equals(block.getRegistryName().getNamespace())) {
             list.addAll(block.getDrops(world, pos, state, fortuneLevel));
         } else {
             block.getDrops(list, world, pos, state, fortuneLevel);

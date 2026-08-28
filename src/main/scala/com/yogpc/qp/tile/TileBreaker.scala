@@ -26,7 +26,7 @@ import net.minecraftforge.items.CapabilityItemHandler
 import net.minecraftforge.items.wrapper.InvWrapper
 
 class TileBreaker extends TileEntity with IEnchantableTile with HasInv {
-  private[this] val handler = new InvWrapper(this)
+  private val handler = new InvWrapper(this)
   var silktouch = false
   var fortune: Byte = 0
 
@@ -57,10 +57,10 @@ class TileBreaker extends TileEntity with IEnchantableTile with HasInv {
 
   override def getName: String = TranslationKeys.breaker
 
-  override def hasCapability(capability: Capability[_], @Nullable facing: EnumFacing): Boolean =
-    (capability eq CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) || super.hasCapability(capability, facing)
+  override def hasCapability(capability: Capability[?], @Nullable facing: EnumFacing): Boolean =
+    capability.eq(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) || super.hasCapability(capability, facing)
 
   @Nullable override def getCapability[T](capability: Capability[T], @Nullable facing: EnumFacing): T =
-    if (capability eq CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(handler)
+    if (capability.eq(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)) CapabilityItemHandler.ITEM_HANDLER_CAPABILITY.cast(handler)
     else super.getCapability(capability, facing)
 }

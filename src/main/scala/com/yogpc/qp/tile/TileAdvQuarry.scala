@@ -46,10 +46,10 @@ import net.minecraftforge.fml.common.registry.ForgeRegistries
 import net.minecraftforge.items.{CapabilityItemHandler, IItemHandlerModifiable}
 
 import scala.annotation.tailrec
-import scala.collection.JavaConverters._
+import scala.compiletime.uninitialized
+import scala.jdk.CollectionConverters.*
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
-import scala.reflect.ClassTag
 
 class TileAdvQuarry extends APowerTile
   with IEnchantableTile
@@ -61,9 +61,9 @@ class TileAdvQuarry extends APowerTile
   with HasModuleInventory
   with HasStorage {
   self =>
-  private[this] var mDigRange = TileAdvQuarry.defaultRange
+  private var mDigRange = TileAdvQuarry.defaultRange
   var modules: List[IModule] = Nil
-  private[this] var attachments: Map[Attachments[_ <: APacketTile], EnumFacing] = Map.empty
+  private var attachments: Map[Attachments[? <: APacketTile], EnumFacing] = Map.empty
   var ench: QEnch = TileAdvQuarry.defaultEnch
   var target: BlockPos = BlockPos.ORIGIN
   var framePoses = List.empty[BlockPos]
@@ -72,8 +72,8 @@ class TileAdvQuarry extends APowerTile
   val fluidStacks = scala.collection.mutable.Map.empty[FluidStack, FluidTank]
   val cacheItems = new ItemList
   val itemHandler = new ItemHandler
-  val fluidHandlers: Map[EnumFacing, FluidHandler] = EnumFacing.VALUES.map(f => f -> new FluidHandler(facing = f)).toMap.withDefaultValue(new FluidHandler(null))
-  val fluidExtractFacings: Map[EnumFacing, mutable.Set[FluidStack]] = EnumFacing.VALUES.map(f => f -> scala.collection.mutable.Set.empty[FluidStack]).toMap
+  val fluidHandlers: Map[EnumFacing, FluidHandler] = EnumFacing.VALUES.iterator.map(f => f -> new FluidHandler(facing = f)).toMap.withDefaultValue(new FluidHandler(null))
+  val fluidExtractFacings: Map[EnumFacing, mutable.Set[FluidStack]] = EnumFacing.VALUES.iterator.map(f => f -> scala.collection.mutable.Set.empty[FluidStack]).toMap
   val mode = new Mode
   val ACTING: PropertyHelper[JBool] = ADismCBlock.ACTING
   val moduleInv = new QuarryModuleInventory(new TextComponentString("Modules"), 5, this, _ => refreshModules(), TileAdvQuarry.moduleFilter)
@@ -82,7 +82,7 @@ class TileAdvQuarry extends APowerTile
     super.update()
     if (!getWorld.isRemote && !machineDisabled) {
       modules.foreach(_.invoke(IModule.Tick(self)))
-      if (mode is TileAdvQuarry.MAKE_FRAME) {
+      if (mode.is(TileAdvQuarry.MAKE_FRAME)) {
         @inline
         def makeFrame(): Unit = {
           if (target == getPos) {
@@ -127,7 +127,7 @@ class TileAdvQuarry extends APowerTile
         def nextFrameTarget: BlockPos = {
           framePoses match {
             case p :: rest => framePoses = rest; p
-            case Nil => mode set TileAdvQuarry.BREAK_BLOCK; digRange.min
+            case Nil => mode.set(TileAdvQuarry.BREAK_BLOCK); digRange.min
           }
         }
 
@@ -141,11 +141,11 @@ class TileAdvQuarry extends APowerTile
 
         var i = 0
         while (i < 4 * digRange.timeInTick) {
-          if (mode is TileAdvQuarry.MAKE_FRAME)
+          if (mode.is(TileAdvQuarry.MAKE_FRAME))
             makeFrame()
           i += 1
         }
-      } else if (mode is TileAdvQuarry.BREAK_BLOCK) {
+      } else if (mode.is(TileAdvQuarry.BREAK_BLOCK)) {
 
         type B_1 = (NonNullList[ItemStack], Seq[Int], Seq[Int], Seq[Int], Seq[Int], Long)
         type C_1 = (NonNullList[ItemStack], Seq[Int], Seq[Int], Seq[Int], Seq[Int])
@@ -172,7 +172,10 @@ class TileAdvQuarry extends APowerTile
         }
 
         val calcBreakEnergy: NonNullList[ItemStack] => Either[Reason, B_1] = list => {
-          val destroy, dig, drain, shear = new mutable.WrappedArrayBuilder[Int](ClassTag.Int)
+          val destroy = Vector.newBuilder[Int]
+          val dig = Vector.newBuilder[Int]
+          val drain = Vector.newBuilder[Int]
+          val shear = Vector.newBuilder[Int]
           var requireEnergy = 0d
           val x = target.getX
           var y = target.getY - 1
@@ -250,7 +253,7 @@ class TileAdvQuarry extends APowerTile
           if (PowerManager.useEnergy(self, energy, EnergyUsage.ADV_BREAK_BLOCK)) {
             Right(list, destroy, dig, drain, rest)
           } else {
-            Left(Reason(EnergyUsage.ADV_BREAK_BLOCK, energy, getStoredEnergy))
+            Left(Reason(EnergyUsage.ADV_BREAK_BLOCK, energy.toDouble, getStoredEnergy.toDouble))
           }
         }
 
@@ -292,7 +295,7 @@ class TileAdvQuarry extends APowerTile
             for (y <- shear) {
               p.setY(y)
               val state = getWorld.getBlockState(p)
-              val block = state.getBlock.asInstanceOf[Block with IShearable]
+              val block = state.getBlock.asInstanceOf[Block & IShearable]
               val (r, go) = breakEvent(p, state, fakePlayer) { e =>
                 tempList.addAll(block.onSheared(itemShear, getWorld, p, ench.fortune))
                 ForgeEventFactory.fireBlockHarvesting(tempList, getWorld, p, state, ench.fortune, 1f, ench.silktouch, fakePlayer)
@@ -337,7 +340,7 @@ class TileAdvQuarry extends APowerTile
           }
           fakePlayer.setHeldItem(EnumHand.MAIN_HAND, VersionUtil.empty())
           modules.collectFirst { case module: ExpPumpModule => module }.foreach(_.addXp(additionalExp))
-          if (goNext) Right(list, reasons)
+          if (goNext) Right(list, reasons.toVector)
           else Left(Reason.StringMessage("Module work hasn't finished yet."))
         }
 
@@ -345,14 +348,15 @@ class TileAdvQuarry extends APowerTile
         val n = if (chunks.isEmpty) digRange.timeInTick else 1
         var j = 0
         var notEnoughEnergy = false
-        while (j < n && (mode is TileAdvQuarry.BREAK_BLOCK) && !notEnoughEnergy) {
-          (for (a <- dropCheck().right;
-                b <- calcBreakEnergy(a).right;
-                c <- consumeEnergy(b).right;
-                d <- digging(c).right) yield d)
-            .right.map { case (l, reasons) =>
+        while (j < n && mode.is(TileAdvQuarry.BREAK_BLOCK) && !notEnoughEnergy) {
+          (for {
+            a <- dropCheck()
+            b <- calcBreakEnergy(a)
+            c <- consumeEnergy(b)
+            d <- digging(c)
+          } yield d).map { case (l, reasons) =>
             @tailrec
-            def next(stream: Stream[((BlockPos, BlockPos), Int)], reasons: List[Reason] = Nil): (Option[BlockPos], Seq[Reason]) = {
+            def next(stream: LazyList[((BlockPos, BlockPos), Int)], reasons: List[Reason] = Nil): (Option[BlockPos], Seq[Reason]) = {
               stream match {
                 case ((pre, newPos), index) #:: rest =>
                   if (pre == newPos) {
@@ -362,9 +366,9 @@ class TileAdvQuarry extends APowerTile
                     if (notEnoughEnergy || !PowerManager.useEnergy(self, energy, EnergyUsage.ADV_CHECK_BLOCK)) {
                       notEnoughEnergy = true
                       if (index == 0)
-                        None -> Seq(Reason(EnergyUsage.ADV_CHECK_BLOCK, energy, getStoredEnergy, index))
+                        None -> Seq(Reason(EnergyUsage.ADV_CHECK_BLOCK, energy.toDouble, getStoredEnergy.toDouble, index))
                       else
-                        Some(pre) -> (Reason(EnergyUsage.ADV_CHECK_BLOCK, energy, getStoredEnergy, index) :: reasons)
+                        Some(pre) -> (Reason(EnergyUsage.ADV_CHECK_BLOCK, energy.toDouble, getStoredEnergy.toDouble, index) :: reasons)
                     } else {
                       if (index == 31) {
                         Some(newPos) -> reasons
@@ -397,20 +401,20 @@ class TileAdvQuarry extends APowerTile
                   //Finished.
                   target = digRange.min
                   finishWork()
-                  mode set TileAdvQuarry.CHECK_LIQUID
+                  mode.set(TileAdvQuarry.CHECK_LIQUID)
                 }
               }
           }
 
           j += 1
         }
-      } else if (mode is TileAdvQuarry.NOT_NEED_BREAK) {
+      } else if (mode.is(TileAdvQuarry.NOT_NEED_BREAK)) {
         if (digRange.defined && !Config.content.noEnergy)
           if (getStoredEnergy > getMaxStored * 0.3) {
-            mode set TileAdvQuarry.MAKE_FRAME
+            mode.set(TileAdvQuarry.MAKE_FRAME)
             startWork()
           }
-      } else if (mode is TileAdvQuarry.CHECK_LIQUID) {
+      } else if (mode.is(TileAdvQuarry.CHECK_LIQUID)) {
         val aabb = new AxisAlignedBB(digRange.minX - digRange.dropWidth, 0, digRange.minZ - digRange.dropWidth, digRange.maxX + digRange.dropWidth, digRange.maxY + 3, digRange.maxZ + digRange.dropWidth)
         val drops = getWorld.getEntitiesWithinAABB(classOf[EntityItem], aabb)
         drops.asScala.filter(_.getItem.getCount > 0).foreach(entity => {
@@ -422,8 +426,8 @@ class TileAdvQuarry extends APowerTile
         nextPoses(digRange, target, inclusive = true).take(32 * digRange.timeInTick).foreach { case (_, p) =>
           target = p
           if (p == BlockPos.ORIGIN) {
-            mode set TileAdvQuarry.NONE
-          } else if (mode is TileAdvQuarry.CHECK_LIQUID) {
+            mode.set(TileAdvQuarry.NONE)
+          } else if (mode.is(TileAdvQuarry.CHECK_LIQUID)) {
             Iterator.iterate(p.down())(_.down()).takeWhile(_.getY > yLevel).filter(p => {
               val state = getWorld.getBlockState(p)
               !state.getBlock.isAir(state, getWorld, p) && TilePump.isLiquid(state)
@@ -431,7 +435,7 @@ class TileAdvQuarry extends APowerTile
           }
         }
 
-      } else if (mode is TileAdvQuarry.FILL_BLOCKS) {
+      } else if (mode.is(TileAdvQuarry.FILL_BLOCKS)) {
         val handler = InvUtils.findItemHandler(getWorld, getPos.up, EnumFacing.DOWN).orNull
         if (handler != null) {
           val list = Range(0, handler.getSlots).find(i => {
@@ -442,7 +446,7 @@ class TileAdvQuarry extends APowerTile
           nextPoses(digRange, target).take(list.map(_.getCount).sum).foreach { case (_, p) =>
             target = p
             if (p == BlockPos.ORIGIN) {
-              mode set TileAdvQuarry.NONE
+              mode.set(TileAdvQuarry.NONE)
             } else {
               val state = InvUtils.getStateFromItem(list.head.getItem.asInstanceOf[ItemBlock], list.head.getItemDamage)
               getWorld.setBlockState(new BlockPos(p.getX, y, p.getZ), state)
@@ -450,7 +454,7 @@ class TileAdvQuarry extends APowerTile
           }
         } else {
           target = BlockPos.ORIGIN
-          mode set TileAdvQuarry.NONE
+          mode.set(TileAdvQuarry.NONE)
         }
       }
       if (!isEmpty) {
@@ -474,10 +478,10 @@ class TileAdvQuarry extends APowerTile
       val chunkPos = chunks.head
       val bool = getWorld.isChunkGeneratedAt(chunkPos.x, chunkPos.z)
       if (Config.content.debug) {
-        QuarryPlus.LOGGER.debug("Chunk has already loaded : " + bool + chunkPos.x + chunkPos.z)
+        QuarryPlus.LOGGER.debug(s"Chunk has already loaded : $bool${chunkPos.x}${chunkPos.z}")
       }
       if (!bool)
-        getWorld.getChunkFromChunkCoords(chunkPos.x, chunkPos.z)
+        getWorld.getChunk(chunkPos.x, chunkPos.z)
       chunks = chunks.tail
     }
   }
@@ -522,7 +526,7 @@ class TileAdvQuarry extends APowerTile
   }
 
   def energyConfigure(): Unit = {
-    if (mode is NONE) {
+    if (mode.is(NONE)) {
       configure(0, getMaxStored)
     } else if (mode.reduceReceive) {
       configure(ench.maxReceive / 128, ench.maxStore)
@@ -609,18 +613,18 @@ class TileAdvQuarry extends APowerTile
   override def isUsableByPlayer(player: EntityPlayer): Boolean = self.getWorld.getTileEntity(self.getPos) eq this
 
   override def getDebugMessages: util.List[TextComponentString] = {
-    import scala.collection.JavaConverters._
-    List("Items to extract = " + cacheItems.list.size,
-      "Liquid to extract = " + fluidStacks.size,
-      "Next target = " + target.toString,
+    import scala.jdk.CollectionConverters.*
+    List(s"Items to extract = ${cacheItems.list.size}",
+      s"Liquid to extract = ${fluidStacks.size}",
+      s"Next target = $target",
       mode.toString,
       digRange.toString,
       ench.toString,
-      "Modules: " + modules.mkString(", "),
-      "YLevel = " + yLevel).map(toComponentString).asJava
+      s"Modules: ${modules.mkString(", ")}",
+      s"YLevel = $yLevel").map(toComponentString).asJava
   }
 
-  override def hasCapability(capability: Capability[_], facing: EnumFacing): Boolean = {
+  override def hasCapability(capability: Capability[?], facing: EnumFacing): Boolean = {
     capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY ||
       (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && Config.content.enableChunkDestroyerFluidHandler) ||
       super.hasCapability(capability, facing)
@@ -654,12 +658,12 @@ class TileAdvQuarry extends APowerTile
 
   override def onChunkUnload(): Unit = {
     if (!getWorld.isRemote)
-      mode set TileAdvQuarry.NONE
+      mode.set(TileAdvQuarry.NONE)
     ForgeChunkManager.releaseTicket(this.chunkTicket)
     super.onChunkUnload()
   }
 
-  private[this] var chunkTicket: ForgeChunkManager.Ticket = _
+  private var chunkTicket: ForgeChunkManager.Ticket = uninitialized
 
   override def requestTicket(): Unit = {
     if (this.chunkTicket != null) return
@@ -698,22 +702,22 @@ class TileAdvQuarry extends APowerTile
     //Called when noEnergy is true and block is right clicked with stick (item)
     if (machineDisabled) {
       VersionUtil.sendMessage(player, new TextComponentString("ChunkDestroyer is disabled."), true)
-    } else if (mode is TileAdvQuarry.NOT_NEED_BREAK) {
-      mode set TileAdvQuarry.MAKE_FRAME
+    } else if (mode.is(TileAdvQuarry.NOT_NEED_BREAK)) {
+      mode.set(TileAdvQuarry.MAKE_FRAME)
       startWork()
     }
   }
 
   def startFillMode(): Unit = {
-    if ((mode is TileAdvQuarry.NONE) && digRange.defined && preparedFiller) {
-      mode set TileAdvQuarry.FILL_BLOCKS
+    if (mode.is(TileAdvQuarry.NONE) && digRange.defined && preparedFiller) {
+      mode.set(TileAdvQuarry.FILL_BLOCKS)
       target = digRange.min.add(-1, 0, 0)
     }
   }
 
   def noFrameStart(): Unit = {
-    if (mode is TileAdvQuarry.NOT_NEED_BREAK) {
-      mode set TileAdvQuarry.BREAK_BLOCK
+    if (mode.is(TileAdvQuarry.NOT_NEED_BREAK)) {
+      mode.set(TileAdvQuarry.BREAK_BLOCK)
       target = digRange.min
       startWork()
     }
@@ -725,7 +729,7 @@ class TileAdvQuarry extends APowerTile
     }
   }
 
-  override def connectAttachment(facing: EnumFacing, attachment: Attachments[_ <: APacketTile], simulate: Boolean): Boolean = {
+  override def connectAttachment(facing: EnumFacing, attachment: Attachments[? <: APacketTile], simulate: Boolean): Boolean = {
     if (!attachments.contains(attachment)) {
       if (!simulate) {
         attachments = attachments.updated(attachment, facing)
@@ -746,7 +750,7 @@ class TileAdvQuarry extends APowerTile
     }
   }
 
-  override def isValidAttachment(attachments: Attachments[_ <: APacketTile]): Boolean = VALID_ATTACHMENTS(attachments)
+  override def isValidAttachment(attachments: Attachments[? <: APacketTile]): Boolean = VALID_ATTACHMENTS(attachments)
 
   def refreshModules(): Unit = {
     val attachmentModules = attachments.flatMap { case (kind, facing) => kind.module(world.getTileEntity(pos.offset(facing))).asScala }.toList
@@ -797,7 +801,7 @@ class TileAdvQuarry extends APowerTile
   private[TileAdvQuarry] class FluidHandler(val facing: EnumFacing) extends IFluidHandler {
     //FluidHandlerFluidMap(fluidStacks.asJava) {
 
-    def fluids = if (facing != null) fluidStacks.filterKeys(fluidExtractFacings(facing)) else fluidStacks.toMap
+    def fluids = if (facing != null) fluidStacks.view.filterKeys(fluidExtractFacings(facing)).toMap else fluidStacks.toMap
 
     /**
       * Not fill-able.
@@ -818,12 +822,12 @@ class TileAdvQuarry extends APowerTile
     }
 
     override def toString: String = {
-      "ChunkDestroyer FluidHandler contents = " + getTankProperties.map { c =>
+      s"ChunkDestroyer FluidHandler contents = ${getTankProperties.iterator.map { c =>
         Option(c.getContents) match {
           case Some(s) => (s.getFluid.getName, s.amount)
           case None => ("No liquid", 0)
         }
-      }.mkString(", ")
+      }.mkString(", ")}"
     }
 
     override def drain(resource: FluidStack, doDrain: Boolean): FluidStack = {
@@ -832,7 +836,7 @@ class TileAdvQuarry extends APowerTile
     }
 
     override def drain(maxDrain: Int, doDrain: Boolean): FluidStack = {
-      fluids.values.toStream.map(_.drain(maxDrain, doDrain)).find(nonNull).orNull
+      fluids.valuesIterator.map(_.drain(maxDrain, doDrain)).find(nonNull).orNull
     }
   }
 
@@ -842,7 +846,7 @@ class TileAdvQuarry extends APowerTile
     override def onContentsChanged(): Unit = {
       super.onContentsChanged()
       if (this.getFluidAmount <= 0) {
-        self.fluidStacks.retain { case (_, v) => v != this }
+        self.fluidStacks.filterInPlace { case (_, v) => v != this }
         if (!tile.getWorld.isRemote) {
           PacketHandler.sendToAround(AdvContentMessage.create(self), getWorld, getPos)
         }
@@ -853,7 +857,7 @@ class TileAdvQuarry extends APowerTile
       if (fluid == null) {
         "QuarryTank(null, 0)"
       } else {
-        "QuarryTank(" + fluid.getLocalizedName + ", " + getFluidAmount + ")"
+        s"QuarryTank(${fluid.getLocalizedName}, ${getFluidAmount})"
       }
     }
   }
@@ -862,7 +866,7 @@ class TileAdvQuarry extends APowerTile
 
     import TileAdvQuarry._
 
-    private[this] var mode: Modes = NONE
+    private var mode: Modes = NONE
 
     def set(newMode: Modes): Unit = {
       mode = newMode
@@ -883,7 +887,7 @@ class TileAdvQuarry extends APowerTile
 
     def reduceReceive: Boolean = is(MAKE_FRAME)
 
-    override def toString: String = "ChunkDestroyer mode = " + mode
+    override def toString: String = s"ChunkDestroyer mode = $mode"
 
     override def writeToNBT(nbt: NBTTagCompound): NBTTagCompound = {
       nbt.tap(_.setInteger("mode", mode.index))
@@ -936,7 +940,7 @@ object TileAdvQuarry {
   private final val NBT_MODE = "nbt_quarrymode"
   private final val NBT_ITEM_LIST = "nbt_itemlist"
   private final val NBT_ITEM_ELEMENTS = "nbt_itemelements"
-  final val VALID_ATTACHMENTS: Set[Attachments[_]] = Set(Attachments.EXP_PUMP, Attachments.REPLACER)
+  final val VALID_ATTACHMENTS: Set[Attachments[?]] = Set(Attachments.EXP_PUMP, Attachments.REPLACER)
 
   val defaultEnch = QEnch(efficiency = 0, unbreaking = 0, fortune = 0, silktouch = false)
   val defaultRange: DigRange = new DigRange(BlockPos.ORIGIN, BlockPos.ORIGIN) {
@@ -996,7 +1000,7 @@ object TileAdvQuarry {
 
   object QEnch extends INBTReadable[QEnch] {
     override def readFromNBT(tag: NBTTagCompound): QEnch = {
-      if (!tag.hasNoTags) {
+      if (!tag.isEmpty) {
         val o = tag.getCompoundTag("other")
         val otherMap = o.getKeySet.asScala.map(s => ForgeRegistries.ENCHANTMENTS.getValue(new ResourceLocation(s)) -> o.getInteger(s))
           .collect { case (e, l) if e != null => Enchantment.getEnchantmentID(e) -> l }.toMap
@@ -1007,7 +1011,7 @@ object TileAdvQuarry {
   }
 
   case class DigRange(minX: Int, minY: Int, minZ: Int, maxX: Int, maxY: Int, maxZ: Int) extends INBTWritable {
-    def this(minPos: BlockPos, maxPos: BlockPos) {
+    def this(minPos: BlockPos, maxPos: BlockPos) = {
       this(minPos.getX, minPos.getY, minPos.getZ, maxPos.getX, maxPos.getY, maxPos.getZ)
     }
 
@@ -1109,7 +1113,7 @@ object TileAdvQuarry {
         VersionUtil.empty()
     }
 
-    override def toString: String = "ItemList size = " + list.size
+    override def toString: String = s"ItemList size = ${list.size}"
 
     override def writeToNBT(nbt: NBTTagCompound): NBTTagCompound = {
       nbt.setTag(NBT_ITEM_ELEMENTS,
@@ -1172,7 +1176,7 @@ object TileAdvQuarry {
     builder.result()
   }
 
-  def nextPoses(range: DigRange, previous: BlockPos, inclusive: Boolean = false): Stream[(BlockPos, BlockPos)] = {
+  def nextPoses(range: DigRange, previous: BlockPos, inclusive: Boolean = false): LazyList[(BlockPos, BlockPos)] = {
     val getNext: ((BlockPos, BlockPos)) => (BlockPos, BlockPos) = (t: (BlockPos, BlockPos)) => {
       val (_, pos) = t
       if (pos == BlockPos.ORIGIN)
@@ -1193,15 +1197,15 @@ object TileAdvQuarry {
       }
     }
     if (inclusive) {
-      Stream.iterate((previous, previous))(getNext)
+      LazyList.iterate((previous, previous))(getNext)
     } else {
-      Stream.iterate(getNext(previous, previous))(getNext)
+      LazyList.iterate(getNext(previous, previous))(getNext)
     }
   }
 
   def xpFilter(i: Int): Any => Boolean = _ => i > 0
 
-  private[this] final lazy val nonAcceptableModule = Set(
+  private final lazy val nonAcceptableModule = Set(
     QuarryPlusI.pumpModule.getSymbol
     //    QuarryPlusI.torchModule.getSymbol // In 1.12, the module works fine.
   )

@@ -26,7 +26,7 @@ class ItemTemplate extends Item with IEnchantableItem {
 
   setMaxStackSize(1)
   setCreativeTab(QuarryPlusI.creativeTab)
-  setUnlocalizedName(QuarryPlus.Names.template)
+  setTranslationKey(QuarryPlus.Names.template)
   setRegistryName(QuarryPlus.modID, QuarryPlus.Names.template)
 
   /**
@@ -38,7 +38,7 @@ class ItemTemplate extends Item with IEnchantableItem {
     */
   override def canMove(is: ItemStack, enchantment: Enchantment) = {
     val l = is.getEnchantmentTagList
-    (l == null || l.tagCount == 0) && ((enchantment eq Enchantments.SILK_TOUCH) || (enchantment eq Enchantments.FORTUNE))
+    (l == null || l.tagCount == 0) && (enchantment.eq(Enchantments.SILK_TOUCH) || enchantment.eq(Enchantments.FORTUNE))
   }
 
   /**
@@ -75,7 +75,7 @@ class ItemTemplate extends Item with IEnchantableItem {
           val f = enchantSet.contains(IEnchantableTile.FortuneID)
           val template = ItemTemplate.getTemplate(stack)
           if (s != f && template != ItemTemplate.EmPlate) {
-            import scala.collection.JavaConverters._
+            import scala.jdk.CollectionConverters.*
             if (f) {
               basic.fortuneInclude = template.include
               basic.fortuneList.addAll(template.items.asJava)
@@ -94,7 +94,7 @@ class ItemTemplate extends Item with IEnchantableItem {
           val f = enchantSet.contains(IEnchantableTile.FortuneID)
           val template = ItemTemplate.getTemplate(stack)
           if (s != f && template != ItemTemplate.EmPlate) {
-            import scala.collection.JavaConverters._
+            import scala.jdk.CollectionConverters.*
             if (f) {
               quarry2.fortuneInclude = template.include
               quarry2.fortuneList = quarry2.fortuneList ++ template.items
@@ -160,7 +160,9 @@ object ItemTemplate {
   def read(compound: Option[NBTTagCompound]): Template = {
     val list = compound.map(_.getTagList(NBT_Template_Items, NBT.TAG_COMPOUND))
     val include = compound.filter(_.hasKey(NBT_Include)).fold(true)(_.getBoolean(NBT_Include))
-    list.map(t => t.tagIterator.map(BlockData.readFromNBT).toList -> include).fold(EmPlate)(Template.tupled)
+    list.map(t => t.tagIterator.map(BlockData.readFromNBT).toList -> include).fold(EmPlate) {
+      case (items, includeItems) => Template(items, includeItems)
+    }
   }
 
   def setTemplate(stack: ItemStack, template: Template): Unit = {

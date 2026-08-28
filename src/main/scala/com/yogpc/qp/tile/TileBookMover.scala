@@ -13,7 +13,7 @@ import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.util.{ITickable, NonNullList}
 import net.minecraftforge.fml.common.registry.ForgeRegistries
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.*
 
 class TileBookMover extends APowerTile with HasInv with ITickable {
 

@@ -120,7 +120,7 @@ public class TileLaser extends APowerTile implements IEnchantableTile, IDebugSen
             Vec3d[] vec3ds = new Vec3d[targets.size()];
             for (int i = 0; i < targets.size(); i++) {
                 BlockPos targetPos = targets.get(i);
-                vec3ds[i] = new Vec3d(targetPos).addVector(
+                vec3ds[i] = new Vec3d(targetPos).add(
                     (5 + getWorld().rand.nextInt(6) + 0.5) / 16D,
                     9 / 16D,
                     (5 + getWorld().rand.nextInt(6) + 0.5) / 16D

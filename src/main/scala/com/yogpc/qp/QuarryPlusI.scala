@@ -20,13 +20,14 @@ import com.yogpc.qp.modules._
 import com.yogpc.qp.tile._
 import net.minecraft.block.Block
 import net.minecraft.item.Item
+import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.ResourceLocation
 
 import scala.collection.mutable.ListBuffer
 
 object QuarryPlusI {
-  private[this] val blocks = new ListBuffer[Block]
-  private[this] val items = new ListBuffer[Item]
+  private val blocks = new ListBuffer[Block]
+  private val items = new ListBuffer[Item]
   val creativeTab = new CreativeTabQuarryPlus
   val blockQuarry: BlockQuarry = registerB(new BlockQuarry)
   val blockMarker: BlockMarker = registerB(new BlockMarker)
@@ -78,7 +79,7 @@ object QuarryPlusI {
   final val guiIdStatus = 15
   final val guiIdFiller = 16
 
-  val tileIdMap = Map(
+  val tileIdMap: Map[Class[? <: TileEntity], ResourceLocation] = Map(
     classOf[TileWorkbench] -> QuarryPlus.Names.workbench,
     classOf[TileQuarry] -> QuarryPlus.Names.quarry,
     classOf[TileMarker] -> QuarryPlus.Names.marker,
@@ -96,7 +97,7 @@ object QuarryPlusI {
     classOf[TileReplacer] -> QuarryPlus.Names.replacer,
     classOf[TileQuarry2] -> QuarryPlus.Names.quarry2,
     classOf[TileFiller] -> QuarryPlus.Names.filler
-  ).mapValues(s => new ResourceLocation(QuarryPlus.modID, s))
+  ).view.mapValues(s => new ResourceLocation(QuarryPlus.modID, s)).toMap
 
   val tileIdSet = tileIdMap.map { case (_, s) => s.toString }.toSet
 
@@ -111,12 +112,12 @@ object QuarryPlusI {
   }
 
   def blockList(): util.List[Block] = {
-    import scala.collection.JavaConverters._
+    import scala.jdk.CollectionConverters.*
     new util.ArrayList[Block](blocks.asJava)
   }
 
   def itemList(): util.List[Item] = {
-    import scala.collection.JavaConverters._
+    import scala.jdk.CollectionConverters.*
     new util.ArrayList[Item](items.asJava)
   }
 

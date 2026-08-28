@@ -14,13 +14,13 @@ import net.minecraft.util.math.{BlockPos, RayTraceResult}
 import net.minecraft.util.{EnumBlockRenderType, EnumFacing}
 import net.minecraft.world.{IBlockAccess, World}
 
-abstract class QPBlock(materialIn: Material, name: String, generator: QPBlock => _ <: ItemBlock, dummy: Boolean = false) extends BlockContainer(materialIn) {
+abstract class QPBlock(materialIn: Material, name: String, generator: QPBlock => ItemBlock, dummy: Boolean = false) extends BlockContainer(materialIn) {
 
-  def this(materialIn: Material, name: String, generator: Function[QPBlock, _ <: ItemBlock]) = {
-    this(materialIn, name, (block: QPBlock) => generator.apply(block))
+  def this(materialIn: Material, name: String, generator: Function[QPBlock, ? <: ItemBlock]) = {
+    this(materialIn, name, (block: QPBlock) => generator.apply(block), false)
   }
 
-  setUnlocalizedName(name)
+  setTranslationKey(name)
   setRegistryName(QuarryPlus.modID, name)
   setCreativeTab(QuarryPlusI.creativeTab)
   val itemBlock = generator.apply(this)
@@ -44,7 +44,7 @@ abstract class QPBlock(materialIn: Material, name: String, generator: QPBlock =>
   }
 
   override def getComparatorInputOverride(blockState: IBlockState, worldIn: World, pos: BlockPos): Int = {
-    if (blockState.getValue(ADismCBlock.ACTING)) 15 else 0
+    if (blockState.getValue[java.lang.Boolean](ADismCBlock.ACTING)) 15 else 0
   }
 
   override def hasComparatorInputOverride(state: IBlockState): Boolean = state.getPropertyKeys.contains(ADismCBlock.ACTING)

@@ -6,13 +6,13 @@ import net.minecraft.client.renderer.BufferBuilder
 import net.minecraftforge.client.model.animation.FastTESR
 
 object RenderFiller extends FastTESR[TileFiller] {
-  private[this] final val d = 2d / 16d
-  lazy val sprite = Sprites.getMap('yellow)
+  private final val d = 2d / 16d
+  lazy val sprite = Sprites.getMap(Symbol("yellow"))
   val instance = this
 
   override def renderTileEntityFast(te: TileFiller, x: Double, y: Double, z: Double, partialTicks: Float, destroyStage: Int, partial: Float, buffer: BufferBuilder): Unit = {
-    Minecraft.getMinecraft.mcProfiler.startSection("quarryplus")
-    Minecraft.getMinecraft.mcProfiler.startSection("filler")
+    Minecraft.getMinecraft.profiler.startSection("quarryplus")
+    Minecraft.getMinecraft.profiler.startSection("filler")
     val areaOpt = te.getWorkingArea
     if (areaOpt.isDefined) {
       val min = areaOpt.get._1
@@ -45,8 +45,8 @@ object RenderFiller extends FastTESR[TileFiller] {
       if (b2 && b4) Box(max.getX + 0.5, min.getY + 0.5, max.getZ + 0.5, max.getX + 0.5, max.getY + 0.5, max.getZ + 0.5, d, d, d, firstSide = false, endSide = false).render(buffer, sprite)
       buffer.setTranslation(0, 0, 0)
     }
-    Minecraft.getMinecraft.mcProfiler.endSection()
-    Minecraft.getMinecraft.mcProfiler.endSection()
+    Minecraft.getMinecraft.profiler.endSection()
+    Minecraft.getMinecraft.profiler.endSection()
   }
 
 }

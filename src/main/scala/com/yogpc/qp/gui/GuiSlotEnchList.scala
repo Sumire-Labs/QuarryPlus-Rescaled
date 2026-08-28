@@ -34,6 +34,7 @@ class GuiSlotEnchList(mc: Minecraft, w: Int, h: Int, t: Int, b: Int, val parent:
   override protected def drawSlot(entryID: Int, insideLeft: Int, yPos: Int, insideSlotHeight: Int, mouseXIn: Int, mouseYIn: Int, f: Float): Unit = {
     val name = this.target.get(entryID).getLocalizedName
     Minecraft.getMinecraft.fontRenderer.drawStringWithShadow(name,
-      (this.parent.width * 3 / 5 - Minecraft.getMinecraft.fontRenderer.getStringWidth(name)) / 2, yPos + 2, 0xFFFFFF)
+      ((this.parent.width * 3 / 5 - Minecraft.getMinecraft.fontRenderer.getStringWidth(name)) / 2).toFloat,
+      (yPos + 2).toFloat, 0xFFFFFF)
   }
 }

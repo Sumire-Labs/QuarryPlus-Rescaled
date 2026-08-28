@@ -5,7 +5,7 @@ import com.yogpc.qp.utils.IngredientWithCount
 import net.minecraft.item.ItemStack
 import net.minecraft.util.ResourceLocation
 
-import scala.collection.JavaConverters.asScalaBufferConverter
+import scala.jdk.CollectionConverters.*
 
 final class EnchantmentCopyRecipe(override val location: ResourceLocation, o: ItemStack, e: Double, input: IngredientWithCount)
   extends WorkbenchRecipe(ItemDamage(o), e, showInJEI = true) {

@@ -21,9 +21,9 @@ import net.minecraft.item.{ItemBlock, ItemStack}
 class ItemBlockRefinery(b: Block) extends ItemBlock(b) with IEnchantableItem {
   override def canMove(is: ItemStack, enchantment: Enchantment): Boolean = {
     if (EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, is) > 0) {
-      EFFICIENCY or UNBREAKING
+      EFFICIENCY.or(UNBREAKING)
     } else {
-      UNBREAKING or FORTUNE or EFFICIENCY
+      UNBREAKING.or(FORTUNE).or(EFFICIENCY)
     }
   }.test(enchantment)
 

@@ -20,7 +20,8 @@ import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.items.CapabilityItemHandler
 import net.minecraftforge.items.wrapper.InvWrapper
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.*
+import scala.compiletime.uninitialized
 
 final class TileFiller
   extends APowerTile
@@ -29,7 +30,7 @@ final class TileFiller
     with HasModuleInventory
     with IChunkLoadTile {
   val inventory = new TileFiller.InventoryFiller
-  private[this] final val moduleInventory = new QuarryModuleInventory(new TextComponentTranslation(TranslationKeys.filler), 5, this, refreshModules _, TileFiller.modulePredicate)
+  private final val moduleInventory = new QuarryModuleInventory(new TextComponentTranslation(TranslationKeys.filler), 5, this, refreshModules, TileFiller.modulePredicate)
   var work: FillerWorks = FillerWorks.Wait
   var modules: List[IModule] = Nil
   var lastArea: Option[(BlockPos, BlockPos)] = None
@@ -75,7 +76,7 @@ final class TileFiller
     super.writeToNBT(nbt)
   }
 
-  override def hasCapability(capability: Capability[_], facing: EnumFacing) =
+  override def hasCapability(capability: Capability[?], facing: EnumFacing) =
     capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY || super.hasCapability(capability, facing)
 
   override def getCapability[T](capability: Capability[T], facing: EnumFacing): T = {
@@ -103,15 +104,15 @@ final class TileFiller
   override def getDebugName: String = TranslationKeys.filler
 
   override def getDebugMessages = Seq(
-    "FillerWorks: " + this.work,
-    "Modules: " + modules.mkString(", ")
+    s"FillerWorks: ${this.work}",
+    s"Modules: ${modules.mkString(", ")}"
   ).map(toComponentString).asJava
 
   override def moduleInv = this.moduleInventory
 
   // Chunk Loading
 
-  private[this] var chunkTicket: ForgeChunkManager.Ticket = _
+  private var chunkTicket: ForgeChunkManager.Ticket = uninitialized
 
   override def requestTicket(): Unit = {
     if (this.chunkTicket != null) return
@@ -165,12 +166,12 @@ object TileFiller {
   final val slotCount = 27
   final val power = 5000
   final val modulePredicate: java.util.function.Predicate[IModuleItem] = new java.util.function.Predicate[IModuleItem] {
-    private[this] final lazy val set = Set(
+    private final lazy val set = Set(
       QuarryPlusI.fuelModuleCreative.getSymbol,
       QuarryPlusI.fuelModuleNormal.getSymbol
     )
 
-    override def test(t: IModuleItem): Boolean = set contains t.getSymbol
+    override def test(t: IModuleItem): Boolean = set.contains(t.getSymbol)
   }
 
   final class InventoryFiller extends InventoryBasic(TranslationKeys.filler, false, TileFiller.slotCount) {

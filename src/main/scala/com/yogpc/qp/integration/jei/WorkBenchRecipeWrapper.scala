@@ -9,14 +9,14 @@ import mezz.jei.api.recipe.IRecipeWrapper
 import net.minecraft.client.Minecraft
 import net.minecraft.item.ItemStack
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.*
 
 class WorkBenchRecipeWrapper(val recipe: WorkbenchRecipe) extends IRecipeWrapper with Ordered[WorkBenchRecipeWrapper] {
 
   override def getIngredients(ingredients: IIngredients): Unit = {
     val inputs = new AList[JList[ItemStack]](recipeSize)
 
-    recipe.inputs.foreach(l => inputs add l.flatMap(_.stackList).asJava)
+    recipe.inputs.foreach(l => inputs.add(l.flatMap(_.stackList).asJava))
     val outputs = Collections.singletonList(recipe.getOutput)
 
     ingredients.setInputLists(VanillaTypes.ITEM, inputs)

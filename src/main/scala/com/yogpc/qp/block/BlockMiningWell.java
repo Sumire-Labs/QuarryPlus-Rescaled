@@ -136,7 +136,7 @@ public class BlockMiningWell extends ADismCBlock {
     @Override
     @SuppressWarnings("deprecation")
     public IBlockState getStateFromMeta(int meta) {
-        return getDefaultState().withProperty(FACING, EnumFacing.getFront(meta & 7)).withProperty(ACTING, (meta & 8) == 8);
+        return getDefaultState().withProperty(FACING, EnumFacing.byIndex(meta & 7)).withProperty(ACTING, (meta & 8) == 8);
     }
 
     @Override

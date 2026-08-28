@@ -15,7 +15,7 @@ class ItemQuarryDebug extends Item {
 
   import ItemQuarryDebug._
 
-  setUnlocalizedName(QuarryPlus.Names.debug)
+  setTranslationKey(QuarryPlus.Names.debug)
   setRegistryName(QuarryPlus.modID, QuarryPlus.Names.debug)
   setMaxStackSize(1)
   setCreativeTab(QuarryPlusI.creativeTab)
@@ -28,7 +28,7 @@ class ItemQuarryDebug extends Item {
       if (Config.content.debug || QuarryPlus.instance.inDev) {
         val tile = worldIn.getTileEntity(pos)
         tile match {
-          case plusMachine: APowerTile with IDebugSender =>
+          case plusMachine: (APowerTile & IDebugSender) =>
             if (!worldIn.isRemote) {
               if (player.isSneaking) {
                 plusMachine.toggleOutputEnergyInfo()
@@ -83,6 +83,6 @@ object ItemQuarryDebug {
 
   def energyToString(tile: APowerTile): ITextComponent = {
     if (Config.content.noEnergy) new TextComponentString("No Energy Required.")
-    else new TextComponentString(tile.getStoredEnergy / APowerTile.MJToMicroMJ + " / " + tile.getMaxStored / APowerTile.MJToMicroMJ + " MJ")
+    else new TextComponentString(s"${tile.getStoredEnergy / APowerTile.MJToMicroMJ} / ${tile.getMaxStored / APowerTile.MJToMicroMJ} MJ")
   }
 }

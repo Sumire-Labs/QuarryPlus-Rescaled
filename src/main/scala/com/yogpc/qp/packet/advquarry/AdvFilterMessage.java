@@ -15,7 +15,7 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import scala.collection.convert.WrapAsJava$;
+import scala.jdk.javaapi.CollectionConverters;
 import scala.collection.mutable.Set;
 
 import static jp.t2v.lab.syntax.MapStreamSyntax.keys;
@@ -34,8 +34,8 @@ public class AdvFilterMessage implements IMessage {
         AdvFilterMessage message = new AdvFilterMessage();
         message.dim = quarry.getWorld().provider.getDimension();
         message.pos = quarry.getPos();
-        message.filter = WrapAsJava$.MODULE$.mapAsJavaMap(quarry.fluidExtractFacings()).entrySet().stream()
-            .map(values(s -> WrapAsJava$.MODULE$.setAsJavaSet(s).stream()
+        message.filter = CollectionConverters.asJava(quarry.fluidExtractFacings()).entrySet().stream()
+            .map(values(s -> CollectionConverters.asJava(s).stream()
                 .map(f -> f.writeToNBT(new NBTTagCompound()))
                 .collect(VersionUtil.toNBTList())))
             .map(keys(EnumFacing::toString))

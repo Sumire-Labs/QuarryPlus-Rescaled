@@ -21,7 +21,7 @@ import net.minecraft.world.chunk.storage.ExtendedBlockStorage;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
-import scala.collection.JavaConverters;
+import scala.jdk.javaapi.CollectionConverters;
 import scala.collection.immutable.Set;
 
 public abstract class PumpModule implements IModule {
@@ -30,7 +30,7 @@ public abstract class PumpModule implements IModule {
 
     static {
         java.util.Set<ModuleType> collect = Stream.of(((ModuleType) TypeBeforeBreak$.MODULE$)).collect(Collectors.toSet());
-        TYPE_SET = JavaConverters.asScalaSetConverter(collect).asScala().<ModuleType>toSet();
+        TYPE_SET = CollectionConverters.asScala(collect).<ModuleType>toSet();
     }
 
     @Override

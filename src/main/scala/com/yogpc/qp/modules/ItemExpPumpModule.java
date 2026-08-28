@@ -29,7 +29,7 @@ public class ItemExpPumpModule extends Item implements IDisabled, IModuleItem {
 
     public ItemExpPumpModule() {
         setRegistryName(QuarryPlus.modID, QuarryPlus.Names.exppumpModule);
-        setUnlocalizedName(QuarryPlus.Names.exppumpModule);
+        setTranslationKey(QuarryPlus.Names.exppumpModule);
         setCreativeTab(QuarryPlusI.creativeTab());
     }
 
@@ -74,7 +74,7 @@ public class ItemExpPumpModule extends Item implements IDisabled, IModuleItem {
             int xp = getXp(stack).orElse(0);
             if (xp > 0) {
                 Optional.ofNullable(stack.getTagCompound()).ifPresent(t -> t.removeTag(Key_xp));
-                stack.setTagCompound(Optional.ofNullable(stack.getTagCompound()).filter(t -> !t.hasNoTags()).orElse(null));
+                stack.setTagCompound(Optional.ofNullable(stack.getTagCompound()).filter(t -> !t.isEmpty()).orElse(null));
                 if (!worldIn.isRemote) {
                     EntityXPOrb orb = new EntityXPOrb(worldIn, playerIn.posX, playerIn.posY, playerIn.posZ, xp);
                     worldIn.spawnEntity(orb);

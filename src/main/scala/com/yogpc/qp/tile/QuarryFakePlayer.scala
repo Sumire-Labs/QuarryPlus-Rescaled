@@ -23,9 +23,9 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 class QuarryFakePlayer private(worldServer: WorldServer) extends FakePlayer(worldServer, QuarryFakePlayer.profile) {
   this.connection = new FakeHandler(this)
 
-  private[this] val advancements = new PlayerAdvancements(
+  private val advancements = new PlayerAdvancements(
     worldServer.getMinecraftServer,
-    new File(new File(worldServer.getMinecraftServer.getWorld(0).getSaveHandler.getWorldDirectory, "advancements"), getUniqueID + ".json"),
+    new File(new File(worldServer.getMinecraftServer.getWorld(0).getSaveHandler.getWorldDirectory, "advancements"), s"$getUniqueID.json"),
     this) {
     override def getProgress(advancementIn: Advancement): AdvancementProgress = {
       new AdvancementProgress() {

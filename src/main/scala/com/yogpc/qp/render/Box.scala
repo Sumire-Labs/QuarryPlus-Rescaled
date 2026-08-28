@@ -66,7 +66,7 @@ sealed class Box(val startX: Double, val startY: Double, val startZ: Double,
     val lengthFloor = MathHelper.floor(l)
     var i1 = 0
     while (i1 <= lengthFloor) {
-      val i2 = if (i1 == lengthFloor) l else i1 + 1
+      val i2: Double = if (i1 == lengthFloor) l else i1 + 1d
       buffer.pos(e1X + eX * i2, e1Y + eY * i2, e1Z + eZ * i2).color(red, green, blue, alpha).tex(sprite.getMinU, sprite.getMinV).lightedAndEnd(lv)
       buffer.pos(e1X + eX * i1, e1Y + eY * i1, e1Z + eZ * i1).color(red, green, blue, alpha).tex(sprite.getMaxU, sprite.getMinV).lightedAndEnd(lv)
       buffer.pos(e2X + eX * i1, e2Y + eY * i1, e2Z + eZ * i1).color(red, green, blue, alpha).tex(sprite.getMaxU, sprite.getMaxV).lightedAndEnd(lv)

@@ -25,7 +25,7 @@ public class ItemQuarryPickaxe extends ItemTool {
         super(ToolMaterial.DIAMOND, Collections.emptySet());
         setRegistryName(QuarryPlus.modID, QuarryPlus.Names.quarryPickaxe);
         setCreativeTab(QuarryPlusI.creativeTab());
-        setUnlocalizedName(QuarryPlus.Names.quarryPickaxe);
+        setTranslationKey(QuarryPlus.Names.quarryPickaxe);
     }
 
     @Override

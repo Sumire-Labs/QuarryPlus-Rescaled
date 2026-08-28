@@ -17,7 +17,7 @@ public class ItemFuelModule extends Item implements IModuleItem {
 
     public ItemFuelModule(FuelModule.Mode mode) {
         setRegistryName(QuarryPlus.modID, QuarryPlus.Names.fuelModule + "_" + mode.name());
-        setUnlocalizedName(QuarryPlus.Names.fuelModule + "_" + mode.name());
+        setTranslationKey(QuarryPlus.Names.fuelModule + "_" + mode.name());
         setCreativeTab(QuarryPlusI.creativeTab());
         this.mode = mode;
     }

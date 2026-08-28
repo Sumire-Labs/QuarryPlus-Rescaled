@@ -17,7 +17,7 @@ import net.minecraftforge.oredict.OreDictionary
 import scala.util.Try
 
 object QuarryBlackList {
-  private[this] final lazy val entries: Set[Entry] = fromJson(Paths.get("config", QuarryPlus.modID, "blacklist.json"))
+  private final lazy val entries: Set[Entry] = fromJson(Paths.get("config", QuarryPlus.modID, "blacklist.json"))
 
   def fromJson(path: Path): Set[Entry] = Try {
     if (Files.exists(path)) {
@@ -45,10 +45,10 @@ object QuarryBlackList {
     def test(state: IBlockState, world: World, pos: BlockPos): Boolean
   }
 
-  private[this] final val ID_AIR = QuarryPlus.modID + ":blacklist_air"
-  private[this] final val ID_NAME = QuarryPlus.modID + ":blacklist_name"
-  private[this] final val ID_MOD = QuarryPlus.modID + ":blacklist_modid"
-  private[this] final val ID_ORES = QuarryPlus.modID + ":blacklist_ores"
+  private final val ID_AIR = s"${QuarryPlus.modID}:blacklist_air"
+  private final val ID_NAME = s"${QuarryPlus.modID}:blacklist_name"
+  private final val ID_MOD = s"${QuarryPlus.modID}:blacklist_modid"
+  private final val ID_ORES = s"${QuarryPlus.modID}:blacklist_ores"
 
   object Entry extends AnyRef with JsonSerializer[Entry] with JsonDeserializer[Entry] {
     override def serialize(src: Entry, typeOfSrc: Type, context: JsonSerializationContext): JsonElement = {
@@ -88,22 +88,22 @@ object QuarryBlackList {
   private case class Name(name: ResourceLocation) extends Entry(ID_NAME) {
     override def test(state: IBlockState, world: World, pos: BlockPos): Boolean = state.getBlock.getRegistryName == name
 
-    override def toString = "BlackList for " + name
+    override def toString = s"BlackList for $name"
   }
 
   private case class Mod(modID: String) extends Entry(ID_MOD) {
     override def test(state: IBlockState, world: World, pos: BlockPos): Boolean = {
       val registryName = state.getBlock.getRegistryName
       if (registryName == null) false
-      else registryName.getResourceDomain == modID
+      else registryName.getNamespace == modID
     }
 
-    override def toString = "BlackList for all blocks of " + modID
+    override def toString = s"BlackList for all blocks of $modID"
   }
 
   private object Ores extends Entry(ID_ORES) {
-    private[this] var cacheNoOre = Set(Blocks.AIR.getDefaultState)
-    private[this] var cacheOre = Set(
+    private var cacheNoOre = Set(Blocks.AIR.getDefaultState)
+    private var cacheOre = Set(
       Blocks.COAL_ORE.getDefaultState,
       Blocks.DIAMOND_ORE.getDefaultState,
       Blocks.EMERALD_ORE.getDefaultState,

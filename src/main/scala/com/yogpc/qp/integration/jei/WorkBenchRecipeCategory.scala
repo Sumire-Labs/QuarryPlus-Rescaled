@@ -23,7 +23,7 @@ class WorkBenchRecipeCategory(guiHelper: IGuiHelper) extends IRecipeCategory[Wor
     //7, 17 -- 7, 89
 
     val x0 = 3
-    for (i <- 0 until recipeWrapper.recipeSize) {
+    for (i <- 0.until(recipeWrapper.recipeSize)) {
       val row = i / 9
       val columns = i % 9
       guiItemStack.init(i, true, x0 + o * columns - xOff, x0 + o * row - yOff)

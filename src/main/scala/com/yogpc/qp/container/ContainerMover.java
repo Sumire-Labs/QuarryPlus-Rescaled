@@ -261,11 +261,11 @@ public class ContainerMover extends Container {
                     break;
                 }
             }
-            if (list.hasNoTags()) {
+            if (list.isEmpty()) {
                 NBTTagCompound compound = stack.getTagCompound();
                 if (compound != null) {
                     compound.removeTag("ench");
-                    if (compound.hasNoTags())
+                    if (compound.isEmpty())
                         stack.setTagCompound(null);
                 }
             }

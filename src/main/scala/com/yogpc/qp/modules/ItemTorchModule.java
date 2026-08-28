@@ -15,7 +15,7 @@ public class ItemTorchModule extends Item implements IDisabled, IModuleItem {
 
     public ItemTorchModule() {
         setRegistryName(QuarryPlus.modID, QuarryPlus.Names.torchModule);
-        setUnlocalizedName(QuarryPlus.Names.torchModule);
+        setTranslationKey(QuarryPlus.Names.torchModule);
         setCreativeTab(QuarryPlusI.creativeTab());
     }
 

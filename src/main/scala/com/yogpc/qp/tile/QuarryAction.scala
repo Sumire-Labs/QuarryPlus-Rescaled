@@ -70,9 +70,9 @@ object QuarryAction {
 
       def a(y: Int) = {
         Range(r.xMin, r.xMax).map(x => new BlockPos(x, y, firstZ)) ++
-          Range(firstZ, lastZ, (lastZ - firstZ).signum).map(z => new BlockPos(r.xMax, y, z)) ++
+          Range(firstZ, lastZ, (lastZ - firstZ).sign).map(z => new BlockPos(r.xMax, y, z)) ++
           Range(r.xMax, r.xMin, -1).map(x => new BlockPos(x, y, lastZ)) ++
-          Range(lastZ, firstZ, (firstZ - lastZ).signum).map(z => new BlockPos(r.xMin, y, z))
+          Range(lastZ, firstZ, (firstZ - lastZ).sign).map(z => new BlockPos(r.xMin, y, z))
       }.toList
 
       def b(y: Int) = {
@@ -187,7 +187,7 @@ object QuarryAction {
 
   class BreakBlock(quarry2: TileQuarry2, y: Int, targetBefore: BlockPos, var headX: Double, var headY: Double, var headZ: Double) extends QuarryAction {
 
-    def this(quarry2: TileQuarry2, y: Int, targetBefore: BlockPos) {
+    def this(quarry2: TileQuarry2, y: Int, targetBefore: BlockPos) = {
       this(quarry2, y, targetBefore, (quarry2.area.xMin + quarry2.area.xMax + 1) / 2, y + 1, (quarry2.area.zMin + quarry2.area.zMax + 1) / 2)
     }
 
@@ -199,7 +199,7 @@ object QuarryAction {
 
     override def action(target: BlockPos): Unit = {
       if (movingHead) {
-        val maxDistance = Math.sqrt(pre distanceSq target) /
+        val maxDistance = Math.sqrt(pre.distanceSq(target)) /
           (Config.content.tickDelay(TileQuarry2.SYMBOL).toDouble + 1)
         val x = target.getX - this.headX
         val y = target.getY + 1 - this.headY
@@ -250,6 +250,7 @@ object QuarryAction {
               movingHead = true
               pre = target
             }
+          case _ => ()
         }
       }
     }
@@ -264,7 +265,7 @@ object QuarryAction {
         val set = quarry.modules.flatMap(IModule.replaceBlocks(y)).toSet
         val list = QuarryAction.digTargets(quarry2.area, targetBefore, y, log = false)
           .filter(p => checkBreakable(quarry2.getWorld, p, quarry2.getWorld.getBlockState(p), quarry2.modules))
-        list.forall(quarry.getWorld.getBlockState _ andThen set)
+        list.forall(pos => set(quarry.getWorld.getBlockState(pos)))
       } else {
         false
       }
@@ -330,7 +331,7 @@ object QuarryAction {
     if (log) QuarryPlus.LOGGER.info(MARKER, s"Making targets list of breaking blocks. y=$y $r, firstX=$firstX, lastX=$lastX firstZ=$firstZ, lastZ=$lastZ")
     val list = Range.inclusive(firstZ, lastZ, signum(firstZ, lastZ))
       .map(z => Range.inclusive(firstX, lastX, signum(firstX, lastX)).map(x => new BlockPos(x, y, z)))
-      .zip(Stream.iterate(true)(b => !b))
+      .zip(LazyList.iterate(true)(b => !b))
       .flatMap {
         case (p1, true) => p1
         case (p2, false) => p2.reverse
@@ -345,12 +346,12 @@ object QuarryAction {
   }
 
   def near[A](pos: A, x1: A, x2: A)(implicit proxy: Numeric[A]): A = {
-    val c = (proxy.minus _).curried(pos) andThen proxy.abs
+    val c = (value: A) => proxy.abs(proxy.minus(pos, value))
     List(x1, x2).reduceLeft[A] { case (b, a) => if (proxy.lt(c(a), c(b))) a else b }
   }
 
   def far[A](pos: A, x1: A, x2: A)(implicit proxy: Numeric[A]): A = {
-    val c = (proxy.minus _).curried(pos) andThen proxy.abs
+    val c = (value: A) => proxy.abs(proxy.minus(pos, value))
     List(x1, x2).reduceRight[A] { case (a, b) => if (proxy.gt(c(a), c(b))) a else b }
   }
 
@@ -399,8 +400,8 @@ object QuarryAction {
     case (q, t, s) => loadFromNBT(getNamed(t, s))(q)
   }
 
-  val signum = (a: Int, b: Int) => if (a == b) 1 else (b - a).signum
+  val signum = (a: Int, b: Int) => if (a == b) 1 else (b - a).sign
 
-  implicit val actionToNbt: QuarryAction NBTWrapper NBTTagCompound = action => action.serverWrite(new NBTTagCompound)
+  implicit val actionToNbt: NBTWrapper[QuarryAction, NBTTagCompound] = action => action.serverWrite(new NBTTagCompound)
 
 }

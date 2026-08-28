@@ -63,7 +63,6 @@ package object qp {
 
       override def size: Int = list.tagCount()
 
-      override def hasDefiniteSize: Boolean = true
     }
   }
 
@@ -82,10 +81,10 @@ package object qp {
       }
       Option(stack.getTagCompound).foreach(subtag => {
         subtag.removeTag(tagName)
-        if (!list.hasNoTags) {
+        if (!list.isEmpty) {
           subtag.setTag(tagName, list)
         }
-        stack.setTagCompound(if (subtag.hasNoTags) null else subtag)
+        stack.setTagCompound(if (subtag.isEmpty) null else subtag)
       })
     }
   }
@@ -125,7 +124,7 @@ package object qp {
   implicit val bool2NBT: NBTWrapper[Boolean, NBTTagByte] = (b: Boolean) => new NBTTagByte(if (b) 1 else 0)
 
   implicit val Fluid2NBT: NBTWrapper[FluidStack, NBTTagCompound] = (num: FluidStack) => num.writeToNBT(new NBTTagCompound)
-  implicit val NBTSerializable2NBT: INBTSerializable[NBTTagCompound] NBTWrapper NBTTagCompound = _.serializeNBT()
+  implicit val NBTSerializable2NBT: NBTWrapper[INBTSerializable[NBTTagCompound], NBTTagCompound] = _.serializeNBT()
 
   implicit class NumberToNbt[A](private val num: A) extends AnyVal {
     def toNBT[B <: NBTBase](implicit wrapper: NBTWrapper[A, B]): B = wrapper apply num
@@ -133,9 +132,9 @@ package object qp {
 
   implicit class PosHelper(private val blockPos: BlockPos) extends AnyVal {
     def offset(facing1: EnumFacing, facing2: EnumFacing): BlockPos = {
-      val x = facing1.getFrontOffsetX + facing2.getFrontOffsetX
-      val y = facing1.getFrontOffsetY + facing2.getFrontOffsetY
-      val z = facing1.getFrontOffsetZ + facing2.getFrontOffsetZ
+      val x = facing1.getXOffset + facing2.getXOffset
+      val y = facing1.getYOffset + facing2.getYOffset
+      val z = facing1.getZOffset + facing2.getZOffset
       blockPos.add(x, y, z)
     }
 

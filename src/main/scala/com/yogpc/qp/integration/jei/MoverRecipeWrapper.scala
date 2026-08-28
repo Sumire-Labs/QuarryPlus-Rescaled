@@ -14,7 +14,7 @@ import net.minecraft.init.Items
 import net.minecraft.item.{Item, ItemStack}
 import net.minecraftforge.fml.common.registry.ForgeRegistries
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.*
 
 class MoverRecipeWrapper(recipe: MoverRecipe) extends IRecipeWrapper {
 
@@ -40,7 +40,7 @@ object MoverRecipeWrapper {
 
   def recipes: java.util.Collection[MoverRecipe] =
     ForgeRegistries.ITEMS.asScala
-      .collect { case i: Item with IEnchantableItem => i }
+      .collect { case i: (Item & IEnchantableItem) => i }
       .flatMap(wrap)
       .toSeq.asJava
 
@@ -48,9 +48,9 @@ object MoverRecipeWrapper {
 
   val enchantments = Seq(EFFICIENCY, UNBREAKING, FORTUNE, SILK_TOUCH)
 
-  def wrap(item: Item with IEnchantableItem): Seq[MoverRecipe] = item.stacks().map(s => MoverRecipe(item, s))
+  def wrap(item: Item & IEnchantableItem): Seq[MoverRecipe] = item.stacks().toSeq.map(s => MoverRecipe(item, s))
 
-  case class MoverRecipe(item: Item with IEnchantableItem, stack: ItemStack) extends (Enchantment => Boolean) {
+  case class MoverRecipe(item: Item & IEnchantableItem, stack: ItemStack) extends (Enchantment => Boolean) {
     def toStack: ItemStack = stack.copy()
 
     def canMove(enchantment: Enchantment): Boolean = item.canMove(toStack, enchantment)

@@ -45,7 +45,7 @@ public class GuiP_List extends GuiScreenA implements GuiYesNoCallback {
 
     public GuiP_List(final int id, final TilePump tq) {
         super(null);
-        this.dir = EnumFacing.getFront(id);
+        this.dir = EnumFacing.byIndex(id);
         this.tile = tq;
     }
 

@@ -23,9 +23,9 @@ class ItemBlockBreaker(b: Block) extends ItemBlock(b) with IEnchantableItem {
     if (EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, is) > 0) {
       FALSE
     } else if (EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, is) > 0) {
-      SILKTOUCH.negate() and FORTUNE
+      SILKTOUCH.negate().and(FORTUNE)
     } else {
-      SILKTOUCH or FORTUNE
+      SILKTOUCH.or(FORTUNE)
     }
   }.test(enchantment)
 

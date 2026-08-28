@@ -55,14 +55,14 @@ class GuiAdvQuarry(tile: TileAdvQuarry, player: EntityPlayer) extends GuiContain
   override def actionPerformed(button: GuiButton): Unit = {
     super.actionPerformed(button)
     if (button.id == 8) {
-      if (tile.mode is TileAdvQuarry.NOT_NEED_BREAK) {
+      if (tile.mode.is(TileAdvQuarry.NOT_NEED_BREAK)) {
         PacketHandler.sendToServer(AdvActionMessage.create(tile, AdvActionMessage.Actions.QUICK_START))
       }
     } else if (button.id == 9) {
       PacketHandler.sendToServer(AdvActionMessage.create(tile, AdvActionMessage.Actions.MODULE_INV))
       //      onClose()
-    } else if (tile.mode is TileAdvQuarry.NOT_NEED_BREAK) {
-      val direction = EnumFacing.getFront(button.id / 2 + 2)
+    } else if (tile.mode.is(TileAdvQuarry.NOT_NEED_BREAK)) {
+      val direction = EnumFacing.byIndex(button.id / 2 + 2)
       val increase = if (button.id % 2 == 0) 1 else -1
       val shift = GuiScreen.isShiftKeyDown
       val ctrl = GuiScreen.isCtrlKeyDown

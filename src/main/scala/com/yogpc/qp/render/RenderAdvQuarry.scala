@@ -6,17 +6,17 @@ import net.minecraft.client.renderer.BufferBuilder
 import net.minecraftforge.client.model.animation.FastTESR
 
 object RenderAdvQuarry extends FastTESR[TileAdvQuarry] {
-  private[this] final val d = 1d / 16d
+  private final val d = 1d / 16d
   val instance = this
-  lazy val sprite = Sprites.getMap('yellow)
+  lazy val sprite = Sprites.getMap(Symbol("yellow"))
 
   override def renderTileEntityFast(te: TileAdvQuarry, x: Double, y: Double, z: Double,
                                     partialTicks: Float, destroyStage: Int, partial: Float, buffer: BufferBuilder): Unit = {
 
-    Minecraft.getMinecraft.mcProfiler.startSection("quarryplus")
+    Minecraft.getMinecraft.profiler.startSection("quarryplus")
 
-    if ((te.mode is TileAdvQuarry.MAKE_FRAME) || (te.mode is TileAdvQuarry.NOT_NEED_BREAK)) {
-      Minecraft.getMinecraft.mcProfiler.startSection("chunkdestroyer")
+    if (te.mode.is(TileAdvQuarry.MAKE_FRAME) || te.mode.is(TileAdvQuarry.NOT_NEED_BREAK)) {
+      Minecraft.getMinecraft.profiler.startSection("chunkdestroyer")
       val range = te.digRange
       if (range.defined) {
         val pos = te.getPos
@@ -38,10 +38,10 @@ object RenderAdvQuarry extends FastTESR[TileAdvQuarry] {
         if (b4) Box(range.maxX + 1.5, range.minY, minZ, range.maxX + 1.5, range.maxY, maxZ, d, d, d, firstSide = false, endSide = false).render(buffer, sprite)
         buffer.setTranslation(0, 0, 0)
       }
-      Minecraft.getMinecraft.mcProfiler.endSection()
+      Minecraft.getMinecraft.profiler.endSection()
     }
 
-    Minecraft.getMinecraft.mcProfiler.endSection()
+    Minecraft.getMinecraft.profiler.endSection()
   }
 
   override def isGlobalRenderer(te: TileAdvQuarry): Boolean = true

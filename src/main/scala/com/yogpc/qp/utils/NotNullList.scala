@@ -5,12 +5,12 @@ import java.util.Objects
 import net.minecraft.item.ItemStack
 import net.minecraft.util.NonNullList
 
-import scala.collection.JavaConverters._
-import scala.collection.generic.Clearable
+import scala.jdk.CollectionConverters.*
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable.Clearable
 
-class NotNullList(val seq: mutable.Buffer[ItemStack] with Clearable) extends NonNullList[ItemStack](seq.asJava, null) {
+class NotNullList(val seq: mutable.Buffer[ItemStack] & Clearable) extends NonNullList[ItemStack](seq.asJava, null) {
   var fix = false
   val fixing: ArrayBuffer[ItemStack] = ArrayBuffer.empty[ItemStack]
 

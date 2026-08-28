@@ -96,7 +96,7 @@ class ListLikeMap[A, B] private(private val list: util.ArrayList[(A, B)]) {
   def map[C](f: (A, B) => C): List[C] = foldLeft(List.empty[C]) { case (l, t) => f(t._1, t._2) :: l }.reverse
 
   def valuesIterator: Iterator[B] = new AbstractIterator[B] {
-    private[this] var count = 0
+    private var count = 0
 
     override def hasNext: Boolean = count < list.size()
 
@@ -110,7 +110,7 @@ class ListLikeMap[A, B] private(private val list: util.ArrayList[(A, B)]) {
   override def equals(obj: Any): Boolean = {
     if (super.equals(obj)) return true
     obj match {
-      case value: ListLikeMap[_, _] => this.list == value.list
+      case value: ListLikeMap[?, ?] => this.list == value.list
       case _ => false
     }
   }

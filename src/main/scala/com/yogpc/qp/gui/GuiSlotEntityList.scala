@@ -33,7 +33,7 @@ class GuiSlotEntityList(mc: Minecraft, width: Int, height: Int, topIn: Int, bott
   override protected def drawSlot(entryID: Int, insideLeft: Int, yPos: Int, insideSlotHeight: Int, mouseXIn: Int, mouseYIn: Int, f: Float): Unit = {
     val name = this.gc.names.get(entryID)
     Minecraft.getMinecraft.fontRenderer.drawStringWithShadow(name,
-      (this.mc.currentScreen.width - Minecraft.getMinecraft.fontRenderer.getStringWidth(name)) / 2,
-      yPos + 2, 0xFFFFFF)
+      ((this.mc.currentScreen.width - Minecraft.getMinecraft.fontRenderer.getStringWidth(name)) / 2).toFloat,
+      (yPos + 2).toFloat, 0xFFFFFF)
   }
 }

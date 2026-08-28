@@ -8,8 +8,8 @@ import net.minecraft.entity.player.{EntityPlayer, EntityPlayerMP}
 import net.minecraft.inventory.{Container, Slot}
 import net.minecraft.tileentity.TileEntity
 
-class ContainerQuarryLevel[T <: TileEntity with HasInv](tile: T, player: EntityPlayer)
-                                                       (implicit messageFunc: T => _ <: LevelMessage)
+class ContainerQuarryLevel[T <: TileEntity & HasInv](tile: T, player: EntityPlayer)
+                                                       (implicit messageFunc: T => LevelMessage)
   extends Container {
   val oneBox = 18
 
@@ -24,7 +24,7 @@ class ContainerQuarryLevel[T <: TileEntity with HasInv](tile: T, player: EntityP
   if (!tile.getWorld.isRemote)
     PacketHandler.sendToClient(messageFunc(tile), player.asInstanceOf[EntityPlayerMP])
 
-  override def canInteractWith(playerIn: EntityPlayer) = tile.getWorld.getTileEntity(tile.getPos) eq tile
+  override def canInteractWith(playerIn: EntityPlayer) = tile.getWorld.getTileEntity(tile.getPos).eq(tile)
 
   override def transferStackInSlot(playerIn: EntityPlayer, index: Int) = VersionUtil.empty
 }

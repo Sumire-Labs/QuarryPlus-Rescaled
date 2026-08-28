@@ -36,9 +36,9 @@ object IModule {
   val replaceModuleIDs = Set(ReplacerModule.id, TorchModule.id)
   val pumpModuleIDs = Set(PumpModule.ID)
   val expPumpModuleIDs = Set(ExpPumpModule.ID)
-  val hasReplaceModule: IModule => Boolean = getId andThen replaceModuleIDs
-  val hasPumpModule: IModule => Boolean = getId andThen pumpModuleIDs
-  val hasExpPumpModule: IModule => Boolean = getId andThen expPumpModuleIDs
+  val hasReplaceModule: IModule => Boolean = getId.andThen(replaceModuleIDs)
+  val hasPumpModule: IModule => Boolean = getId.andThen(pumpModuleIDs)
+  val hasExpPumpModule: IModule => Boolean = getId.andThen(expPumpModuleIDs)
   val replaceBlocks: Int => PartialFunction[IModule, List[IBlockState]] = y => {
     case t: TorchModule if t.y() == y => List(Blocks.TORCH.getDefaultState)
     case r: ReplacerModule => List(r.toReplace())
@@ -55,13 +55,13 @@ object IModule {
 
   sealed trait ModuleType
 
-  final case object TypeBeforeBreak extends ModuleType
+  case object TypeBeforeBreak extends ModuleType
 
-  final case object TypeCollectItem extends ModuleType
+  case object TypeCollectItem extends ModuleType
 
-  final case object TypeAfterBreak extends ModuleType
+  case object TypeAfterBreak extends ModuleType
 
-  final case object TypeTick extends ModuleType
+  case object TypeTick extends ModuleType
 
   sealed abstract class CalledWhen(val moduleType: ModuleType)
 

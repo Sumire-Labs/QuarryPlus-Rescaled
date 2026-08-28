@@ -24,7 +24,7 @@ public class ItemReplacerModule extends Item implements IDisabled, IModuleItem {
 
     public ItemReplacerModule() {
         setRegistryName(QuarryPlus.modID, QuarryPlus.Names.replacerModule);
-        setUnlocalizedName(QuarryPlus.Names.replacerModule);
+        setTranslationKey(QuarryPlus.Names.replacerModule);
         setCreativeTab(QuarryPlusI.creativeTab());
     }
 

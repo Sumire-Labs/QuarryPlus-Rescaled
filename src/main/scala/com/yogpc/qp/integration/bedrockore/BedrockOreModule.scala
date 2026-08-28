@@ -6,7 +6,7 @@ import li.cil.bedrockores.common.tileentity.TileEntityBedrockOre
 import net.minecraft.item.ItemStack
 import net.minecraft.util.NonNullList
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.*
 
 class BedrockOreModule(machine: APowerTile, mode: () => Int, u: () => Int) extends IModule {
   override def id: String = BedrockOreModule.id

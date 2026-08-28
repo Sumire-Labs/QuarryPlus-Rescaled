@@ -21,7 +21,7 @@ public class BlockPlainPipe extends BlockEmptyDrops {
     public BlockPlainPipe() {
         super(Material.GLASS);
         setCreativeTab(QuarryPlusI.creativeTab());
-        setUnlocalizedName(QuarryPlus.Names.plainpipe);
+        setTranslationKey(QuarryPlus.Names.plainpipe);
         setRegistryName(QuarryPlus.modID, QuarryPlus.Names.plainpipe);
         itemBlock = new ItemBlock(this);
         itemBlock.setRegistryName(QuarryPlus.modID, QuarryPlus.Names.plainpipe);
@@ -35,7 +35,7 @@ public class BlockPlainPipe extends BlockEmptyDrops {
 
     @Override
     @SideOnly(Side.CLIENT)
-    public BlockRenderLayer getBlockLayer() {
+    public BlockRenderLayer getRenderLayer() {
         return BlockRenderLayer.CUTOUT;
     }
 

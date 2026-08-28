@@ -56,7 +56,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.apache.commons.lang3.BooleanUtils;
 import scala.Symbol;
-import scala.collection.JavaConverters;
+import scala.jdk.javaapi.CollectionConverters;
 
 import static com.yogpc.qp.tile.IAttachment.Attachments.EXP_PUMP;
 import static com.yogpc.qp.tile.IAttachment.Attachments.FLUID_PUMP;
@@ -354,7 +354,7 @@ public class TileQuarry extends TileBasic implements IDebugSender, IChunkLoadTil
 
         if (facingMap.containsKey(EXP_PUMP)) {
             List<Entity> xpOrbs = world.getEntitiesWithinAABB(Entity.class, axis);
-            modules.forEach(iModule -> iModule.invoke(new IModule.CollectingItem(JavaConverters.asScalaBufferConverter(xpOrbs).asScala().toList())));
+            modules.forEach(iModule -> iModule.invoke(new IModule.CollectingItem(CollectionConverters.asScala(xpOrbs).toList())));
         }
 
     }

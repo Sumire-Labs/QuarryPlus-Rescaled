@@ -16,7 +16,7 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import scala.collection.convert.WrapAsJava$;
+import scala.jdk.javaapi.CollectionConverters;
 
 /**
  * To Client only
@@ -31,7 +31,7 @@ public class AdvContentMessage implements IMessage {
         AdvContentMessage message = new AdvContentMessage();
         message.pos = quarry.getPos();
         message.dim = quarry.getWorld().provider.getDimension();
-        message.map = WrapAsJava$.MODULE$.mutableMapAsJavaMap(quarry.fluidStacks());
+        message.map = CollectionConverters.asJava(quarry.fluidStacks());
         return message;
     }
 

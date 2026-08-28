@@ -62,13 +62,13 @@ public class GuiP_SelectSide extends GuiScreenA {
     @Override
     public void actionPerformed(final GuiButton button) {
         if (this.copy) {
-            LinkedList<String> list = tile.mapping.get(EnumFacing.getFront(button.id));
+            LinkedList<String> list = tile.mapping.get(EnumFacing.byIndex(button.id));
             PacketHandler.sendToServer(Mappings.Copy.create(tile, to, list));
             tile.mapping.put(to, list);
             showParent();
         } else {
             mc.displayGuiScreen(new GuiP_List(button.id, tile));
-//            this.mc.displayGuiScreen(new GuiP_SelectSide(parent, tile, false, EnumFacing.getFront(button.id)));
+//            this.mc.displayGuiScreen(new GuiP_SelectSide(parent, tile, false, EnumFacing.byIndex(button.id)));
         }
     }
 

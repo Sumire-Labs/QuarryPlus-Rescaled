@@ -16,8 +16,8 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.ResourceLocation
 
-class GuiQuarryLevel[T <: TileEntity with HasInv](private[this] val tile: T, player: EntityPlayer)
-                                                 (implicit lA: YLevel[T], func: T => _ <: LevelMessage)
+class GuiQuarryLevel[T <: TileEntity & HasInv](private val tile: T, player: EntityPlayer)
+                                                 (implicit lA: YLevel[T], func: T => LevelMessage)
   extends GuiContainer(new ContainerQuarryLevel(tile, player)) {
 
   val LOCATION = new ResourceLocation(QuarryPlus.modID, "textures/gui/advpump.png")

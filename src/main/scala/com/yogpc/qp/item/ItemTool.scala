@@ -42,7 +42,7 @@ class ItemTool extends Item with IEnchantableItem {
   setHasSubtypes(true)
   setMaxDamage(0)
   setCreativeTab(QuarryPlusI.creativeTab)
-  setUnlocalizedName(QuarryPlus.Names.tool)
+  setTranslationKey(QuarryPlus.Names.tool)
   setRegistryName(QuarryPlus.modID, QuarryPlus.Names.tool)
 
   override def isBookEnchantable(s1: ItemStack, s2: ItemStack) = false
@@ -125,7 +125,7 @@ class ItemTool extends Item with IEnchantableItem {
     super.onItemUseFirst(player, worldIn, pos, side, hitX, hitY, hitZ, hand)
   }
 
-  override def getUnlocalizedName(stack: ItemStack) =
+  override def getTranslationKey(stack: ItemStack) =
     stack.getItemDamage match {
       case ItemTool.`meta_ListEditor` =>
         "item." + ItemTool.listeditor
@@ -135,7 +135,7 @@ class ItemTool extends Item with IEnchantableItem {
         "item." + ItemTool.statuschecker
       case ItemTool.meta_YSetter =>
         "item." + ItemTool.ySetter
-      case _ => super.getUnlocalizedName(stack)
+      case _ => super.getTranslationKey(stack)
     }
 
   @SideOnly(Side.CLIENT)
@@ -167,7 +167,7 @@ class ItemTool extends Item with IEnchantableItem {
   override def canMove(is: ItemStack, enchantment: Enchantment): Boolean = {
     if (is.getItemDamage != meta_ListEditor) return false
     val l = is.getEnchantmentTagList
-    (l == null || l.tagCount == 0) && ((enchantment eq Enchantments.SILK_TOUCH) || (enchantment eq Enchantments.FORTUNE))
+    (l == null || l.tagCount == 0) && (enchantment.eq(Enchantments.SILK_TOUCH) || enchantment.eq(Enchantments.FORTUNE))
   }
 
   override def stacks(): Array[ItemStack] = Array(getEditorStack)

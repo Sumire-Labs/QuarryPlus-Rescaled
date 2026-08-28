@@ -7,7 +7,7 @@ import net.minecraft.util.{EnumFacing, EnumHand}
 import net.minecraft.world.WorldServer
 import net.minecraftforge.common.ForgeHooks
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.*
 
 trait FillerWorks {
   val name: String
@@ -45,7 +45,7 @@ object FillerWorks {
     }
   }
 
-  private[this] final val restoreMap: Map[String, NBTTagCompound => FillerWorks] = Map(
+  private final val restoreMap: Map[String, NBTTagCompound => FillerWorks] = Map(
     Wait.name -> (_ => Wait),
     "FillAll" -> (tag => new FillAll(BlockPos.fromLong(tag.getLong("minPos")), BlockPos.fromLong(tag.getLong("maxPos")))),
     "FillBox" -> (tag => new FillBox(BlockPos.fromLong(tag.getLong("minPos")), BlockPos.fromLong(tag.getLong("maxPos"))))

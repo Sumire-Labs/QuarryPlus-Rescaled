@@ -1,5 +1,6 @@
 package com.yogpc.qp.tile
 
+import java.lang.{Boolean => JBool}
 import java.util
 import com.yogpc.qp.block.ADismCBlock
 import com.yogpc.qp.compat.InvUtils
@@ -9,6 +10,7 @@ import com.yogpc.qp.tile.TileAdvPump._
 import com.yogpc.qp.utils.{INBTReadable, INBTWritable, MarkerUtil, NBTBuilder}
 import com.yogpc.qp.version.VersionUtil
 import com.yogpc.qp.{Config, QuarryPlus, QuarryPlusI, _}
+import net.minecraft.block.properties.IProperty
 import net.minecraft.block.state.IBlockState
 import net.minecraft.init.Blocks
 import net.minecraft.inventory.InventoryHelper
@@ -24,28 +26,30 @@ import net.minecraftforge.fluids._
 import net.minecraftforge.fluids.capability.{CapabilityFluidHandler, FluidTankProperties, IFluidHandler, IFluidTankProperties}
 import net.minecraftforge.fml.relauncher.{Side, SideOnly}
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.*
 import scala.collection.mutable
 import scala.collection.mutable.{ArrayBuffer, ListBuffer}
+import scala.compiletime.uninitialized
 
 /**
   * @see [[buildcraft.factory.tile.TilePump]]
   */
 class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with IDebugSender with IChunkLoadTile {
 
+  private val ACTING: IProperty[JBool] = ADismCBlock.ACTING
   var placeFrame = true
   var delete = false
-  private[this] var finished = true
-  private[this] var toStart = Config.content.pumpAutoStart
-  private[this] var queueBuilt = false
-  private[this] var skip = false
-  private[this] var ench = TileAdvPump.defaultEnch
-  private[this] var target: BlockPos = BlockPos.ORIGIN
-  private[this] var toDig: List[BlockPos] = Nil
-  private[this] var toDelete: List[BlockPos] = Nil
-  private[this] var inRange: Set[BlockPos] = Set.empty
-  private[this] val paths = mutable.Map.empty[BlockPos, List[BlockPos]]
-  private[this] val FACINGS = List(EnumFacing.UP, EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.WEST, EnumFacing.EAST)
+  private var finished = true
+  private var toStart = Config.content.pumpAutoStart
+  private var queueBuilt = false
+  private var skip = false
+  private var ench = TileAdvPump.defaultEnch
+  private var target: BlockPos = BlockPos.ORIGIN
+  private var toDig: List[BlockPos] = Nil
+  private var toDelete: List[BlockPos] = Nil
+  private var inRange: Set[BlockPos] = Set.empty
+  private val paths = mutable.Map.empty[BlockPos, List[BlockPos]]
+  private val FACINGS = List(EnumFacing.UP, EnumFacing.NORTH, EnumFacing.SOUTH, EnumFacing.WEST, EnumFacing.EAST)
 
   override def isWorking: Boolean = !finished
 
@@ -76,7 +80,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
             finished = false
             startWork()
             val state = getWorld.getBlockState(getPos)
-            if (!state.getValue(ADismCBlock.ACTING)) {
+            if (!state.getValue[JBool](ACTING)) {
               changeState(working = true, state)
             }
           }
@@ -105,15 +109,15 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
     def overflowedMessage(): Unit = {
       if (Config.content.debug) {
         QuarryPlus.LOGGER.warn("Pump overflowed")
-        List("Pos = " + getPos,
-          "Range = " + ench.distance,
-          "target : " + target,
-          "Ench : " + ench,
-          "FluidType : " + FluidHandler.getFluidType,
-          "FluidAmount : " + FluidHandler.getAmount,
-          "Pumped : " + FluidHandler.amountPumped,
-          "Start pos : " + ench.start,
-          "End pos : " + ench.end).map("   " + _).foreach(QuarryPlus.LOGGER.warn)
+        List(s"Pos = $getPos",
+          s"Range = ${ench.distance}",
+          s"target : $target",
+          s"Ench : $ench",
+          s"FluidType : ${FluidHandler.getFluidType}",
+          s"FluidAmount : ${FluidHandler.getAmount}",
+          s"Pumped : ${FluidHandler.amountPumped}",
+          s"Start pos : ${ench.start}",
+          s"End pos : ${ench.end}").map(line => s"   $line").foreach(QuarryPlus.LOGGER.warn)
       }
     }
 
@@ -180,7 +184,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
       G_ReInit()
       finishWork()
       val state = getWorld.getBlockState(getPos)
-      if (state.getValue(ADismCBlock.ACTING)) {
+      if (state.getValue[JBool](ACTING)) {
         changeState(working = false, state)
       }
       getWorld.profiler.endSection()
@@ -285,7 +289,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
 
   private def changeState(working: Boolean, state: IBlockState): Unit = {
     if (VersionUtil.changeAdvPumpState()) {
-      InvUtils.setNewState(getWorld, getPos, this, state.withProperty(ADismCBlock.ACTING, Boolean.box(working)))
+      InvUtils.setNewState(getWorld, getPos, this, state.withProperty(ACTING, Boolean.box(working)))
     }
   }
 
@@ -317,17 +321,17 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
   override def getDebugName: String = TranslationKeys.advpump
 
   override def getDebugMessages: java.util.List[TextComponentString] = {
-    List("Range = " + ench.distance,
-      "target : " + target,
-      "Finished : " + finished,
-      "Ench : " + ench,
-      "FluidType : " + FluidHandler.getFluidType,
-      "FluidAmount : " + FluidHandler.getAmount,
-      "Pumped : " + FluidHandler.amountPumped,
-      "Delete : " + delete,
-      "To Start : " + toStart,
-      "Start pos : " + ench.start,
-      "End pos : " + ench.end).map(toComponentString).asJava
+    List(s"Range = ${ench.distance}",
+      s"target : $target",
+      s"Finished : $finished",
+      s"Ench : $ench",
+      s"FluidType : ${FluidHandler.getFluidType}",
+      s"FluidAmount : ${FluidHandler.getAmount}",
+      s"Pumped : ${FluidHandler.amountPumped}",
+      s"Delete : $delete",
+      s"To Start : $toStart",
+      s"Start pos : ${ench.start}",
+      s"End pos : ${ench.end}").map(toComponentString).asJava
   }
 
   //noinspection SpellCheckingInspection
@@ -360,7 +364,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
     super.writeToNBT(nbt)
   }
 
-  override def hasCapability(capability: Capability[_], facing: EnumFacing): Boolean = {
+  override def hasCapability(capability: Capability[?], facing: EnumFacing): Boolean = {
     if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) true
     else super.hasCapability(capability, facing)
   }
@@ -370,7 +374,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
     else super.getCapability(capability, facing)
   }
 
-  private[this] var chunkTicket: ForgeChunkManager.Ticket = _
+  private var chunkTicket: ForgeChunkManager.Ticket = uninitialized
 
   override def requestTicket(): Unit = {
     if (this.chunkTicket != null) return
@@ -401,7 +405,7 @@ class TileAdvPump extends APowerTile with IEnchantableTile with ITickable with I
 
   private object FluidHandler extends IFluidHandler with INBTWritable with INBTReadable[IFluidHandler] {
 
-    private[this] final val fluidStacks = new ListBuffer[FluidStack]
+    private final val fluidStacks = new ListBuffer[FluidStack]
     var amountPumped = 0L
 
     override def fill(resource: FluidStack, doFill: Boolean): Int = 0
@@ -514,8 +518,8 @@ object TileAdvPump {
   private final val NBT_FluidHandler = "FluidHandler"
   private final val NBT_pumped = "amountPumped"
   private final val NBT_liquids = "liquds"
-  private[this] final val defaultBaseEnergy = Seq(10, 8, 6, 4).map(_ * APowerTile.MJToMicroMJ)
-  private[this] final val defaultReceiveEnergy = Seq(32, 64, 128, 256, 512, 1024).map(_ * APowerTile.MJToMicroMJ)
+  private final val defaultBaseEnergy = Seq(10, 8, 6, 4).map(_ * APowerTile.MJToMicroMJ)
+  private final val defaultReceiveEnergy = Seq(32, 64, 128, 256, 512, 1024).map(_ * APowerTile.MJToMicroMJ)
   val defaultEnch = PEnch(efficiency = 0, unbreaking = 0, fortune = 0, silktouch = false, BlockPos.ORIGIN, BlockPos.ORIGIN)
 
   case class PEnch(efficiency: Int, unbreaking: Int, fortune: Int, silktouch: Boolean, start: BlockPos, end: BlockPos) extends INBTWritable {
@@ -597,7 +601,7 @@ object TileAdvPump {
 
   object PEnch extends INBTReadable[PEnch] {
     override def readFromNBT(tag: NBTTagCompound): PEnch = {
-      if (!tag.hasNoTags) {
+      if (!tag.isEmpty) {
         PEnch(tag.getInteger("efficiency"), tag.getInteger("unbreaking"), tag.getInteger("fortune"), tag.getBoolean("silktouch"),
           BlockPos.fromLong(tag.getLong("start")), BlockPos.fromLong(tag.getLong("end")))
       } else

@@ -51,7 +51,7 @@ public class BlockMover extends Block implements IDismantleable, IWrenchable {
         super(Material.IRON);
         setHardness(1.2F);
         setCreativeTab(QuarryPlusI.creativeTab());
-        setUnlocalizedName(QuarryPlus.Names.mover);
+        setTranslationKey(QuarryPlus.Names.mover);
         setRegistryName(QuarryPlus.modID, QuarryPlus.Names.mover);
         itemBlock = new ItemBlock(this);
         itemBlock.setRegistryName(QuarryPlus.modID, QuarryPlus.Names.mover);

@@ -37,7 +37,7 @@ public class Now implements IMessage {
         if (i == -1) {
             facing = null;
         } else {
-            facing = EnumFacing.getFront(i);
+            facing = EnumFacing.byIndex(i);
         }
         working = buffer.readBoolean();
         blockPos = buffer.readBlockPos();

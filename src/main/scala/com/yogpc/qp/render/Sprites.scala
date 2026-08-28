@@ -20,6 +20,15 @@ object Sprites {
     val textureMap = event.getMap
     LaserType.values().foreach(laserType => map.put(laserType.symbol, textureMap.registerSprite(laserType.location())))
     val put_F = (name: Symbol) => map.put(name, textureMap.registerSprite(new ResourceLocation(QuarryPlus.modID, "entities/" + name.name)))
-    List('laser_1, 'laser_2, 'laser_3, 'laser_4, 'yellow, 'stripes_h, 'stripes_v, 'stripes_b, 'stripes_refinery).foreach(put_F)
+    List(
+      Symbol("laser_1"),
+      Symbol("laser_2"),
+      Symbol("laser_3"),
+      Symbol("laser_4"),
+      Symbol("yellow"),
+      Symbol("stripes_h"),
+      Symbol("stripes_v"),
+      Symbol("stripes_b"),
+      Symbol("stripes_refinery")).foreach(put_F)
   }
 }

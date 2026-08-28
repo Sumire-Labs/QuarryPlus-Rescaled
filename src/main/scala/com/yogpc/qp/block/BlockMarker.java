@@ -60,7 +60,7 @@ public class BlockMarker extends Block implements ITileEntityProvider {//BlockCo
     public BlockMarker() {
         super(Material.CIRCUITS);
         setLightLevel(0.5F);
-        setUnlocalizedName(QuarryPlus.Names.marker);
+        setTranslationKey(QuarryPlus.Names.marker);
         setRegistryName(QuarryPlus.modID, QuarryPlus.Names.marker);
         setCreativeTab(QuarryPlusI.creativeTab());
         this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.UP));
@@ -83,7 +83,7 @@ public class BlockMarker extends Block implements ITileEntityProvider {//BlockCo
 
     @Override
     @SideOnly(Side.CLIENT)
-    public BlockRenderLayer getBlockLayer() {
+    public BlockRenderLayer getRenderLayer() {
         return BlockRenderLayer.CUTOUT;
     }
 
@@ -163,7 +163,7 @@ public class BlockMarker extends Block implements ITileEntityProvider {//BlockCo
     @Override
     @SuppressWarnings("deprecation")
     public IBlockState getStateFromMeta(int meta) {
-        return getDefaultState().withProperty(FACING, EnumFacing.getFront(meta));
+        return getDefaultState().withProperty(FACING, EnumFacing.byIndex(meta));
     }
 
     @Override

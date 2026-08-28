@@ -12,8 +12,8 @@ import net.minecraftforge.client.model.animation.FastTESR
   */
 object RenderDistiller extends FastTESR[TileRefinery] {
   val instance = this
-  private[this] final val d = 1d / 16d
-  lazy val sprite = Sprites.getMap('stripes_refinery)
+  private final val d = 1d / 16d
+  lazy val sprite = Sprites.getMap(Symbol("stripes_refinery"))
 
   private def spriteUFromStage(i: Float) = {
     if (i <= 1) 0
@@ -23,8 +23,8 @@ object RenderDistiller extends FastTESR[TileRefinery] {
   }
 
   override def renderTileEntityFast(te: TileRefinery, x: Double, y: Double, z: Double, partialTicks: Float, destroyStage: Int, partial: Float, buffer: BufferBuilder): Unit = {
-    Minecraft.getMinecraft.mcProfiler.startSection("quarryplus")
-    Minecraft.getMinecraft.mcProfiler.startSection("refinery")
+    Minecraft.getMinecraft.profiler.startSection("quarryplus")
+    Minecraft.getMinecraft.profiler.startSection("refinery")
     val pos = te.getPos
     buffer.setTranslation(x, y, z) //set pos to (0,0,0)
     val light = te.getWorld.getCombinedLight(pos, 0)
@@ -54,8 +54,8 @@ object RenderDistiller extends FastTESR[TileRefinery] {
     }
     renderBox(new Buffer(buffer), facing, te.animationSpeed, trans1, trans2)
     buffer.setTranslation(0, 0, 0)
-    Minecraft.getMinecraft.mcProfiler.endSection()
-    Minecraft.getMinecraft.mcProfiler.endSection()
+    Minecraft.getMinecraft.profiler.endSection()
+    Minecraft.getMinecraft.profiler.endSection()
   }
 
   private def renderFluid(buffer: BufferBuilder, light: Box.LightValue, boxHeight: Double, tank: TileRefinery#DistillerTank,

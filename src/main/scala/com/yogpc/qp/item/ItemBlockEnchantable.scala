@@ -31,13 +31,13 @@ class ItemBlockEnchantable(block: Block) extends ItemBlock(block) with IEnchanta
 object ItemBlockEnchantable {
   private def getTester(is: ItemStack) = {
     if (Config.content.enableMap(BlockBookMover.SYMBOL)) {
-      SILKTOUCH or FORTUNE or UNBREAKING or EFFICIENCY
+      SILKTOUCH.or(FORTUNE).or(UNBREAKING).or(EFFICIENCY)
     } else if (EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, is) > 0) {
-      FORTUNE.negate() and (UNBREAKING or EFFICIENCY or SILKTOUCH)
+      FORTUNE.negate().and(UNBREAKING.or(EFFICIENCY).or(SILKTOUCH))
     } else if (EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, is) > 0) {
-      SILKTOUCH.negate() and (UNBREAKING or EFFICIENCY or FORTUNE)
+      SILKTOUCH.negate().and(UNBREAKING.or(EFFICIENCY).or(FORTUNE))
     } else {
-      SILKTOUCH or FORTUNE or UNBREAKING or EFFICIENCY
+      SILKTOUCH.or(FORTUNE).or(UNBREAKING).or(EFFICIENCY)
     }
   }
 }

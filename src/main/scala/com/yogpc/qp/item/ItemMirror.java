@@ -51,7 +51,7 @@ public class ItemMirror extends ItemFood {
     public ItemMirror() {
         super(0, 0, false);
         setHasSubtypes(true);
-        setUnlocalizedName(QuarryPlus.Names.mirror);
+        setTranslationKey(QuarryPlus.Names.mirror);
         setRegistryName(QuarryPlus.modID, QuarryPlus.Names.mirror);
         setCreativeTab(QuarryPlusI.creativeTab());
         setAlwaysEdible();
@@ -128,14 +128,14 @@ public class ItemMirror extends ItemFood {
     }
 
     @Override
-    public String getUnlocalizedName(final ItemStack is) {
+    public String getTranslationKey(final ItemStack is) {
         switch (is.getItemDamage()) {
             case OverWorld_Meta:
                 return "item.overworldmirror";
             case Dimension_Meta:
                 return "item.dimensionmirror";
         }
-        return super.getUnlocalizedName(is);
+        return super.getTranslationKey(is);
     }
 
     @Override

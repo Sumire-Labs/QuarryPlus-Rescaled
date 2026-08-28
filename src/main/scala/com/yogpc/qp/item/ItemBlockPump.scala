@@ -28,13 +28,13 @@ class ItemBlockPump(b: Block) extends ItemBlock(b) with IEnchantableItem {
 
   def tester(stack: ItemStack) = {
     if (Config.content.enableMap(BlockBookMover.SYMBOL)) {
-      SILKTOUCH or FORTUNE or UNBREAKING
+      SILKTOUCH.or(FORTUNE).or(UNBREAKING)
     } else if (EnchantmentHelper.getEnchantmentLevel(Enchantments.SILK_TOUCH, stack) > 0) {
-      FORTUNE.negate() and (UNBREAKING or SILKTOUCH)
+      FORTUNE.negate().and(UNBREAKING.or(SILKTOUCH))
     } else if (EnchantmentHelper.getEnchantmentLevel(Enchantments.FORTUNE, stack) > 0) {
-      SILKTOUCH.negate() and (UNBREAKING or FORTUNE)
+      SILKTOUCH.negate().and(UNBREAKING.or(FORTUNE))
     } else {
-      SILKTOUCH or FORTUNE or UNBREAKING
+      SILKTOUCH.or(FORTUNE).or(UNBREAKING)
     }
   }
 }

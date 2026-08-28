@@ -13,7 +13,7 @@ import net.minecraft.init.Items
 import net.minecraft.item.{Item, ItemEnchantedBook}
 import net.minecraftforge.fml.common.registry.ForgeRegistries
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.*
 
 class BookRecipeWrapper(recipe: BookRecipe) extends IRecipeWrapper {
 
@@ -29,14 +29,14 @@ class BookRecipeWrapper(recipe: BookRecipe) extends IRecipeWrapper {
 
   override def drawInfo(minecraft: Minecraft, recipeWidth: Int, recipeHeight: Int, mouseX: Int, mouseY: Int): Unit = {
     import BookRecipeCategory._
-    minecraft.fontRenderer.drawString(50000 + "MJ", 36 - xOff, 66 - yOff, 0x404040)
+    minecraft.fontRenderer.drawString("50000MJ", 36 - xOff, 66 - yOff, 0x404040)
   }
 }
 
 object BookRecipeWrapper {
   val enchTypes = EnumEnchantmentType.values().filter(_.canEnchantItem(Items.DIAMOND_PICKAXE)).toSet
   val enchantments = ForgeRegistries.ENCHANTMENTS.getValuesCollection.asScala.filter(e => enchTypes(e.`type`)).map(e => new EnchantmentData(e, e.getMaxLevel))
-  val items = ForgeRegistries.ITEMS.asScala.collect { case i: Item with IEnchantableItem if i.isValidInBookMover => i }.flatMap(_.stacks).toSeq
+  val items = ForgeRegistries.ITEMS.asScala.collect { case i: (Item & IEnchantableItem) if i.isValidInBookMover => i }.flatMap(_.stacks).toSeq
 
   def recipes = enchantments.map(BookRecipe.apply).toSeq.asJava
 

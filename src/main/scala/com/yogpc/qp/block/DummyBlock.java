@@ -24,7 +24,7 @@ public class DummyBlock extends BlockEmptyDrops {
     public DummyBlock() {
         super(Material.GLASS);
         setRegistryName(QuarryPlus.modID, QuarryPlus.Names.dummyblock);
-        setUnlocalizedName(QuarryPlus.modID + "." + QuarryPlus.Names.dummyblock);
+        setTranslationKey(QuarryPlus.modID + "." + QuarryPlus.Names.dummyblock);
         setCreativeTab(QuarryPlusI.creativeTab());
         setHardness(1.0f);
         setLightOpacity(0);
@@ -56,7 +56,7 @@ public class DummyBlock extends BlockEmptyDrops {
 
     @SideOnly(Side.CLIENT)
     @Override
-    public BlockRenderLayer getBlockLayer() {
+    public BlockRenderLayer getRenderLayer() {
         return BlockRenderLayer.CUTOUT;
     }
 

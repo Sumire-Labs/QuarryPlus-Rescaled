@@ -44,7 +44,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import scala.collection.JavaConversions;
+import scala.jdk.javaapi.CollectionConverters;
 
 public class BlockFrame extends BlockEmptyDrops {
 
@@ -75,7 +75,7 @@ public class BlockFrame extends BlockEmptyDrops {
         super(Material.GLASS);
         setHardness(0.5F);
         setCreativeTab(QuarryPlusI.creativeTab());
-        setUnlocalizedName(QuarryPlus.Names.frame);
+        setTranslationKey(QuarryPlus.Names.frame);
         setRegistryName(QuarryPlus.modID, QuarryPlus.Names.frame);
         this.setDefaultState(this.blockState.getBaseState()
             .withProperty(NORTH, false).withProperty(EAST, false).withProperty(SOUTH, false)
@@ -183,7 +183,7 @@ public class BlockFrame extends BlockEmptyDrops {
 
     @Override
     @SideOnly(Side.CLIENT)
-    public BlockRenderLayer getBlockLayer() {
+    public BlockRenderLayer getRenderLayer() {
         return BlockRenderLayer.CUTOUT;
     }
 
@@ -296,8 +296,8 @@ public class BlockFrame extends BlockEmptyDrops {
         static {
             List<BlockPos> ds = Stream.of(EnumFacing.values()).map(EnumFacing::getDirectionVec).map(BlockPos::new).collect(Collectors.toList());
             ds.add(BlockPos.ORIGIN);
-            DIRECTIONS = JavaConversions.asJavaCollection(JavaConversions.asScalaBuffer(ds).combinations(2).toList()).stream()
-                .map(JavaConversions::asJavaCollection)
+            DIRECTIONS = CollectionConverters.asJavaCollection(CollectionConverters.asScala(ds).combinations(2).toList()).stream()
+                .map(CollectionConverters::asJavaCollection)
                 .map(poses -> poses.stream().reduce(BlockPos.ORIGIN, BlockPos::add))
                 .filter(p -> !BlockPos.ORIGIN.equals(p))
                 .collect(Collectors.toSet())

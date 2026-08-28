@@ -40,7 +40,7 @@ object BlockWrapper extends JsonDeserializer[BlockWrapper] with JsonSerializer[B
 
   import com.yogpc.qp._
 
-  private[this] val GSON = (new GsonBuilder).setPrettyPrinting().disableHtmlEscaping()
+  private val GSON = (new GsonBuilder).setPrettyPrinting().disableHtmlEscaping()
     .registerTypeAdapter(classOf[BlockWrapper], this)
     .create()
   final val KEY_STATE = "blockstate"
@@ -52,7 +52,7 @@ object BlockWrapper extends JsonDeserializer[BlockWrapper] with JsonSerializer[B
   }
 
   def getWrapper(s: String): Set[BlockWrapper] = {
-    import scala.collection.JavaConverters._
+    import scala.jdk.CollectionConverters.*
     val value = GSON.fromJson(s, classOf[JsonElement])
     if (value.isJsonArray) {
       value.getAsJsonArray.asScala.map(GSON.fromJson(_, classOf[BlockWrapper])).toSet

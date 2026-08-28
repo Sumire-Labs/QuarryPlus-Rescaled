@@ -1,19 +1,40 @@
-/run
+.gradle
+**/build/
+!src/**/build/
+run/
+out/
+
+# Ignore Gradle GUI config
+gradle-app.setting
+
+# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
+!gradle-wrapper.jar
+
+# Avoid ignore Gradle wrappper properties
+!gradle-wrapper.properties
+
+# Cache of project
+.gradletasknamecache
+
+# Eclipse Gradle plugin generated files
+# Eclipse Core
+.project
+# JDT-specific (Eclipse Java Development Tools)
+.classpath
+
+# IDEA config
+.idea
+
+# QuarryPlus-specific generated files
 /server
 /run2
-# idea
-out
-*.ipr
-*.iws
-*.iml
-
-# gradle
-build
-.gradle
+/bin/
 build.ps1
-
 FILES
 libs
 Minecraft
 run-server
 test_run
+*.ipr
+*.iws
+*.iml

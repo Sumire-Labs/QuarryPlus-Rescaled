@@ -35,16 +35,16 @@ object BlockData extends INBTReadable[BlockData] {
     override def getLocalizedName = "Unknown:Dummy"
   }
 
-  val comparator: Comparator[BlockData] = Ordering.by((b: BlockData) => b.name) thenComparing Ordering.by((b: BlockData) => b.meta)
+  val comparator: Comparator[BlockData] = Ordering.by((b: BlockData) => b.name).thenComparing(Ordering.by((b: BlockData) => b.meta))
 }
 
 case class BlockData(name: ResourceLocation, meta: Int) extends INBTWritable with Ordered[BlockData] {
 
-  def this(resourceName: String, meta: Int) {
+  def this(resourceName: String, meta: Int) = {
     this(new ResourceLocation(resourceName), meta)
   }
 
-  def this(block: Block, state: IBlockState) {
+  def this(block: Block, state: IBlockState) = {
     this(ForgeRegistries.BLOCKS.getKey(block), state.getBlock.getMetaFromState(state))
   }
 
@@ -66,7 +66,7 @@ case class BlockData(name: ResourceLocation, meta: Int) extends INBTWritable wit
     nbt
   }
 
-  override def toString: String = name + "@" + meta
+  override def toString: String = s"${name}@${meta}"
 
   def getLocalizedName: String = {
     /*val sb = new StringBuilder

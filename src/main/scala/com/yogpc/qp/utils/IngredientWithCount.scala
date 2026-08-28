@@ -25,7 +25,7 @@ case class IngredientWithCount(ingredient: Ingredient, count: Int) {
     ingredient.getMatchingStacks.map(_.copy()).filter(VersionUtil.nonEmpty).map { s =>
       VersionUtil.setCount(s, count)
       s
-    }
+    }.toIndexedSeq
   }
 
   def shrink(stack: ItemStack): Boolean = {
@@ -49,8 +49,8 @@ object IngredientWithCount {
   def getSeq(json: JsonElement, ctx: JsonContext): Seq[IngredientWithCount] = {
     val factory: JsonObject => IngredientWithCount = new IngredientWithCount(_, ctx)
     if (json.isJsonArray) {
-      import scala.collection.JavaConverters._
-      json.getAsJsonArray.asScala.map(changer andThen factory).toSeq
+      import scala.jdk.CollectionConverters.*
+      json.getAsJsonArray.asScala.map(changer.andThen(factory)).toSeq
     } else {
       Seq(factory(json.getAsJsonObject))
     }

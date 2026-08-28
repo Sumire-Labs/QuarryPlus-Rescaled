@@ -46,7 +46,7 @@ public abstract class ADismCBlock extends QPBlock implements IDismantleable, IWr
         super(material, name, generator);
     }
 
-    protected ADismCBlock(final Material material, String name, Function1<QPBlock, ? extends ItemBlock> generator, boolean dummy) {
+    protected ADismCBlock(final Material material, String name, Function1<QPBlock, ItemBlock> generator, boolean dummy) {
         super(material, name, generator, dummy);
     }
 

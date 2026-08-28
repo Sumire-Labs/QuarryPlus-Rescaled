@@ -23,15 +23,19 @@ import org.lwjgl.opengl.GL11
   */
 object RenderLaser extends TileEntitySpecialRenderer[TileLaser] {
   val instance = this
-  private[this] final val d4 = 4 / 16D
-  private[this] final val d = 1 / 16D
-  lazy val textureArray = Array(Sprites.getMap('laser_1), Sprites.getMap('laser_2), Sprites.getMap('laser_3), Sprites.getMap('laser_4))
+  private final val d4 = 4 / 16D
+  private final val d = 1 / 16D
+  lazy val textureArray = Array(
+    Sprites.getMap(Symbol("laser_1")),
+    Sprites.getMap(Symbol("laser_2")),
+    Sprites.getMap(Symbol("laser_3")),
+    Sprites.getMap(Symbol("laser_4")))
 
-  private val bcLoaded = Loader isModLoaded QuarryPlus.Optionals.Buildcraft_silicon_modID
+  private val bcLoaded = Loader.isModLoaded(QuarryPlus.Optionals.Buildcraft_silicon_modID)
 
   override def renderTileEntityFast(te: TileLaser, x: Double, y: Double, z: Double, partialTicks: Float, destroyStage: Int, f: Float, buffer: BufferBuilder): Unit = {
-    Minecraft.getMinecraft.mcProfiler.startSection("quarryplus")
-    Minecraft.getMinecraft.mcProfiler.startSection("laser")
+    Minecraft.getMinecraft.profiler.startSection("quarryplus")
+    Minecraft.getMinecraft.profiler.startSection("laser")
 
     if (te.getAvg > 0.1 && te.lasers != null) {
       val pos = te.getPos
@@ -48,13 +52,13 @@ object RenderLaser extends TileEntitySpecialRenderer[TileLaser] {
       buffer.setTranslation(0, 0, 0)
     }
 
-    Minecraft.getMinecraft.mcProfiler.endSection()
-    Minecraft.getMinecraft.mcProfiler.endSection()
+    Minecraft.getMinecraft.profiler.endSection()
+    Minecraft.getMinecraft.profiler.endSection()
   }
 
   override def render(te: TileLaser, x: Double, y: Double, z: Double, partialTicks: Float, destroyStage: Int, alpha: Float): Unit = {
-    Minecraft.getMinecraft.mcProfiler.startSection("quarryplus")
-    Minecraft.getMinecraft.mcProfiler.startSection("laser")
+    Minecraft.getMinecraft.profiler.startSection("quarryplus")
+    Minecraft.getMinecraft.profiler.startSection("laser")
     if (bcLoaded) {
       if (te.lasers != null) {
         val tessellator = Tessellator.getInstance
@@ -105,9 +109,9 @@ object RenderLaser extends TileEntitySpecialRenderer[TileLaser] {
         if (l != null) {
           val facing = te.getWorld.getBlockState(te.getPos).getValue(ADismCBlock.FACING)
           renderLaser(this.rendererDispatcher.renderEngine,
-            te.getPos.getX + 0.5 + 0.3 * facing.getFrontOffsetX,
-            te.getPos.getY + 0.5 + 0.3 * facing.getFrontOffsetY,
-            te.getPos.getZ + 0.5 + 0.3 * facing.getFrontOffsetZ,
+            te.getPos.getX + 0.5 + 0.3 * facing.getXOffset,
+            te.getPos.getY + 0.5 + 0.3 * facing.getYOffset,
+            te.getPos.getZ + 0.5 + 0.3 * facing.getZOffset,
             l.x, l.y, l.z,
             (te.getWorld.getWorldTime % 40).toInt, te.getTexture)
         }
@@ -117,8 +121,8 @@ object RenderLaser extends TileEntitySpecialRenderer[TileLaser] {
       GL11.glPopMatrix()
     }
 
-    Minecraft.getMinecraft.mcProfiler.endSection()
-    Minecraft.getMinecraft.mcProfiler.endSection()
+    Minecraft.getMinecraft.profiler.endSection()
+    Minecraft.getMinecraft.profiler.endSection()
   }
 
   private val model = new ModelBase() {}

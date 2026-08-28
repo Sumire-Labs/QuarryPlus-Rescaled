@@ -7,20 +7,20 @@ import scala.collection.mutable
 
 class EnergyDebug(tile: APowerTile) {
 
-  private[this] val tileName = tile.getClass.getSimpleName
-  private[this] val got = Array.ofDim[Long](100)
-  private[this] val used = Array.ofDim[Long](100)
-  private[this] var gotCount = 0
-  private[this] var usedCount = 0
-  private[this] var totalUsed = 0L
+  private val tileName = tile.getClass.getSimpleName
+  private val got = Array.ofDim[Long](100)
+  private val used = Array.ofDim[Long](100)
+  private var gotCount = 0
+  private var usedCount = 0
+  private var totalUsed = 0L
 
-  private[this] var uLastTick = 0L
-  private[this] var gLastTick = 0L
-  private[this] var lastOutput = 0L
-  private[this] final val mj = APowerTile.MJToMicroMJ
-  private[this] val stopWatch = Stopwatch.createUnstarted()
-  private[this] var startTime = 0L
-  private[this] val usageMap = mutable.Map.empty[EnergyUsage, Long]
+  private var uLastTick = 0L
+  private var gLastTick = 0L
+  private var lastOutput = 0L
+  private final val mj = APowerTile.MJToMicroMJ
+  private val stopWatch = Stopwatch.createUnstarted()
+  private var startTime = 0L
+  private val usageMap = mutable.Map.empty[EnergyUsage, Long]
 
   def started: Boolean = stopWatch.isRunning
 
@@ -43,7 +43,7 @@ class EnergyDebug(tile: APowerTile) {
     if (!started)
       start()
     val tick = getTime
-    val energy = Math.round(amount)
+    val energy = amount
     if (tick == uLastTick) {
       used(usedCount - 1) += energy
     } else {
@@ -60,7 +60,7 @@ class EnergyDebug(tile: APowerTile) {
   def get(amount: Long): Unit = {
     if (!outputInfo) return
     val tick = getTime
-    val energy = Math.round(amount)
+    val energy = amount
     if (tick == gLastTick) {
       if (gotCount > 0)
         got(gotCount - 1) += energy
@@ -126,7 +126,7 @@ class EnergyDebug(tile: APowerTile) {
       QuarryPlus.LOGGER.info(
         s"$tileName finished its work and took ${stopWatch.toString}, $time ticks. Used ${totalUsed / mj} MJ at ${totalUsed * 10 / time / mj} RF/t"
       )
-      usageMap.foreach { case (usage, amount) => QuarryPlus.LOGGER.info(usage + " used " + amount / mj + "MJ.") }
+      usageMap.foreach { case (usage, amount) => QuarryPlus.LOGGER.info(s"$usage used ${amount / mj}MJ.") }
       usageMap.clear()
       totalUsed = 0L
       startTime = 0L

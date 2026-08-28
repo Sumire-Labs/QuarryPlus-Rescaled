@@ -47,7 +47,7 @@ case class OK(itemStack: ItemStack) extends ItemDamage {
   val damage: Int = itemStack.getItemDamage
   val tag: NBTTagCompound = itemStack.getTagCompound
 
-  override def toString: String = item.getUnlocalizedName() + "@" + damage
+  override def toString: String = s"${item.getTranslationKey()}@$damage"
 
   override def equals(any: Any): Boolean = {
     any match {
@@ -76,7 +76,7 @@ case class BlockOK(itemStack: ItemStack, block: Block) extends ItemDamage {
   val damage: Int = itemStack.getItemDamage
   val tag: NBTTagCompound = itemStack.getTagCompound
 
-  override def toString: String = block.getUnlocalizedName + "@" + damage
+  override def toString: String = s"${block.getTranslationKey}@$damage"
 
   override def hashCode(): Int = block.hashCode()
 
@@ -101,7 +101,7 @@ case object NG extends ItemDamage {
 
   override val hashCode: Int = 0
 
-  override val toString: String = getClass.getName + " Null item @0"
+  override val toString: String = s"${getClass.getName} Null item @0"
 
   override def toStack(amount: Int): ItemStack = com.yogpc.qp.version.VersionUtil.empty()
 

@@ -20,7 +20,7 @@ import net.minecraft.util.math.BlockPos
 import net.minecraft.world.World
 import net.minecraftforge.common.ForgeChunkManager
 
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.*
 
 object ChunkLoadingHandler extends ForgeChunkManager.OrderedLoadingCallback {
   val instance = this

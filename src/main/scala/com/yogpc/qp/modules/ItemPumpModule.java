@@ -18,7 +18,7 @@ import scala.Symbol;
 public class ItemPumpModule extends Item implements IDisabled, IModuleItem {
 
     public ItemPumpModule() {
-        setUnlocalizedName(QuarryPlus.Names.pumpModule);
+        setTranslationKey(QuarryPlus.Names.pumpModule);
         setCreativeTab(QuarryPlusI.creativeTab());
         setRegistryName(QuarryPlus.modID, QuarryPlus.Names.pumpModule);
     }
