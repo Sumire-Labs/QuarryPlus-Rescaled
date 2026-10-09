@@ -46,19 +46,24 @@ dependencies {
         compileOnly 'com.cleanroommc:lwjglx:1.0.0'
     }
 
-    // Scalar supplies the Scala 3 runtime to CleanroomLoader.
     modRuntimeOnly 'com.cleanroommc:scalar:1.0.0'
 
     modImplementation 'net.industrial-craft:industrialcraft-2:2.8.221-ex112:dev'
     modImplementation 'cofh:RedstoneFlux:1.12-2.1.0.7:universal'
-    modImplementation 'cofh:CoFHCore:1.12.2-4.6.3.27:universal'
-    modLibrary 'mezz:jei:4.33.0:dev'
+    modImplementation('cofh:CoFHCore:1.12.2-4.6.3.27:universal') {
+        // Use the Cleanroom JEI declared below instead of CoFHCore's older upstream API.
+        exclude group: 'mezz.jei', module: 'jei_1.12.2'
+    }
+    modDevImplementation 'mezz:jei:4.35.0:dev'
     modImplementation 'com.mod-buildcraft:buildcraft-main:7.99.24.7'
 
     modCompileOnly 'CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-4.1.20.605'
     compileOnly 'CraftTweaker2:CraftTweaker2-API:4.1.20.605'
     compileOnly 'CraftTweaker2:ZenScript:4.1.20.605'
-    modCompileOnly 'mekanism:Mekanism:1.12.2-9.4.4.330+0b21085'
+    modCompileOnly('mekanism:Mekanism:1.12.2-9.4.4.330+0b21085') {
+        // Only Mekanism's API is needed; its POM pulls obsolete runtime JEI/CTM/CraftTweaker versions.
+        transitive = false
+    }
     modCompileOnly 'curse.maven:bedrockores-275083:2602707'
 
     // Example - Dependency descriptor:
@@ -81,7 +86,9 @@ dependencies {
     // contain = bundle dependency jars into final artifact, will extract them in mod loading. Can be used it as jar-in-jar
     // shadow = bundle dependencies into shadow output artifact (relocation configurable in shadowJar task)
     // modImplementation = mod dependency available at both compile time and runtime
+    // modDevImplementation = development-only mod dependency available at compile time and runtime
     // modCompileOnly = mod dependency available only at compile time
+    // modRuntimeOnly = mod dependency available only at runtime
     // modLibrary = won't be remap but will be forced injected into classpath later
 
     // Transitive dependencies:

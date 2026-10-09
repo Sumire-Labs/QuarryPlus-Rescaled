@@ -3,3 +3,29 @@
 
 // Helper methods (assertProperty, assertSubProperties, setDefaultProperty) are
 // defined directly in build.gradle's script scope and exported via ext.
+
+// Expose the Git-derived release stage to the publishing workflows.
+def releaseStage = versioning.stage
+tasks.register('printReleaseStage') {
+    group = 'help'
+    description = 'Prints the release stage read from Git tags.'
+    doLast {
+        println releaseStage.get().name().toLowerCase(Locale.ROOT)
+    }
+}
+
+// A file keeps plugin startup logging out of GitHub Actions output values.
+def computedVersion = versioning.version
+def releaseMetadataFile = layout.buildDirectory.file('release-metadata.properties')
+tasks.register('writeReleaseMetadata') {
+    group = 'help'
+    description = 'Writes the computed version and stage for publishing workflows.'
+    inputs.property('version', computedVersion)
+    inputs.property('stage', releaseStage)
+    outputs.file(releaseMetadataFile)
+    doLast {
+        def metadataFile = releaseMetadataFile.get().asFile
+        metadataFile.parentFile.mkdirs()
+        metadataFile.setText("version=${computedVersion.get()}\nstage=${releaseStage.get().name().toLowerCase(Locale.ROOT)}\n", 'UTF-8')
+    }
+}

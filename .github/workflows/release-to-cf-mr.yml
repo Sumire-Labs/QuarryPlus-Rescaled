@@ -1,18 +1,27 @@
 name: Releases to CurseForge and/or Modrinth
 
 on:
-  workflow_dispatch: 
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing release tag to publish (for example 13.0.0-alpha)'
+        required: true
+        type: string
 
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    env:
+      RELEASE_TAG: ${{ inputs.tag }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
         with:
+          ref: refs/tags/${{ inputs.tag }}
           fetch-depth: 0
+          fetch-tags: true
           
       - name: Set up JDK
         uses: actions/setup-java@v5
@@ -27,11 +36,20 @@ jobs:
         run: chmod +x ./gradlew
         
       - name: Execute Gradle build
-        run: ./gradlew build
+        run: GITHUB_REF_TYPE=tag GITHUB_REF_NAME="$RELEASE_TAG" ./gradlew build writeReleaseMetadata
+
+      - name: Read release version and stage
+        id: version
+        run: cat build/release-metadata.properties >> "$GITHUB_OUTPUT"
 
       - name: Get Changes between Tags
-        id: changes
-        uses: simbo/changes-between-tags-action@v1
+        run: |
+          previous=$(git describe --tags --abbrev=0 "$RELEASE_TAG^" 2>/dev/null || true)
+          if [ -n "$previous" ]; then
+            git log --format='- %s (%h)' "$previous..HEAD" > build/release-changelog.md
+          else
+            git log --format='- %s (%h)' HEAD > build/release-changelog.md
+          fi
 
       - uses: Kir-Antipov/mc-publish@v3
         with:
@@ -52,5 +70,7 @@ jobs:
           game-versions: 1.12.2
           java: |
             25
-          version: ${{ steps.changes.outputs.tag }}
-          changelog: ${{ steps.changes.outputs.changes }}
+          version: ${{ steps.version.outputs.version }}
+          # CurseForge and Modrinth represent release candidates as beta builds.
+          version-type: ${{ steps.version.outputs.stage == 'rc' && 'beta' || steps.version.outputs.stage }}
+          changelog-file: build/release-changelog.md

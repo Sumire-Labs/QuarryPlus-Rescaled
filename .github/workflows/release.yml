@@ -12,19 +12,31 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v7
-      - name: Set up JDK
-        uses: actions/setup-java@v5
         with:
-          java-version: '25'
-          distribution: 'temurin'
-      - uses: gradle/actions/setup-gradle@v6
+          fetch-depth: 0
+          fetch-tags: true
+      - name: Set up JDK 25
+        uses: actions/setup-java@v5.2.0
+        with:
+          java-version: "25"
+          distribution: "temurin"
+      - uses: gradle/actions/setup-gradle@v6.1.0
         name: Set up Gradle
-      - name: Add permission
-        run: chmod +x ./gradlew
       - name: Execute Gradle build
-        run: ./gradlew build
+        run: ./gradlew clean build verifyReleaseJar
 
-      - uses: ncipollo/release-action@v1
+      - name: Select release artifacts
+        shell: bash
+        run: |
+          mkdir -p build/release
+          for artifact in build/libs/*.jar; do
+            case "$artifact" in
+              *-dev.jar|*-shadow.jar) continue ;;
+            esac
+            cp "$artifact" build/release/
+          done
+
+      - uses: ncipollo/release-action@v1.21.0
         with:
-          artifacts: "build/libs/*"
+          artifacts: "build/release/*.jar"
           generateReleaseNotes: true
