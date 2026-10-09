@@ -1,5 +1,5 @@
-# [13.0.0] Maintenance by Sumire Lab 
-
+# [13.0.0] 
+- Java 25
 - Complete rewrite from Scalar 2 to Scalar 3
 - Migrate MCP to 39-1.12
 
