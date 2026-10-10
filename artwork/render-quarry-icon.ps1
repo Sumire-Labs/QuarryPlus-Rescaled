@@ -40,7 +40,7 @@ public static class QuarryIconRenderer
         };
         using (var image = new Bitmap(inputPath))
         {
-            int scale = Math.Max(1, image.Width / 85);
+            int scale = Math.Max(1, image.Width / 51);
             int margin = Math.Max(3, image.Width / 32);
             int textWidth = (glyphs.Length * 6 - 1) * scale;
             int originX = image.Width - margin - textWidth;
