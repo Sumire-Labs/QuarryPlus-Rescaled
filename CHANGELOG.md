@@ -1,3 +1,7 @@
+# [13.0.1] 
+- Update Credits
+- Add ModIcon
+
 # [13.0.0] 
 - Java 25
 - Complete rewrite from Scalar 2 to Scalar 3
