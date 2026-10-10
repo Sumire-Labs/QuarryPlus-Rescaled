@@ -1,0 +1,54 @@
+// Verify the remapped distribution artifact before the release workflow uploads it.
+// This script can also be applied externally when rebuilding older, unchanged tags.
+def releaseJarTask = tasks.named(project.ext.remapTaskName)
+def releaseJarFile = releaseJarTask.flatMap { it.archiveFile }
+def computedVersion = versioning.version
+def releaseModId = mod_id.toString()
+def releaseLogoPath = mod_logo_path.toString()
+tasks.register('verifyReleaseJar') {
+    group = 'verification'
+    description = 'Verifies version tokens, metadata, and the icon in the remapped release JAR.'
+    dependsOn(releaseJarTask)
+    inputs.file(releaseJarFile)
+    inputs.property('version', computedVersion)
+    inputs.property('modId', releaseModId)
+    inputs.property('logoPath', releaseLogoPath)
+    doLast {
+        def archive = releaseJarFile.get().asFile
+        def expectedVersion = computedVersion.get()
+        new java.util.zip.ZipFile(archive).withCloseable { zip ->
+            def readEntry = { String name ->
+                def entry = zip.getEntry(name)
+                if (entry == null) {
+                    throw new GradleException("Release JAR is missing ${name}: ${archive.name}")
+                }
+                zip.getInputStream(entry).withCloseable { it.readAllBytes() }
+            }
+            def metadataText = new String(readEntry('mcmod.info'), java.nio.charset.StandardCharsets.UTF_8)
+            if (metadataText.contains('@{') || metadataText.contains('{{')) {
+                throw new GradleException('Release metadata contains unresolved tokens')
+            }
+            def metadata = new groovy.json.JsonSlurper().parseText(metadataText)
+                .find { it.modid == releaseModId }
+            if (metadata == null || metadata.version != expectedVersion) {
+                throw new GradleException("Release metadata must contain ${releaseModId} version ${expectedVersion}")
+            }
+            if (metadata.logoFile != releaseLogoPath) {
+                throw new GradleException("Release logoFile must be ${releaseLogoPath}")
+            }
+            if (!releaseLogoPath.isBlank()) {
+                readEntry(releaseLogoPath)
+            }
+            def manifest = new java.util.jar.Manifest(new ByteArrayInputStream(readEntry('META-INF/MANIFEST.MF')))
+            if (manifest.mainAttributes.getValue('ModType') != 'CRL' ||
+                manifest.mainAttributes.getValue('Implementation-Version') != expectedVersion) {
+                throw new GradleException('Release manifest has an incorrect loader type or version')
+            }
+            def tags = new String(readEntry('com/yogpc/qp/QuarryPlusTags.class'), java.nio.charset.StandardCharsets.ISO_8859_1)
+            if (!tags.contains(expectedVersion) || tags.contains('@{mod_') || tags.contains('{{ mod_')) {
+                throw new GradleException('Release constants have an incorrect version or unresolved tokens')
+            }
+        }
+        logger.lifecycle("Verified release JAR: ${archive.name}")
+    }
+}

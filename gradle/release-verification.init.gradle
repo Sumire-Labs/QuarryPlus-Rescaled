@@ -1,0 +1,8 @@
+// Supply the current verifier without editing a historical tag's working tree.
+gradle.projectsEvaluated {
+    def root = gradle.rootProject
+    if (root.tasks.findByName('verifyReleaseJar') == null) {
+        def verifier = root.providers.gradleProperty('release_verification_script').get()
+        root.apply from: verifier
+    }
+}

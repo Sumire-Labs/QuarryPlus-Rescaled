@@ -29,3 +29,5 @@ tasks.register('writeReleaseMetadata') {
         metadataFile.setText("version=${computedVersion.get()}\nstage=${releaseStage.get().name().toLowerCase(Locale.ROOT)}\n", 'UTF-8')
     }
 }
+
+apply from: 'gradle/scripts/verify-release.gradle'

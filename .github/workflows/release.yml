@@ -1,6 +1,12 @@
 name: Releases
 
 on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing tag to release (for example 13.0.0 or 13.0.1)'
+        required: true
+        type: string
   push:
     tags:
       - "*"
@@ -10,9 +16,22 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    env:
+      RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
+    defaults:
+      run:
+        working-directory: source
     steps:
-      - uses: actions/checkout@v7
+      - name: Checkout release tooling
+        uses: actions/checkout@v7
         with:
+          ref: ${{ github.sha }}
+          path: release-tools
+      - name: Checkout tagged sources
+        uses: actions/checkout@v7
+        with:
+          ref: refs/tags/${{ env.RELEASE_TAG }}
+          path: source
           fetch-depth: 0
           fetch-tags: true
       - name: Set up JDK 25
@@ -23,7 +42,14 @@ jobs:
       - uses: gradle/actions/setup-gradle@v6.1.0
         name: Set up Gradle
       - name: Execute Gradle build
-        run: ./gradlew clean build verifyReleaseJar
+        run: |
+          GITHUB_REF_TYPE=tag GITHUB_REF_NAME="$RELEASE_TAG" ./gradlew clean build verifyReleaseJar writeReleaseMetadata \
+            --init-script "$GITHUB_WORKSPACE/release-tools/gradle/release-verification.init.gradle" \
+            -Prelease_verification_script="$GITHUB_WORKSPACE/release-tools/gradle/scripts/verify-release.gradle"
+
+      - name: Read release metadata
+        id: metadata
+        run: cat build/release-metadata.properties >> "$GITHUB_OUTPUT"
 
       - name: Select release artifacts
         shell: bash
@@ -38,5 +64,8 @@ jobs:
 
       - uses: ncipollo/release-action@v1.21.0
         with:
-          artifacts: "build/release/*.jar"
+          tag: ${{ env.RELEASE_TAG }}
+          artifacts: "source/build/release/*.jar"
+          artifactErrorsFailBuild: true
           generateReleaseNotes: true
+          prerelease: ${{ steps.metadata.outputs.stage != 'release' }}
