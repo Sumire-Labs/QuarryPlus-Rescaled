@@ -23,3 +23,8 @@ ChunkDestroyer and Advanced Pump will increase the number of old GC and lag.
 
 - Port to Cleanroom w/ Java 25 + Scala 3.x.
 - Migrate MCP to 39-1.12
+
+## Credits
+
+yogpstop - Original Mod 
+kotori316 - Additional Enchanted Miner
