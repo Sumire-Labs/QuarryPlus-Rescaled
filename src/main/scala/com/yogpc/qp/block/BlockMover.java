@@ -68,7 +68,7 @@ public class BlockMover extends Block implements IDismantleable, IWrenchable {
             return true;
         }
         if (!playerIn.isSneaking() && !Config.content().disableMapJ().get(SYMBOL)) {
-            playerIn.openGui(QuarryPlus.instance(), QuarryPlusI.guiIdMover(), worldIn, pos.getX(), pos.getY(), pos.getZ());
+            com.sumirelabs.quarryplus.gui.mui.QuarryGuiFactory.open(playerIn, QuarryPlusI.guiIdMover(), worldIn, pos);
             return true;
         }
         return false;

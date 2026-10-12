@@ -109,7 +109,7 @@ class ItemTemplate extends Item with IEnchantableItem {
       case _ =>
         if (!playerIn.isSneaking && handIn == EnumHand.MAIN_HAND) {
           val playerPos = playerIn.getPosition
-          playerIn.openGui(QuarryPlus.INSTANCE, QuarryPlusI.guiIdListTemplate, worldIn, playerPos.getX, playerPos.getY, playerPos.getZ)
+          com.sumirelabs.quarryplus.gui.mui.QuarryGuiFactory.open(playerIn, QuarryPlusI.guiIdListTemplate, worldIn, playerPos)
           EnumActionResult.SUCCESS
         } else {
           super.onItemUseFirst(playerIn, worldIn, pos, side, hitX, hitY, hitZ, handIn)

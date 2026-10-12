@@ -110,7 +110,7 @@ public class BlockPlacer extends ADismCBlock {
             if (Config.content().debug()) {
                 QuarryPlus.LOGGER.info("Placer touched " + hand + " Item : " + stack);
             }
-            playerIn.openGui(QuarryPlus.INSTANCE, QuarryPlusI.guiIdPlacer(), worldIn, pos.getX(), pos.getY(), pos.getZ());
+            com.sumirelabs.quarryplus.gui.mui.QuarryGuiFactory.open(playerIn, QuarryPlusI.guiIdPlacer(), worldIn, pos);
             return true;
         }
         return false;

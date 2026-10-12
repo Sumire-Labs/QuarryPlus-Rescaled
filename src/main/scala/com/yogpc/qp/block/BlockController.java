@@ -75,12 +75,8 @@ public class BlockController extends Block implements IDismantleable {
         if (!playerIn.isSneaking()) {
             if (!worldIn.isRemote) {
                 if (!Config.content().disableMapJ().get(SYMBOL)) {
-                    List<EntityEntry> entries = ForgeRegistries.ENTITIES.getValuesCollection().stream().filter(entity ->
-                        entity.getEntityClass() != null &&
-                            !Modifier.isAbstract(entity.getEntityClass().getModifiers()) &&
-                            !Config.content().spawnerBlacklist().contains(entity.getRegistryName()))
-                        .collect(Collectors.toList());
-                    PacketHandler.sendToClient(AvailableEntities.create(pos, worldIn.provider.getDimension(), entries), (EntityPlayerMP) playerIn);
+                    com.sumirelabs.quarryplus.gui.mui.QuarryGuiFactory.open(playerIn,
+                            com.sumirelabs.quarryplus.gui.mui.QuarryGuiFactory.CONTROLLER, worldIn, pos);
                 } else {
                     VersionUtil.sendMessage(playerIn, new TextComponentString("Spawner Controller is disabled."), true);
                 }

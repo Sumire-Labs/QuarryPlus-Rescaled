@@ -69,7 +69,7 @@ public class BlockMiningWell extends ADismCBlock {
             }
             return true;
         } else if (stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == ItemTool.meta_YSetter()) {
-            playerIn.openGui(QuarryPlus.instance(), QuarryPlusI.guiIdQuarryYLevel(), worldIn, pos.getX(), pos.getY(), pos.getZ());
+            com.sumirelabs.quarryplus.gui.mui.QuarryGuiFactory.open(playerIn, QuarryPlusI.guiIdQuarryYLevel(), worldIn, pos);
             return true;
         }
         return false;

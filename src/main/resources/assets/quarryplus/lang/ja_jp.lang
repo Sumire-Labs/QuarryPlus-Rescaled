@@ -39,6 +39,9 @@ item.replacer_module.name=置き換えモジュール
 item.torch_module.name=松明モジュール
 item.y_setter.name=採掘機レベル設定用具
 item.template.name=一括更新テンプレート
+qp.mui.pump_filters=ポンププラスの液体フィルター
+qp.mui.spawner=スポナーコントローラー
+qp.mui.toggle_mode=モード切替
 
 chat.changemode=動作モードを%sに切り替えました
 chat.currentmode=現在%sで動作しています

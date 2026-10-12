@@ -36,6 +36,16 @@ tasks.register('verifyReleaseJar') {
             if (metadata.logoFile != releaseLogoPath) {
                 throw new GradleException("Release logoFile must be ${releaseLogoPath}")
             }
+            // Keep externally verified historical tags compatible, while guarding the MUI migration.
+            if (project.file('src/main/scala/com/sumirelabs/quarryplus/gui/mui/QuarryGuiFactory.java').exists()) {
+                readEntry('com/sumirelabs/quarryplus/gui/mui/QuarryGuiFactory.class')
+                if (!metadata.dependencies.contains('modularui')) {
+                    throw new GradleException('ModularUI must be declared in the release metadata')
+                }
+                if (zip.entries().any { it.name.startsWith('com/yogpc/qp/gui/mui/') }) {
+                    throw new GradleException('Release JAR contains stale MUI classes from before the package move; run clean')
+                }
+            }
             if (!releaseLogoPath.isBlank()) {
                 readEntry(releaseLogoPath)
             }

@@ -725,7 +725,7 @@ class TileAdvQuarry extends APowerTile
 
   def openModuleInv(player: EntityPlayer): Unit = {
     if (hasWorld && !world.isRemote) {
-      player.openGui(QuarryPlus.instance(), QuarryPlusI.guiIdQuarryModule, world, pos.getX, pos.getY, pos.getZ)
+      com.sumirelabs.quarryplus.gui.mui.QuarryGuiFactory.open(player, QuarryPlusI.guiIdQuarryModule, world, pos)
     }
   }
 

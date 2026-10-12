@@ -45,7 +45,7 @@ public class BlockFiller extends ADismCBlock {
         }
 
         if (!playerIn.isSneaking()) {
-            playerIn.openGui(QuarryPlus.instance(), QuarryPlusI.guiIdFiller(), worldIn, pos.getX(), pos.getY(), pos.getZ());
+            com.sumirelabs.quarryplus.gui.mui.QuarryGuiFactory.open(playerIn, QuarryPlusI.guiIdFiller(), worldIn, pos);
             return true;
         }
         return false;

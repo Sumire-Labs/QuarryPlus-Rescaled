@@ -76,7 +76,7 @@ class ItemTool extends Item with IEnchantableItem {
             stackTag.removeTag(NAME_key)
             stackTag.removeTag(META_key)
           } else {
-            player.openGui(QuarryPlus.INSTANCE, if (f) QuarryPlusI.guiIdFList else QuarryPlusI.guiIdSList, worldIn, pos.getX, pos.getY, pos.getZ)
+            com.sumirelabs.quarryplus.gui.mui.QuarryGuiFactory.open(player, if (f) QuarryPlusI.guiIdFList else QuarryPlusI.guiIdSList, worldIn, pos)
           }
           return returnValue
         case quarry2: TileQuarry2 if s != f =>

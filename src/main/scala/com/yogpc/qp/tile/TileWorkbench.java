@@ -293,10 +293,12 @@ public class TileWorkbench extends APowerTile implements HasInv, IDebugSender, I
 
     @SideOnly(Side.CLIENT)
     public int getProgressScaled(int scale) {
-        if (isWorking())
-            return Math.min((int) (getStoredEnergy() * scale / currentRecipe.microEnergy()), scale);
-        else
-            return 0;
+        return (int) (getWorkProgress() * scale);
+    }
+
+    /** Progress shared by the server-authoritative ModularUI and the legacy client renderer. */
+    public double getWorkProgress() {
+        return isWorking() ? Math.min((double) getStoredEnergy() / currentRecipe.microEnergy(), 1.0D) : 0.0D;
     }
 
     public int getRecipeIndex() {

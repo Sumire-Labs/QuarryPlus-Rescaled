@@ -29,6 +29,8 @@ public class QuarryJeiPlugin implements IModPlugin {
         registry.handleRecipes(WorkbenchRecipe.class, WorkBenchRecipeWrapper::new, WorkBenchRecipeCategory.UID());
         registry.addRecipeCatalyst(new ItemStack(QuarryPlusI.blockWorkbench()), WorkBenchRecipeCategory.UID());
         registry.addRecipeClickArea(GuiWorkbench.class, 7, 74, 161, 11, WorkBenchRecipeCategory.UID());
+        registry.addRecipeClickArea(com.sumirelabs.quarryplus.gui.mui.MuiRecipeGui.Workbench.class,
+                7, 74, 161, 11, WorkBenchRecipeCategory.UID());
         registry.addRecipes(WorkBenchRecipeWrapper.getAll(), WorkBenchRecipeCategory.UID());
 
         registry.handleRecipes(MoverRecipeWrapper.MoverRecipe.class, MoverRecipeWrapper::new, MoverRecipeCategory.UID());
@@ -39,6 +41,8 @@ public class QuarryJeiPlugin implements IModPlugin {
             registry.handleRecipes(BookRecipeWrapper.BookRecipe.class, BookRecipeWrapper::new, BookRecipeCategory.UID());
             registry.addRecipeCatalyst(new ItemStack(QuarryPlusI.blockBookMover()), BookRecipeCategory.UID());
             registry.addRecipeClickArea(GuiBookMover.class, 79, 35, 23, 16, BookRecipeCategory.UID());
+            registry.addRecipeClickArea(com.sumirelabs.quarryplus.gui.mui.MuiRecipeGui.BookMover.class,
+                    79, 35, 23, 16, BookRecipeCategory.UID());
             registry.addRecipes(BookRecipeWrapper.recipes(), BookRecipeCategory.UID());
         }
 

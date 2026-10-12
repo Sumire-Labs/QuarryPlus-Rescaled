@@ -39,6 +39,9 @@ item.replacer_module.name=Quarry Replacing Module
 item.torch_module.name=Quarry Torch Module
 item.y_setter.name=Quarry Y Setter
 item.template.name=List Template
+qp.mui.pump_filters=PumpPlus Fluid Filters
+qp.mui.spawner=Spawner Controller
+qp.mui.toggle_mode=Toggle mode
 
 chat.changemode=Working mode was changed to %s
 chat.currentmode=Now, working in %s

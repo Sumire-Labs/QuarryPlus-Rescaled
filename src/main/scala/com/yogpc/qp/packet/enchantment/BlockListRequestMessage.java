@@ -34,8 +34,9 @@ public class BlockListRequestMessage implements IMessage {
     @Override
     public IMessage onReceive(IMessage message, MessageContext ctx) {
         EntityPlayer player = QuarryPlus.proxy.getPacketPlayer(ctx.netHandler);
-        if (/*player.openContainer.windowId == containerId &&*/ player.openContainer instanceof ContainerEnchList) {
-            ContainerEnchList container = (ContainerEnchList) player.openContainer;
+        net.minecraft.inventory.Container opened = com.sumirelabs.quarryplus.gui.mui.QuarryModularContainer.unwrap(player.openContainer);
+        if (opened.windowId == containerId && opened instanceof ContainerEnchList) {
+            ContainerEnchList container = (ContainerEnchList) opened;
             return DiffMessage.create(container, container.tile.fortuneList, container.tile.silktouchList);
         }
         return null;

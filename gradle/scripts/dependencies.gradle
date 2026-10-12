@@ -46,15 +46,32 @@ dependencies {
         compileOnly 'com.cleanroommc:lwjglx:1.0.0'
     }
 
-    modRuntimeOnly 'com.cleanroommc:scalar:1.0.0'
+    // Use the real Scala 3.9 provider: the Maven 1.0.0 stub disables its Mod container in development.
+    modRuntimeOnly('curse.maven:scalar-1012168:8800375') {
+        transitive = false
+    }
 
-    modImplementation 'net.industrial-craft:industrialcraft-2:2.8.221-ex112:dev'
+    // Original CleanroomMC ModularUI, rather than a third-party fork.
+    modImplementation('com.cleanroommc:modularui:3.1.6') {
+        transitive = false // Cleanroom supplies Mixin; optional UI integrations are not mandatory mods.
+    }
+    // Zinc inspects ModularContainer's public optional sorting API during Java/Scala joint compilation.
+    modCompileOnly('curse.maven:inventory-bogosorter-632327:7412409') {
+        transitive = false
+    }
+    modCompileOnly('curse.maven:neverenoughanimation-1062347:6533650') {
+        transitive = false
+    }
+
+    // Remap the SRG distribution; IC2's dev classifier uses older MCP names (e.g. mcDataDir).
+    modImplementation 'net.industrial-craft:industrialcraft-2:2.8.221-ex112'
     modImplementation 'cofh:RedstoneFlux:1.12-2.1.0.7:universal'
     modImplementation('cofh:CoFHCore:1.12.2-4.6.3.27:universal') {
         // Use the Cleanroom JEI declared below instead of CoFHCore's older upstream API.
         exclude group: 'mezz.jei', module: 'jei_1.12.2'
     }
-    modDevImplementation 'mezz:jei:4.35.0:dev'
+    // Remap the distribution (including its access transformer) instead of injecting the dev jar.
+    modImplementation 'mezz:jei:4.35.0@jar'
     modImplementation 'com.mod-buildcraft:buildcraft-main:7.99.24.7'
 
     modCompileOnly 'CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-4.1.20.605'

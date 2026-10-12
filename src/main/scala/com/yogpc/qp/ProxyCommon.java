@@ -17,13 +17,14 @@ import net.minecraftforge.registries.IForgeRegistryEntry;
 
 public class ProxyCommon {
     public void openPumpGui(World worldIn, EntityPlayer playerIn, EnumFacing facing, TilePump pump) {
-        if (!worldIn.isRemote) pump.S_OpenGUI(facing, playerIn);
+        if (!worldIn.isRemote) com.sumirelabs.quarryplus.gui.mui.QuarryGuiFactory.open(playerIn,
+                com.sumirelabs.quarryplus.gui.mui.QuarryGuiFactory.PUMP_FILTER_BASE + facing.ordinal(), worldIn, pump.getPos());
     }
 
     public void openAdvQuarryPumpGui(World worldIn, EntityPlayer player, TileAdvQuarry quarry, EnumFacing facing) {
         if (!worldIn.isRemote) {
-            PacketHandler.sendToClient(AdvContentMessage.create(quarry), (EntityPlayerMP) player);
-            PacketHandler.sendToClient(AdvFilterMessage.create(quarry), (EntityPlayerMP) player);
+            com.sumirelabs.quarryplus.gui.mui.QuarryGuiFactory.open(player,
+                    com.sumirelabs.quarryplus.gui.mui.QuarryGuiFactory.ADV_FLUID_BASE + facing.ordinal(), worldIn, quarry.getPos());
         }
     }
 

@@ -369,6 +369,10 @@ class TileQuarry2 extends APowerTile()
     else super.getCapability(capability, facing)
   }
 
+  def getStoredItemCount: Long = storage.itemSize.toLong
+
+  def getStoredFluidAmount: Long = storage.fluidSize.toLong
+
   override def getStatusStrings = {
     val enchantmentStrings = TileQuarry2.getEnchantmentMap(this.enchantments).toList
       .collect { case (location, i) if i > 0 => Option(Enchantment.getEnchantmentByID(location)).map(_.getTranslatedName(i)).getOrElse(s"$location -> $i") } match {

@@ -93,7 +93,7 @@ public class BlockQuarry extends ADismCBlock {
                     VersionUtil.sendMessage(playerIn, new TextComponentTranslation(TranslationKeys.CURRENT_MODE,
                         new TextComponentTranslation(quarry.filler ? TranslationKeys.FILLER_MODE : TranslationKeys.QUARRY_MODE)));
                 } else if (stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == ItemTool.meta_YSetter()) {
-                    playerIn.openGui(QuarryPlus.instance(), QuarryPlusI.guiIdQuarryYLevel(), worldIn, pos.getX(), pos.getY(), pos.getZ());
+                    com.sumirelabs.quarryplus.gui.mui.QuarryGuiFactory.open(playerIn, QuarryPlusI.guiIdQuarryYLevel(), worldIn, pos);
                 } else if (quarry.G_getNow() == TileQuarry.Mode.NOT_NEED_BREAK) {
                     quarry.filler = !quarry.filler;
                     VersionUtil.sendMessage(playerIn, new TextComponentTranslation(TranslationKeys.CHANGEMODE,

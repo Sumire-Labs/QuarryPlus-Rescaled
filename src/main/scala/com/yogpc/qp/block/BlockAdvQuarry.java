@@ -97,13 +97,13 @@ public class BlockAdvQuarry extends ADismCBlock {
                     QuarryPlus.proxy.openAdvQuarryPumpGui(worldIn, playerIn, (TileAdvQuarry) worldIn.getTileEntity(pos), facing);
                     break;
                 case 3:
-                    playerIn.openGui(QuarryPlus.instance(), QuarryPlusI.guiIdAdvQuarryYLevel(), worldIn, pos.getX(), pos.getY(), pos.getZ());
+                    com.sumirelabs.quarryplus.gui.mui.QuarryGuiFactory.open(playerIn, QuarryPlusI.guiIdAdvQuarryYLevel(), worldIn, pos);
                     break;
             }
 
             return true;
         } else if (!playerIn.isSneaking()) {
-            playerIn.openGui(QuarryPlus.instance(), QuarryPlusI.guiIdAdvQuarry(), worldIn, pos.getX(), pos.getY(), pos.getZ());
+            com.sumirelabs.quarryplus.gui.mui.QuarryGuiFactory.open(playerIn, QuarryPlusI.guiIdAdvQuarry(), worldIn, pos);
             return true;
         }
         return false;

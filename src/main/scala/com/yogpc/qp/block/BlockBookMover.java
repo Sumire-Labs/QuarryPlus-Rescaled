@@ -29,7 +29,7 @@ public class BlockBookMover extends ADismCBlock {
                                     EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ)) return true;
         if (!playerIn.isSneaking() && !Config.content().disableMapJ().get(SYMBOL)) {
-            playerIn.openGui(QuarryPlus.instance(), QuarryPlusI.guiIdMoverFromBook(), worldIn, pos.getX(), pos.getY(), pos.getZ());
+            com.sumirelabs.quarryplus.gui.mui.QuarryGuiFactory.open(playerIn, QuarryPlusI.guiIdMoverFromBook(), worldIn, pos);
             return true;
         }
         return false;

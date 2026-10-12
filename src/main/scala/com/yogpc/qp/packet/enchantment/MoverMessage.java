@@ -44,7 +44,7 @@ public class MoverMessage {
         public IMessage onReceive(IMessage message, MessageContext ctx) {
             MinecraftServer server = QuarryPlus.proxy.getPacketWorld(ctx.netHandler).getMinecraftServer();
             Optional.ofNullable(server).ifPresent(s -> s.addScheduledTask(() -> {
-                Container container = QuarryPlus.proxy.getPacketPlayer(ctx.netHandler).openContainer;
+                Container container = com.sumirelabs.quarryplus.gui.mui.QuarryModularContainer.unwrap(QuarryPlus.proxy.getPacketPlayer(ctx.netHandler).openContainer);
                 if (container.windowId == id) {
                     ((ContainerMover) container).moveEnchant();
                 }
@@ -86,7 +86,7 @@ public class MoverMessage {
         public IMessage onReceive(IMessage message, MessageContext ctx) {
             MinecraftServer server = QuarryPlus.proxy.getPacketWorld(ctx.netHandler).getMinecraftServer();
             Optional.ofNullable(server).ifPresent(s -> s.addScheduledTask(() -> {
-                Container container = QuarryPlus.proxy.getPacketPlayer(ctx.netHandler).openContainer;
+                Container container = com.sumirelabs.quarryplus.gui.mui.QuarryModularContainer.unwrap(QuarryPlus.proxy.getPacketPlayer(ctx.netHandler).openContainer);
                 if (container.windowId == id) {
                     ((ContainerMover) container).setAvail(d);
                 }

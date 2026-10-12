@@ -64,7 +64,7 @@ public class FillerActionMessage implements IMessage {
     public enum Actions {
         MODULE_INV((f, c, p) -> {
             if (!f.getWorld().isRemote)
-                p.openGui(QuarryPlus.instance(), QuarryPlusI.guiIdQuarryModule(), f.getWorld(), f.getPos().getX(), f.getPos().getY(), f.getPos().getZ());
+                com.sumirelabs.quarryplus.gui.mui.QuarryGuiFactory.open(p, QuarryPlusI.guiIdQuarryModule(), f.getWorld(), f.getPos());
         }),
         FILL_ALL(TileFiller::startFillAll),
         FILL_BOX(TileFiller::startFillBox),

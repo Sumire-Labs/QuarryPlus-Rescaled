@@ -63,7 +63,7 @@ public class BlockAdvPump extends ADismCBlock {
                     t.sendEnchantMassage(playerIn));
             return true;
         } else if (!playerIn.isSneaking()) {
-            playerIn.openGui(QuarryPlus.instance(), QuarryPlusI.guiIdAdvPump(), worldIn, pos.getX(), pos.getY(), pos.getZ());
+            com.sumirelabs.quarryplus.gui.mui.QuarryGuiFactory.open(playerIn, QuarryPlusI.guiIdAdvPump(), worldIn, pos);
             return true;
         }
         return false;

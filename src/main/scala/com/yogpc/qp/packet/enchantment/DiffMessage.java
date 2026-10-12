@@ -61,7 +61,7 @@ public class DiffMessage implements IMessage {
     @SideOnly(Side.CLIENT)
     public IMessage onReceive(IMessage message, MessageContext ctx) {
         Minecraft.getMinecraft().addScheduledTask(() -> {
-            Container container = QuarryPlus.proxy.getPacketPlayer(ctx.netHandler).openContainer;
+            Container container = com.sumirelabs.quarryplus.gui.mui.QuarryModularContainer.unwrap(QuarryPlus.proxy.getPacketPlayer(ctx.netHandler).openContainer);
             if (containerId == container.windowId && container instanceof ContainerEnchList) {
                 ContainerEnchList enchList = (ContainerEnchList) container;
                 enchList.tile.fortuneList.clear();

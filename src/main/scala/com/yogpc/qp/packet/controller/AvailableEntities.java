@@ -53,7 +53,12 @@ public class AvailableEntities implements IMessage {
     @Override
     @SideOnly(Side.CLIENT)
     public IMessage onReceive(IMessage message, MessageContext ctx) {
-        Minecraft.getMinecraft().addScheduledTask(() -> Minecraft.getMinecraft().displayGuiScreen(new GuiController(dim, pos.getX(), pos.getY(), pos.getZ(), entities)));
+        Minecraft.getMinecraft().addScheduledTask(() -> {
+            net.minecraft.entity.player.EntityPlayer player = Minecraft.getMinecraft().player;
+            if (player != null && player.world.provider.getDimension() == dim) {
+                com.sumirelabs.quarryplus.gui.mui.QuarryGuiFactory.open(player, com.sumirelabs.quarryplus.gui.mui.QuarryGuiFactory.CONTROLLER, player.world, pos);
+            }
+        });
         return null;
     }
 }

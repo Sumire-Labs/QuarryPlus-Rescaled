@@ -73,10 +73,10 @@ public class BlockQuarry2 extends ADismCBlock {
             return true;
         }
         if (stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == ItemTool.meta_YSetter()) {
-            player.openGui(QuarryPlus.instance(), QuarryPlusI.guiIdQuarry2YLevel(), worldIn, pos.getX(), pos.getY(), pos.getZ()); return true;
+            com.sumirelabs.quarryplus.gui.mui.QuarryGuiFactory.open(player, QuarryPlusI.guiIdQuarry2YLevel(), worldIn, pos); return true;
         }
         if (stack.getItem() == QuarryPlusI.itemTool() && stack.getItemDamage() == ItemTool.meta_StatusChecker()) {
-            player.openGui(QuarryPlus.instance(), QuarryPlusI.guiIdStatus(), worldIn, pos.getX(), pos.getY(), pos.getZ());
+            com.sumirelabs.quarryplus.gui.mui.QuarryGuiFactory.open(player, QuarryPlusI.guiIdStatus(), worldIn, pos);
             return true;
         }
         if (!player.isSneaking() ) {
@@ -85,7 +85,7 @@ public class BlockQuarry2 extends ADismCBlock {
 //                    NetworkHooks.openGui(((EntityPlayerMP) player), new TileQuarry2.InteractionObject(t), pos)
 //                );
 //            }
-            player.openGui(QuarryPlus.instance(), QuarryPlusI.guiIdQuarryModule(), worldIn, pos.getX(), pos.getY(), pos.getZ());
+            com.sumirelabs.quarryplus.gui.mui.QuarryGuiFactory.open(player, QuarryPlusI.guiIdQuarryModule(), worldIn, pos);
             return true;
         }
         return false;

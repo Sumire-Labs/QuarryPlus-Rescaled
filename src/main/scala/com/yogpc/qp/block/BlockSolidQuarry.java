@@ -76,7 +76,7 @@ public class BlockSolidQuarry extends ADismCBlock {
             return true;
         }
         if (!playerIn.isSneaking()) {
-            playerIn.openGui(QuarryPlus.instance(), QuarryPlusI.guiIdSolidQuarry(), worldIn, pos.getX(), pos.getY(), pos.getZ());
+            com.sumirelabs.quarryplus.gui.mui.QuarryGuiFactory.open(playerIn, QuarryPlusI.guiIdSolidQuarry(), worldIn, pos);
             return true;
         }
         return false;

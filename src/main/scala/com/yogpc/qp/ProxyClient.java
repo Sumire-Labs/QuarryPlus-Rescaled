@@ -51,21 +51,12 @@ public class ProxyClient extends ProxyCommon {
 
     @Override
     public void openPumpGui(World worldIn, EntityPlayer playerIn, EnumFacing facing, TilePump pump) {
-        if (!worldIn.isRemote) {
-            pump.S_OpenGUI(facing, playerIn);
-        } else {
-            Minecraft.getMinecraft().displayGuiScreen(new GuiP_List(facing.ordinal(), pump));
-        }
+        super.openPumpGui(worldIn, playerIn, facing, pump);
     }
 
     @Override
     public void openAdvQuarryPumpGui(World worldIn, EntityPlayer player, TileAdvQuarry quarry, EnumFacing facing) {
-        if (!worldIn.isRemote) {
-            PacketHandler.sendToClient(AdvContentMessage.create(quarry), (EntityPlayerMP) player);
-            PacketHandler.sendToClient(AdvFilterMessage.create(quarry), (EntityPlayerMP) player);
-        } else {
-            Minecraft.getMinecraft().displayGuiScreen(new GuiAdvQuarryFluid(quarry, player, facing));
-        }
+        super.openAdvQuarryPumpGui(worldIn, player, quarry, facing);
     }
 
     @Override
@@ -96,6 +87,7 @@ public class ProxyClient extends ProxyCommon {
 
     @Override
     public void registerTextures() {
+        com.sumirelabs.quarryplus.gui.mui.GuiSmokeTest.install();
         if (!Config.content().disableRendering()) {
             ClientRegistry.bindTileEntitySpecialRenderer(TileQuarry.class, RenderQuarry.instance());
             ClientRegistry.bindTileEntitySpecialRenderer(TileQuarry2.class, RenderQuarry2.instance());
