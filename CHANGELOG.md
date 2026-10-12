@@ -1,3 +1,7 @@
+# [13.1.0]
+
+- Migrate to ModularUI
+
 # [13.0.1] 
 - Update Credits
 - Add ModIcon
