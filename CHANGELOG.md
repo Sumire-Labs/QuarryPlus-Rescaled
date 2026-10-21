@@ -1,20 +1,7 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # [13.1.2]
 
+- Replace hardcoded GUI text with translation keys, including machine controls, status messages, and configuration validation errors.
+- Add missing translations for English, Japanese, Russian, and Simplified Chinese.
 
 # [13.1.1]
 
