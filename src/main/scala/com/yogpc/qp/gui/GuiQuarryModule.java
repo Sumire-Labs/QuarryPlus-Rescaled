@@ -55,7 +55,7 @@ public class GuiQuarryModule extends GuiContainer {
     protected void drawGuiContainerForegroundLayer(final int mouseX, final int mouseY) {
         this.fontRenderer.drawString(I18n.format(name), 8, 6, 0x404040);
         if (yGetter != null)
-            this.fontRenderer.drawString("Y: " + yGetter.getAsInt(), 120, 6, 0x404040);
+            this.fontRenderer.drawString(I18n.format("qp.mui.y_level", yGetter.getAsInt()), 120, 6, 0x404040);
         this.fontRenderer.drawString(I18n.format(TranslationKeys.CONTAINER_INVENTORY), 8, this.ySize - 96 + 2, 0x404040);
     }
 }

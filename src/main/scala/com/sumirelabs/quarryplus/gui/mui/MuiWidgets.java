@@ -40,6 +40,24 @@ public final class MuiWidgets {
         panel.child(IKey.dynamic(value::getStringValue).asWidget().pos(x, y).width(width));
     }
 
+    /** Sync keys and arguments so each client renders text in its own language. */
+    @SafeVarargs
+    public static void localizedText(MuiContext ctx, ModularPanel panel, String name, int x, int y, int width,
+                                     Supplier<String> key, Supplier<String>... arguments) {
+        StringSyncValue translation = new StringSyncValue(key);
+        ctx.sync.syncValue(name, 0, translation);
+        StringSyncValue[] values = new StringSyncValue[arguments.length];
+        for (int i = 0; i < arguments.length; i++) {
+            values[i] = new StringSyncValue(arguments[i]);
+            ctx.sync.syncValue(name, i + 1, values[i]);
+        }
+        panel.child(IKey.lang(translation::getStringValue, () -> {
+            Object[] args = new Object[values.length];
+            for (int i = 0; i < values.length; i++) args[i] = values[i].getStringValue();
+            return args;
+        }).asWidget().pos(x, y).width(width));
+    }
+
     public static void button(MuiContext ctx, ModularPanel panel, String name, int x, int y,
                               int width, int height, String label, Consumer<PacketBuffer> action) {
         actionButton(ctx, panel, name, x, y, width, height, IKey.lang(label), action);

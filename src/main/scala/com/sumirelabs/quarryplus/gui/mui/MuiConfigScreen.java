@@ -11,6 +11,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonParseException;
 import com.yogpc.qp.Config;
 import com.yogpc.qp.QuarryPlus;
 import java.util.ArrayList;
@@ -59,7 +60,7 @@ public final class MuiConfigScreen {
 
     private ModularPanel panel() {
         ModularPanel panel = ModularPanel.defaultPanel("quarryplus_config", 384, 230);
-        panel.child(IKey.str("QuarryPlus Configuration").asWidget().pos(8, 7).size(280, 12));
+        panel.child(IKey.lang("qp.mui.config.title").asWidget().pos(8, 7).size(280, 12));
         panel.child(IKey.dynamic(() -> (page + 1) + " / " + pages()).asWidget().pos(320, 7).size(56, 12));
         for (int i = 0; i < entries.size(); i++) {
             Entry entry = entries.get(i);
@@ -75,7 +76,7 @@ public final class MuiConfigScreen {
                     .setEnabledIf(w -> page == entryPage));
             if (!entry.element.isList() && entry.element.getType() == ConfigGuiType.BOOLEAN) {
                 panel.child(new ButtonWidget<>().pos(170, y).size(160, 20)
-                        .overlay(IKey.dynamic(() -> entry.value))
+                        .overlay(IKey.lang(() -> Boolean.parseBoolean(entry.value) ? "qp.mui.config.true" : "qp.mui.config.false"))
                         .onMousePressed(button -> {
                             if (button != 0) return false;
                             entry.value = Boolean.toString(!Boolean.parseBoolean(entry.value));
@@ -86,9 +87,9 @@ public final class MuiConfigScreen {
                         .value(new StringValue.Dynamic(() -> entry.value, value -> entry.value = value))
                         .autoUpdateOnChange(true).setEnabledIf(w -> page == entryPage)
                         .tooltipBuilder(t -> t.addLine(IKey.str(entry.element.isList()
-                                ? "JSON array, e.g. [\"first\",\"second\"]" : entry.element.getQualifiedName()))));
+                                ? I18n.format("qp.mui.config.list_hint") : entry.element.getQualifiedName()))));
             }
-            panel.child(new ButtonWidget<>().pos(334, y).size(45, 20).overlay(IKey.str("Reset"))
+            panel.child(new ButtonWidget<>().pos(334, y).size(45, 20).overlay(IKey.lang("gui.reset"))
                     .onMousePressed(button -> {
                         if (button != 0) return false;
                         entry.reset();
@@ -96,10 +97,10 @@ public final class MuiConfigScreen {
                     }).setEnabledIf(w -> page == entryPage));
         }
         panel.child(IKey.dynamic(() -> error).asWidget().pos(8, 168).size(368, 24));
-        panel.child(IKey.str("* Restart Minecraft   ** Rejoin world   Lists: JSON").asWidget().pos(8, 193).size(368, 10));
+        panel.child(IKey.lang("qp.mui.config.restart_hint").asWidget().pos(8, 193).size(368, 10));
         button(panel, 8, 205, 32, "<", () -> page = Math.max(0, page - 1));
         button(panel, 44, 205, 32, ">", () -> page = Math.min(pages() - 1, page + 1));
-        button(panel, 82, 205, 86, "Defaults", () -> entries.forEach(Entry::reset));
+        button(panel, 82, 205, 86, I18n.format("qp.mui.config.defaults"), () -> entries.forEach(Entry::reset));
         button(panel, 194, 205, 88, I18n.format("gui.done"), this::save);
         button(panel, 288, 205, 88, I18n.format("gui.cancel"), () -> Minecraft.getMinecraft().displayGuiScreen(parent));
         return panel;
@@ -146,7 +147,7 @@ public final class MuiConfigScreen {
                 parsed.add(entry.parse());
             } catch (RuntimeException exception) {
                 page = i / ROWS;
-                error = entry.element.getName() + ": " + exception.getMessage();
+                error = label(entry.element) + ": " + exception.getMessage();
                 return;
             }
         }
@@ -176,16 +177,21 @@ public final class MuiConfigScreen {
 
         Object parse() {
             if (!element.isList()) return scalar(value);
-            JsonElement json = new JsonParser().parse(value);
-            if (!json.isJsonArray()) throw new IllegalArgumentException("Expected a JSON array");
+            JsonElement json;
+            try {
+                json = new JsonParser().parse(value);
+            } catch (JsonParseException exception) {
+                throw invalid("json_array");
+            }
+            if (!json.isJsonArray()) throw invalid("json_array");
             JsonArray array = json.getAsJsonArray();
             if (element.isListLengthFixed() && array.size() != element.getDefaults().length)
-                throw new IllegalArgumentException("Requires " + element.getDefaults().length + " values");
+                throw invalid("list_length", element.getDefaults().length);
             if (element.getMaxListLength() >= 0 && array.size() > element.getMaxListLength())
-                throw new IllegalArgumentException("At most " + element.getMaxListLength() + " values");
+                throw invalid("list_max_length", element.getMaxListLength());
             Object[] result = new Object[array.size()];
             for (int i = 0; i < array.size(); i++) {
-                if (!array.get(i).isJsonPrimitive()) throw new IllegalArgumentException("Array values must be scalars");
+                if (!array.get(i).isJsonPrimitive()) throw invalid("scalar_array");
                 result[i] = scalar(array.get(i).getAsString());
             }
             return result;
@@ -195,27 +201,36 @@ public final class MuiConfigScreen {
             Object parsed = input;
             if (element.getType() == ConfigGuiType.BOOLEAN) {
                 if (!"true".equalsIgnoreCase(input) && !"false".equalsIgnoreCase(input))
-                    throw new IllegalArgumentException("Expected true or false");
+                    throw invalid("boolean");
                 parsed = Boolean.valueOf(input);
-            } else if (element.getType() == ConfigGuiType.INTEGER) parsed = Integer.valueOf(input.trim());
+            } else if (element.getType() == ConfigGuiType.INTEGER) {
+                try { parsed = Integer.valueOf(input.trim()); }
+                catch (NumberFormatException exception) { throw invalid("integer"); }
+            }
             else if (element.getType() == ConfigGuiType.DOUBLE) {
-                double number = Double.parseDouble(input.trim());
-                if (!Double.isFinite(number)) throw new IllegalArgumentException("Expected a finite number");
+                double number;
+                try { number = Double.parseDouble(input.trim()); }
+                catch (NumberFormatException exception) { throw invalid("number"); }
+                if (!Double.isFinite(number)) throw invalid("number");
                 parsed = number;
             }
             if (parsed instanceof Number) {
                 double number = ((Number) parsed).doubleValue();
                 if (element.getMinValue() instanceof Number && number < ((Number) element.getMinValue()).doubleValue())
-                    throw new IllegalArgumentException("Minimum: " + element.getMinValue());
+                    throw invalid("minimum", element.getMinValue());
                 if (element.getMaxValue() instanceof Number && number > ((Number) element.getMaxValue()).doubleValue())
-                    throw new IllegalArgumentException("Maximum: " + element.getMaxValue());
+                    throw invalid("maximum", element.getMaxValue());
             }
             if (element.getValidationPattern() != null && !element.getValidationPattern().matcher(input).matches())
-                throw new IllegalArgumentException("Value does not match " + element.getValidationPattern());
+                throw invalid("pattern", element.getValidationPattern());
             if (element.getValidValues() != null && element.getValidValues().length > 0
                     && !Arrays.asList(element.getValidValues()).contains(input))
-                throw new IllegalArgumentException("Allowed: " + Arrays.toString(element.getValidValues()));
+                throw invalid("allowed", Arrays.toString(element.getValidValues()));
             return parsed;
+        }
+
+        private static IllegalArgumentException invalid(String key, Object... args) {
+            return new IllegalArgumentException(I18n.format("qp.mui.config.error." + key, args));
         }
     }
 }

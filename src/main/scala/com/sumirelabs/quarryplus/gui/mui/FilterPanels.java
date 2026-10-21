@@ -100,7 +100,7 @@ public final class FilterPanels {
         rows(c, p, "blocks", 8, 26, 310, 6, () -> data.stream().map(FilterPanels::blockLabel).collect(Collectors.toList()),
                 name -> { selected[0] = data.stream().filter(b -> blockLabel(b).equals(name)).findFirst().orElse(null); confirmation[0] = null; });
         MuiWidgets.text(c, p, "selected", 8, 172, 310, () -> selected[0] == null ? "" : blockLabel(selected[0]));
-        MuiWidgets.text(c, p, "mode", 8, 188, 310, () -> (fortune ? tile.fortuneInclude : tile.silktouchInclude) ? "Include" : "Exclude");
+        MuiWidgets.localizedText(c, p, "mode", 8, 188, 310, () -> (fortune ? tile.fortuneInclude : tile.silktouchInclude) ? TranslationKeys.TOF_INCLUDE : TranslationKeys.TOF_EXCLUDE);
         button(c, p, "toggle", 8, 212, 100, "qp.mui.toggle_mode", () -> {
             if (fortune) tile.fortuneInclude = !tile.fortuneInclude; else tile.silktouchInclude = !tile.silktouchInclude;
             tile.markDirty();
@@ -111,7 +111,7 @@ public final class FilterPanels {
                 else confirmation[0] = selected[0];
             }
         });
-        MuiWidgets.text(c, p, "confirmation", 220, 210, 104, () -> confirmation[0] == null ? "" : "Delete again to confirm");
+        MuiWidgets.localizedText(c, p, "confirmation", 220, 210, 104, () -> confirmation[0] == null ? "" : "qp.mui.confirm_delete");
         return p;
     }
 
@@ -153,7 +153,7 @@ public final class FilterPanels {
             if (!editable.get()) return;
             ItemTemplate.setTemplate(stack.get(), state.get().toggle()); c.player.inventory.markDirty();
         });
-        MuiWidgets.text(c, p, "mode", 8, 110, 120, () -> state.get().include() ? "Include" : "Exclude");
+        MuiWidgets.localizedText(c, p, "mode", 8, 110, 120, () -> state.get().include() ? TranslationKeys.TOF_INCLUDE : TranslationKeys.TOF_EXCLUDE);
         MuiWidgets.slots(c, p);
         return p;
     }
@@ -183,7 +183,7 @@ public final class FilterPanels {
                 label -> visibleFluids.get().stream().filter(name -> fluidLabel(name).equals(label)).findFirst().ifPresent(name -> {
                     selected[0] = name; input[0] = name; pending[0] = "";
                 }));
-        MuiWidgets.text(c, p, "sideName", 248, 48, 104, () -> side[0].toString());
+        MuiWidgets.localizedText(c, p, "sideName", 248, 48, 104, () -> "FD." + side[0]);
         button(c, p, "browse", 248, 62, 104, TranslationKeys.FROM_LIST, () -> browse[0] = !browse[0]);
         Mappings.Type[] types = {Mappings.Type.Remove, Mappings.Type.Top, Mappings.Type.Up, Mappings.Type.Down, Mappings.Type.Bottom};
         String[] keys = {TranslationKeys.DELETE, TranslationKeys.GO_TOP, TranslationKeys.GO_UP, TranslationKeys.GO_DOWN, TranslationKeys.GO_BOTTOM};
@@ -204,12 +204,16 @@ public final class FilterPanels {
         p.child(new TextFieldWidget().setMaxLength(256).autoUpdateOnChange(true).pos(8, 132).size(180, 18).syncHandler("fluidInput", 0));
         button(c, p, "add", 192, 132, 48, TranslationKeys.ADD, () -> {
             String name = input[0].trim();
-            if (name.isEmpty() || mapping.get().contains(name)) { pending[0] = "Already registered or empty"; return; }
+            if (name.isEmpty() || mapping.get().contains(name)) { pending[0] = "qp.mui.invalid_fluid"; return; }
             if (!pending[0].equals("add:" + name)) { pending[0] = "add:" + name; return; }
             mapping.get().add(name); pending[0] = ""; tile.markDirty();
         });
         MuiWidgets.text(c, p, "selected", 8, 154, 232, () -> selected[0]);
-        MuiWidgets.text(c, p, "confirmation", 8, 168, 232, () -> pending[0].isEmpty() ? "" : pending[0] + " (repeat to confirm)");
+        MuiWidgets.localizedText(c, p, "confirmation", 8, 168, 232, () -> {
+            if (pending[0].startsWith("add:")) return "qp.mui.confirm_add";
+            if (pending[0].startsWith("delete:")) return "qp.mui.confirm_delete";
+            return pending[0];
+        });
         p.child(IKey.lang(TranslationKeys.COPY_FROM_OTHER_DIRECTION).asWidget().pos(8, 186).size(344, 12));
         return p;
     }

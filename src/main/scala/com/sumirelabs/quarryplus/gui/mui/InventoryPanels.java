@@ -68,7 +68,7 @@ public final class InventoryPanels {
     private static ModularPanel solidQuarry(MuiContext ctx) {
         TileSolidQuarry tile = (TileSolidQuarry) ctx.tile;
         ModularPanel panel = MuiWidgets.panel(ctx, TranslationKeys.solidquarry, 176, 166);
-        MuiWidgets.text(ctx, panel, "solid_quarry_fuel", 110, 6, 62, () -> "Fuel: " + tile.getFuelCount());
+        MuiWidgets.localizedText(ctx, panel, "solid_quarry_fuel", 110, 6, 62, () -> "qp.mui.fuel", () -> Integer.toString(tile.getFuelCount()));
         inventoryLabel(panel, 72);
         MuiWidgets.slots(ctx, panel);
         return panel;

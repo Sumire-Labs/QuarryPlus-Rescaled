@@ -46,8 +46,8 @@ class GuiAdvQuarry(tile: TileAdvQuarry, player: EntityPlayer) extends GuiContain
     buttonList.add(new GuiButton(6, guiLeft + 158, guiTop + 39, 10, 8, plus))
     buttonList.add(new GuiButton(7, guiLeft + 128, guiTop + 39, 10, 8, minus))
 
-    buttonList.add(new GuiButton(8, guiLeft + 108, guiTop + 58, 60, 12, "No Frame"))
-    buttonList.add(new GuiButton(9, guiLeft + 8, guiTop + 58, 60, 12, "Modules"))
+    buttonList.add(new GuiButton(8, guiLeft + 108, guiTop + 58, 60, 12, I18n.format("qp.mui.no_frame")))
+    buttonList.add(new GuiButton(9, guiLeft + 8, guiTop + 58, 60, 12, I18n.format("qp.mui.modules")))
   }
 
   private def range = tile.digRange

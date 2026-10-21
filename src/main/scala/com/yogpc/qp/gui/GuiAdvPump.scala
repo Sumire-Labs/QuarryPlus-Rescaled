@@ -27,9 +27,9 @@ class GuiAdvPump(tile: TileAdvPump, player: EntityPlayer) extends GuiContainer(n
   override def initGui(): Unit = {
     super.initGui()
     val buttonWidth = 80
-    this.buttonList.add(new GuiButton(0, guiLeft + getXSize / 2 - buttonWidth, guiTop + 22, buttonWidth, 20, text("Frame", tile.placeFrame)))
-    this.buttonList.add(new GuiButton(1, guiLeft + getXSize / 2 - 60, guiTop + 50, 120, 20, "Start"))
-    this.buttonList.add(new GuiButton(2, guiLeft + getXSize / 2, guiTop + 22, buttonWidth, 20, text("Delete", tile.delete)))
+    this.buttonList.add(new GuiButton(0, guiLeft + getXSize / 2 - buttonWidth, guiTop + 22, buttonWidth, 20, text("qp.mui.frame", tile.placeFrame)))
+    this.buttonList.add(new GuiButton(1, guiLeft + getXSize / 2 - 60, guiTop + 50, 120, 20, I18n.format("qp.mui.start")))
+    this.buttonList.add(new GuiButton(2, guiLeft + getXSize / 2, guiTop + 22, buttonWidth, 20, text("qp.mui.delete", tile.delete)))
     buttonList.get(1).enabled = !tile.isWorking
   }
 
@@ -37,12 +37,12 @@ class GuiAdvPump(tile: TileAdvPump, player: EntityPlayer) extends GuiContainer(n
     super.actionPerformed(button)
     button.id match {
       case 0 => tile.placeFrame = !tile.placeFrame
-        this.buttonList.get(0).displayString = text("Frame", tile.placeFrame)
+        this.buttonList.get(0).displayString = text("qp.mui.frame", tile.placeFrame)
         PacketHandler.sendToServer(AdvPumpChangeMessage.create(tile, AdvPumpChangeMessage.ToStart.UNCHANGED))
       case 1 => this.buttonList.get(button.id).enabled = false
         PacketHandler.sendToServer(AdvPumpChangeMessage.create(tile, AdvPumpChangeMessage.ToStart.START))
       case 2 => tile.toggleDelete()
-        this.buttonList.get(2).displayString = text("Delete", tile.delete)
+        this.buttonList.get(2).displayString = text("qp.mui.delete", tile.delete)
         PacketHandler.sendToServer(AdvPumpChangeMessage.create(tile, AdvPumpChangeMessage.ToStart.UNCHANGED))
       case _ => QuarryPlus.LOGGER.error("AdvPump undefined button")
     }
@@ -61,5 +61,5 @@ class GuiAdvPump(tile: TileAdvPump, player: EntityPlayer) extends GuiContainer(n
   }
 
   private def text(prefix: String, boolean: Boolean): String =
-    prefix + " " + (if (boolean) "on" else "off")
+    I18n.format(prefix + (if (boolean) "_on" else "_off"))
 }

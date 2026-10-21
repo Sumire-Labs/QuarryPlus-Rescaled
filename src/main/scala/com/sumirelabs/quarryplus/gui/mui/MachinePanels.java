@@ -73,8 +73,8 @@ public final class MachinePanels {
                 return Double.toString(blocks / 16);
             });
         }
-        MuiWidgets.actionButton(c,p,"quick",108,58,60,12,IKey.str("No Frame"),b->{consume(b);if(q.mode().is(TileAdvQuarry.NOT_NEED_BREAK())) q.noFrameStart();});
-        MuiWidgets.actionButton(c,p,"modules",8,58,60,12,IKey.str("Modules"),b->{consume(b);modules(c);});
+        MuiWidgets.actionButton(c,p,"quick",108,58,60,12,IKey.lang("qp.mui.no_frame"),b->{consume(b);if(q.mode().is(TileAdvQuarry.NOT_NEED_BREAK())) q.noFrameStart();});
+        MuiWidgets.actionButton(c,p,"modules",8,58,60,12,IKey.lang("qp.mui.modules"),b->{consume(b);modules(c);});
         p.child(IKey.lang(TranslationKeys.CONTAINER_INVENTORY).asWidget().pos(8,72));
         MuiWidgets.slots(c,p);
         return p;
@@ -84,11 +84,11 @@ public final class MachinePanels {
         TileAdvPump q = (TileAdvPump)c.tile;
         ModularPanel p = MuiWidgets.panel(c,TranslationKeys.advpump,176,166);
         MuiWidgets.actionButton(c,p,"frame",8,22,80,20,IKey.EMPTY,b->{consume(b);q.placeFrame_$eq(!q.placeFrame());q.markDirty();});
-        MuiWidgets.text(c,p,"frameLabel",10,28,76,()->"Frame "+(q.placeFrame()?"on":"off"));
+        MuiWidgets.localizedText(c,p,"frameLabel",10,28,76,()->q.placeFrame()?"qp.mui.frame_on":"qp.mui.frame_off");
         MuiWidgets.actionButton(c,p,"delete",88,22,80,20,IKey.EMPTY,b->{consume(b);q.toggleDelete();q.markDirty();});
-        MuiWidgets.text(c,p,"deleteLabel",90,28,76,()->"Delete "+(q.delete()?"on":"off"));
+        MuiWidgets.localizedText(c,p,"deleteLabel",90,28,76,()->q.delete()?"qp.mui.delete_on":"qp.mui.delete_off");
         MuiWidgets.actionButton(c,p,"start",28,50,120,20,IKey.EMPTY,b->{consume(b);if(!q.isWorking())q.start();});
-        MuiWidgets.text(c,p,"startLabel",30,56,116,()->q.isWorking()?"Working":"Start");
+        MuiWidgets.localizedText(c,p,"startLabel",30,56,116,()->q.isWorking()?"qp.mui.working":"qp.mui.start");
         p.child(IKey.lang(TranslationKeys.CONTAINER_INVENTORY).asWidget().pos(8,72));
         MuiWidgets.slots(c,p);
         return p;
@@ -97,9 +97,9 @@ public final class MachinePanels {
     private static ModularPanel filler(MuiContext c) {
         TileFiller q = (TileFiller)c.tile;
         ModularPanel p = MuiWidgets.panel(c,TranslationKeys.filler,176,222);
-        MuiWidgets.actionButton(c,p,"modules",110,125,60,14,IKey.str("Modules"),b->{consume(b);modules(c);});
-        MuiWidgets.actionButton(c,p,"all",108,18,60,20,IKey.str("FillAll"),b->{consume(b);q.startFillAll();});
-        MuiWidgets.actionButton(c,p,"box",108,38,60,20,IKey.str("FillBox"),b->{consume(b);q.startFillBox();});
+        MuiWidgets.actionButton(c,p,"modules",110,125,60,14,IKey.lang("qp.mui.modules"),b->{consume(b);modules(c);});
+        MuiWidgets.actionButton(c,p,"all",108,18,60,20,IKey.lang("qp.mui.fill_all"),b->{consume(b);q.startFillAll();});
+        MuiWidgets.actionButton(c,p,"box",108,38,60,20,IKey.lang("qp.mui.fill_box"),b->{consume(b);q.startFillBox();});
         p.child(IKey.lang(TranslationKeys.CONTAINER_INVENTORY).asWidget().pos(8,128));
         MuiWidgets.slots(c,p);
         return p;
@@ -123,7 +123,7 @@ public final class MachinePanels {
         AtomicBoolean adding=new AtomicBoolean();
         AtomicInteger page=new AtomicInteger();
         FluidStack[] selected={null};
-        MuiWidgets.text(c,p,"page",8,20,304,()->(adding.get()?"Select fluid":"Fluid filter")+"  "+(page.get()+1));
+        MuiWidgets.localizedText(c,p,"page",8,20,304,()->adding.get()?"qp.mui.select_fluid_page":"qp.mui.fluid_filter_page",()->Integer.toString(page.get()+1));
         for(int row=0;row<8;row++) {
             final int index=row;
             MuiWidgets.actionButton(c,p,"fluid"+row,8,36+row*18,304,18,IKey.EMPTY,b->{

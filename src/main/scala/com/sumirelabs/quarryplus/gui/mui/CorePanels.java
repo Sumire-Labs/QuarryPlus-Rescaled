@@ -35,7 +35,7 @@ final class CorePanels {
     private static ModularPanel modules(MuiContext ctx) {
         ModularPanel panel = MuiWidgets.panel(ctx, name(ctx), 176, 166);
         if (ctx.tile instanceof TileQuarry2 || ctx.tile instanceof TileAdvQuarry) {
-            MuiWidgets.text(ctx, panel, "module_y", 120, 6, 40, () -> "Y: " + getY(ctx));
+            MuiWidgets.localizedText(ctx, panel, "module_y", 120, 6, 40, () -> "qp.mui.y_level", () -> Integer.toString(getY(ctx)));
         }
         panel.child(IKey.lang(TranslationKeys.CONTAINER_INVENTORY).asWidget().pos(8, 72));
         MuiWidgets.slots(ctx, panel);

@@ -32,6 +32,7 @@ item.listeditor.name=ListEditor
 item.magicmirror.name=MagicMirror
 item.overworldmirror.name=OverworldMirror
 item.quarrydebug.name=QuarryPlus Debug Item
+item.quarry_pickaxe.name=Quarry Pickaxe
 item.statuschecker.name=StatusChecker
 item.pump_module.name=Quarry Pump Module
 item.exppump_module.name=Quarry Exp Collect Module
@@ -45,6 +46,7 @@ qp.mui.toggle_mode=Toggle mode
 
 chat.changemode=Working mode was changed to %s
 chat.currentmode=Now, working in %s
+chat.disable_message=This feature is disabled in the configuration.
 chat.fillermode=Frame Mode
 chat.indent=-    %s%s
 chat.markerarea=This markar's Area is:
@@ -117,7 +119,9 @@ yog.armor.hover.on=Hover Mode enabled.
 yog.pump.liquid=-    %s: %smB
 yog.spanwer.setting=Please select entity to be spawned by spawner
 
+quarryplus.machines=Machines
 quarryplus.machines.tooltip=Machines
+quarryplus.client=Client
 quarryplus.client.tooltip=Client
 quarryplus.tooltip.blockpump=This block is an attachment for %1$s.%2$sPlace this next to %1$s.
 quarryplus.tooltip.exppump=This block is an attachment for %1$s and %2$s.%3$sPlace this next to machines.
