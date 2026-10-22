@@ -60,6 +60,7 @@ object QuarryPlusI {
   val expPumpModule = registerI(new ItemExpPumpModule)
   val replacerModule = registerI(new ItemReplacerModule)
   val torchModule = registerI(new ItemTorchModule)
+  val voidModule = registerI(new ItemVoidModule)
   val fuelModuleNormal = registerI(new ItemFuelModule(FuelModule.Normal))
   val fuelModuleCreative = registerI(new ItemFuelModule(FuelModule.Creative))
   final val guiIdWorkbench = 1
@@ -78,6 +79,7 @@ object QuarryPlusI {
   final val guiIdQuarry2YLevel = 14
   final val guiIdStatus = 15
   final val guiIdFiller = 16
+  final val guiIdVoidModule = 17
 
   val tileIdMap: Map[Class[? <: TileEntity], ResourceLocation] = Map(
     classOf[TileWorkbench] -> QuarryPlus.Names.workbench,

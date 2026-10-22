@@ -170,3 +170,10 @@ qp.mui.config.error.minimum=最小値: %s
 qp.mui.config.error.maximum=最大値: %s
 qp.mui.config.error.pattern=値が形式%sに一致しません
 qp.mui.config.error.allowed=指定できる値: %s
+
+# Void Module
+item.void_module.name=採掘物破棄モジュール
+quarryplus.tooltip.void_module=右クリックで設定。新版採掘機かChunk Destroyerに装着すると、一致する採掘物を破棄します。
+quarryplus.tooltip.void_module_match=アイテム・メタデータ・NBTが一致する物が対象。登録用アイテムは消費しません。
+quarryplus.tooltip.void_module_count=登録数: %s / %s
+qp.mui.void_module_hint=左: 見本登録  右: 登録解除

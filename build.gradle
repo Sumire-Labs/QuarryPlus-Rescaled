@@ -104,6 +104,8 @@ dependencies {
     if (enable_junit_testing.toBoolean()) {
         testImplementation 'org.junit.jupiter:junit-jupiter:6.0.3'
         testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+        // Cleanroom's patched loader uses JsonParser.parseReader during vanilla bootstrap.
+        testRuntimeOnly 'com.google.code.gson:gson:2.13.2'
     }
 }
 
@@ -232,6 +234,13 @@ test {
             showStandardStreams = true
         }
     }
+}
+
+// Unimined adds the mapped Minecraft/Forge APIs to main's compile classpath only.
+// Filter persistence tests exercise real ItemStacks and NBT rather than substitutes.
+sourceSets.test {
+    compileClasspath += sourceSets.main.compileClasspath
+    runtimeClasspath += sourceSets.main.compileClasspath
 }
 
 tasks.withType(JavaCompile).configureEach {

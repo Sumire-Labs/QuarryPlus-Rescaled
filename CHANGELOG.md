@@ -1,3 +1,7 @@
+# [13.1.3]
+
+- Backport Void Module for QuarryPlus and Chunk Destroyer, with 18 non-consuming filter slots and support for multiple modules.
+
 # [13.1.2]
 
 - Replace hardcoded GUI text with translation keys, including machine controls, status messages, and configuration validation errors.

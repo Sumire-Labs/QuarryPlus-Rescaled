@@ -38,7 +38,7 @@ final class GuiSmokeInteractions {
         QuarryModularContainer container = (QuarryModularContainer) player.openContainer;
         check(container.inventorySlots.size() == container.original().inventorySlots.size(), "Duplicate/missing native slots");
         for (int i = 0; i < player.inventory.getSizeInventory(); i++)
-            if (id != 12 || i != 0) player.inventory.setInventorySlotContents(i, ItemStack.EMPTY);
+            if ((id != 12 && id != 17) || i != 0) player.inventory.setInventorySlotContents(i, ItemStack.EMPTY);
         player.inventory.setItemStack(ItemStack.EMPTY);
         player.inventory.setInventorySlotContents(9, new ItemStack(Blocks.COBBLESTONE, 16));
         TileEntity tile = player.world.getTileEntity(POS);
@@ -101,6 +101,16 @@ final class GuiSmokeInteractions {
             mc.playerController.windowClick(container.windowId, playerSlot(container, 0), 0, ClickType.PICKUP, mc.player);
             press(container, "add"); press(container, "modeToggle");
         }
+        else if (id == 17) {
+            int source = playerSlot(container, 9);
+            mc.playerController.windowClick(container.windowId, source, 0, ClickType.PICKUP, mc.player);
+            mc.playerController.windowClick(container.windowId, 0, 0, ClickType.PICKUP, mc.player);
+            mc.playerController.windowClick(container.windowId, 1, 0, ClickType.PICKUP, mc.player);
+            mc.playerController.windowClick(container.windowId, 1, 1, ClickType.PICKUP, mc.player);
+            mc.playerController.windowClick(container.windowId, 0, 0, ClickType.QUICK_MOVE, mc.player);
+            mc.playerController.windowClick(container.windowId, source, 0, ClickType.SWAP, mc.player);
+            mc.playerController.windowClick(container.windowId, source, 0, ClickType.PICKUP, mc.player);
+        }
         else if (id >= 100 && id < 106) {
             press(container, "fluidsSelect0"); press(container, "edit4");
             press(container, "fluidsSelect1"); press(container, "edit0"); press(container, "edit0");
@@ -144,6 +154,33 @@ final class GuiSmokeInteractions {
         else if (id == 12) {
             ItemTemplate.Template template = ItemTemplate.getTemplate(player.inventory.getCurrentItem());
             check(template.items().contains(stone()) && !template.include() && player.inventory.getItemStack().isEmpty(), "Template add/toggle/protected slot failed");
+        } else if (id == 17) {
+            var samples = com.yogpc.qp.modules.VoidFilter.read(player.inventory.getCurrentItem());
+            check(samples.get(0).getItem() == net.minecraft.item.Item.getItemFromBlock(Blocks.COBBLESTONE)
+                    && samples.get(0).getCount() == 1 && samples.get(1).isEmpty(), "Void filter copy/clear failed");
+            check(player.inventory.getStackInSlot(9).getCount() == 16 && player.inventory.getItemStack().isEmpty(),
+                    "Void filter consumed or duplicated samples");
+            TileQuarry2 quarry = (TileQuarry2) tile;
+            quarry.moduleInv().setInventorySlotContents(0, player.inventory.getCurrentItem().copy());
+            check(quarry.moduleInv().isItemValidForSlot(1, player.inventory.getCurrentItem()), "Multiple void modules rejected");
+            quarry.getStorage().insertItem(new ItemStack(Blocks.COBBLESTONE, 64));
+            quarry.getStorage().insertItem(new ItemStack(Items.DIAMOND, 3));
+            check(quarry.getStoredItemCount() == 3, "Quarry void filter did not preserve unrelated drops");
+            ItemStack secondModule = new ItemStack(QuarryPlusI.voidModule());
+            com.yogpc.qp.modules.VoidFilter.write(secondModule, List.of(new ItemStack(Items.DIAMOND)));
+            quarry.moduleInv().setInventorySlotContents(1, secondModule);
+            quarry.getStorage().insertItem(new ItemStack(Items.DIAMOND, 5));
+            check(quarry.getStoredItemCount() == 3, "Void filters were not combined or retroactively deleted stored items");
+            BlockPos cdPos = POS.east(2);
+            player.world.setBlockState(cdPos, QuarryPlusI.blockChunkDestroyer().getDefaultState());
+            TileAdvQuarry cd = (TileAdvQuarry) player.world.getTileEntity(cdPos);
+            cd.moduleInv().setInventorySlotContents(0, player.inventory.getCurrentItem().copy());
+            cd.moduleInv().setInventorySlotContents(1, secondModule.copy());
+            cd.getStorage().insertItem(new ItemStack(Blocks.COBBLESTONE, 64));
+            cd.getStorage().insertItem(new ItemStack(Items.DIAMOND, 3));
+            cd.getStorage().insertItem(new ItemStack(Items.EMERALD, 2));
+            check(cd.getStackInSlot(0).getItem() == Items.EMERALD && cd.getStackInSlot(0).getCount() == 2,
+                    "Chunk Destroyer void filter did not preserve unrelated drops");
         } else if (id >= 100 && id < 106) check(((TilePump) tile).mapping.get(EnumFacing.byIndex(id - 100)).equals(List.of("lava")), "Pump filter reorder/confirmed removal failed");
         else if (id >= 120 && id < 126) {
             scala.collection.mutable.Set<FluidStack> fluids = ((TileAdvQuarry) tile).fluidExtractFacings().apply(EnumFacing.byIndex(id - 120));

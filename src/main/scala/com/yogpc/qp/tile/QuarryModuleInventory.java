@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import com.yogpc.qp.modules.IModuleItem;
+import com.yogpc.qp.modules.ItemVoidModule;
 import jp.t2v.lab.syntax.MapStreamSyntax;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.InventoryBasic;
@@ -58,6 +59,8 @@ public class QuarryModuleInventory extends InventoryBasic implements INBTSeriali
             IModuleItem item = (IModuleItem) stack.getItem();
             if (!moduleFilter.test(item))
                 return false;
+            // Independent void filters combine; other module types remain unique.
+            if (item instanceof ItemVoidModule) return true;
             Predicate<Item> equal = Predicate.isEqual(item);
             Predicate<Item> id = item1 -> item1 instanceof IModuleItem && ((IModuleItem) item1).getSymbol().equals(item.getSymbol());
             return IntStream.range(0, getSizeInventory())

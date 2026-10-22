@@ -28,6 +28,7 @@ public final class InventoryPanels {
         if (id == QuarryPlusI.guiIdSolidQuarry()) return solidQuarry(ctx);
         if (id == QuarryPlusI.guiIdPlacer()) return placer(ctx);
         if (id == QuarryPlusI.guiIdWorkbench()) return workbench(ctx);
+        if (id == QuarryPlusI.guiIdVoidModule()) return voidModule(ctx);
         return null;
     }
 
@@ -47,6 +48,14 @@ public final class InventoryPanels {
         MuiWidgets.button(ctx, panel, "mover_down", 27, 54, 122, 18, TranslationKeys.DOWN,
                 packet -> mover.setAvail(ContainerMover.D.DOWN));
         inventoryLabel(panel, 72);
+        MuiWidgets.slots(ctx, panel);
+        return panel;
+    }
+
+    private static ModularPanel voidModule(MuiContext ctx) {
+        ModularPanel panel = MuiWidgets.panel(ctx, "item.void_module.name", 176, 176);
+        panel.child(IKey.lang("qp.mui.void_module_hint").asWidget().pos(8, 18).width(160));
+        panel.child(IKey.lang(TranslationKeys.CONTAINER_INVENTORY).asWidget().pos(8, 82));
         MuiWidgets.slots(ctx, panel);
         return panel;
     }

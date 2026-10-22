@@ -57,7 +57,11 @@ class TileQuarry2 extends APowerTile()
   var target = BlockPos.ORIGIN
   var yLevel = 1
   var frameMode = false
-  private val storage = new QuarryStorage
+  private val storage = new QuarryStorage {
+    override def addItem(stack: ItemStack): Unit = {
+      if (!modules.exists(_.shouldVoid(stack))) super.addItem(stack)
+    }
+  }
   val moduleInv = new QuarryModuleInventory(new TextComponentString("Modules"), 5, this, _ => refreshModules(), jp.t2v.lab.syntax.MapStreamSyntax.always_true())
   var fortuneList = Set.empty[BlockData]
   var silktouchList = Set.empty[BlockData]

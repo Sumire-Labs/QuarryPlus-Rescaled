@@ -259,6 +259,7 @@ public class QuarryPlus {
         ModelLoader.setCustomModelResourceLocation(expPumpModule(), 0, proxy.fromEntry(expPumpModule()));
         ModelLoader.setCustomModelResourceLocation(replacerModule(), 0, proxy.fromEntry(replacerModule()));
         ModelLoader.setCustomModelResourceLocation(torchModule(), 0, proxy.fromEntry(torchModule()));
+        ModelLoader.setCustomModelResourceLocation(QuarryPlusI.voidModule(), 0, proxy.fromEntry(QuarryPlusI.voidModule()));
         ModelLoader.setCustomModelResourceLocation(fuelModuleNormal(), 0, proxy.fromEntry(fuelModuleNormal()));
         ModelLoader.setCustomModelResourceLocation(fuelModuleCreative(), 0, proxy.fromEntry(fuelModuleCreative()));
     }
@@ -346,6 +347,7 @@ public class QuarryPlus {
         public static final String template = "template";
         public static final String tool = "tool";
         public static final String torchModule = "torch_module";
+        public static final String voidModule = "void_module";
         public static final String workbench = "workbenchplus";
     }
 }

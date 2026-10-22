@@ -170,3 +170,10 @@ qp.mui.config.error.minimum=最小值: %s
 qp.mui.config.error.maximum=最大值: %s
 qp.mui.config.error.pattern=值不符合 %s
 qp.mui.config.error.allowed=允许的值: %s
+
+# Void Module
+item.void_module.name=采石场销毁模块
+quarryplus.tooltip.void_module=右键设置。装入新版采石场或区块破坏器后销毁匹配的采掘物。
+quarryplus.tooltip.void_module_match=匹配物品、元数据和 NBT。设置样本不消耗物品。
+quarryplus.tooltip.void_module_count=已设置: %s / %s
+qp.mui.void_module_hint=左键: 设置样本  右键: 清除

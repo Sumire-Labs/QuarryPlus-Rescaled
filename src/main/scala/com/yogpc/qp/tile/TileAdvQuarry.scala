@@ -114,7 +114,7 @@ class TileAdvQuarry extends APowerTile
                 return
               }
             }
-            list.asScala.foreach(cacheItems.add)
+            list.asScala.foreach(storeMinedItem)
           }
 
           if (PowerManager.useEnergyFrameBuild(self, ench.unbreaking)) {
@@ -387,7 +387,7 @@ class TileAdvQuarry extends APowerTile
           } match {
             case Left(a) => Reason.printNonEnergy(a)
             case Right((drops, nextPos, reasons)) =>
-              drops.asScala.foreach(cacheItems.add)
+              drops.asScala.foreach(storeMinedItem)
               reasons.foreach { r =>
                 r.usage match {
                   case Some(x) if x == EnergyUsage.ADV_BREAK_BLOCK => Reason.print(r)
@@ -419,7 +419,7 @@ class TileAdvQuarry extends APowerTile
         val drops = getWorld.getEntitiesWithinAABB(classOf[EntityItem], aabb)
         drops.asScala.filter(_.getItem.getCount > 0).foreach(entity => {
           QuarryPlus.proxy.removeEntity(entity)
-          cacheItems.add(entity.getItem)
+          storeMinedItem(entity.getItem)
         })
         val exp = getWorld.getEntitiesWithinAABB(classOf[EntityXPOrb], aabb).asScala.map { e => QuarryPlus.proxy.removeEntity(e); e.xpValue }.sum
         modules.collectFirst { case module: ExpPumpModule => module }.foreach(_.addXp(exp))
@@ -907,12 +907,16 @@ class TileAdvQuarry extends APowerTile
     }
   }
 
+  private def storeMinedItem(stack: ItemStack): Unit = {
+    if (!modules.exists(_.shouldVoid(stack))) cacheItems.add(stack)
+  }
+
   override def getName: String = getDebugName
 
   override protected def getSymbol: Symbol = TileAdvQuarry.SYMBOL
 
   override lazy val getStorage: Storage = new Storage {
-    override def insertItem(stack: ItemStack): Unit = cacheItems.add(stack)
+    override def insertItem(stack: ItemStack): Unit = storeMinedItem(stack)
 
     override def insertFluid(fluid: FluidStack, amount: Long): Unit = {
       fluidStacks.get(fluid) match {

@@ -37,7 +37,8 @@ object BuiltinRecipes {
       BlockBookMover.SYMBOL -> (ItemDamage(blockBookMover), 500000, Seq(F(blockMover, 2), F(BEACON, 1), F(BOOKSHELF, 64), F(DIAMOND, 8))),
       BlockExpPump.SYMBOL -> (ItemDamage(blockExpPump), 320000, Seq(F(GOLD_INGOT, 8), F(IRON_INGOT, 24), F(REDSTONE, 32), F(EXPERIENCE_BOTTLE, 1), F(HAY_BLOCK, 16), F(NETHER_STAR, 1d / 25d), F(ENDER_PEARL, 1))),
       TileReplacer.SYMBOL -> (ItemDamage(blockReplacer), 6400000, Seq(F(WATER_BUCKET, 16), F(LAVA_BUCKET, 16), F(IRON_INGOT, 8), F(GOLD_INGOT, 16), F(REDSTONE, 8), F(ENDER_PEARL, 2), F(ENDER_EYE, 6), F(net.minecraft.init.Items.SKULL, 24d / 25d, 5), F(NETHER_STAR, 4), F(STONE, 512))),
-      TileFiller.SYMBOL -> (ItemDamage(blockFiller), 160000, Seq(F(IRON_INGOT, 16), F(LADDER, 16), F(IRON_AXE, 3)))
+      TileFiller.SYMBOL -> (ItemDamage(blockFiller), 160000, Seq(F(IRON_INGOT, 16), F(LADDER, 16), F(IRON_AXE, 3))),
+      voidModule.getSymbol -> (ItemDamage(voidModule), 80000, Seq(F(CHEST, 2), F(HOPPER, 1), F(OBSIDIAN, 8), F(REDSTONE, 16)))
     )
     map.filter { case (key, _) => Config.content.enableMap(key) }.foreach {
       case (s, (item, energy, recipe)) => WorkbenchRecipe.addSeqRecipe(item, energy, recipe, name = s)

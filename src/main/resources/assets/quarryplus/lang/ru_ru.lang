@@ -170,3 +170,10 @@ qp.mui.config.error.minimum=Минимум: %s
 qp.mui.config.error.maximum=Максимум: %s
 qp.mui.config.error.pattern=Значение не соответствует %s
 qp.mui.config.error.allowed=Допустимые значения: %s
+
+# Void Module
+item.void_module.name=Модуль уничтожения добычи
+quarryplus.tooltip.void_module=ПКМ: настройка. Вставьте в карьер или разрушитель чанков для уничтожения выбранной добычи.
+quarryplus.tooltip.void_module_match=Учитываются предмет, метаданные и NBT. Образцы не расходуются.
+quarryplus.tooltip.void_module_count=Зарегистрировано: %s / %s
+qp.mui.void_module_hint=ЛКМ: образец. ПКМ: очистить.

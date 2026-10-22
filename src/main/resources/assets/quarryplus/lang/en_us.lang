@@ -170,3 +170,10 @@ qp.mui.config.error.minimum=Minimum: %s
 qp.mui.config.error.maximum=Maximum: %s
 qp.mui.config.error.pattern=Value does not match %s
 qp.mui.config.error.allowed=Allowed: %s
+
+# Void Module
+item.void_module.name=Quarry Void Module
+quarryplus.tooltip.void_module=Right-click to edit. Install in QuarryPlus or Chunk Destroyer to discard matching mined items.
+quarryplus.tooltip.void_module_match=Matches item, metadata and NBT. Filter samples are not consumed.
+quarryplus.tooltip.void_module_count=Registered: %s / %s
+qp.mui.void_module_hint=Left: copy cursor. Right: clear.

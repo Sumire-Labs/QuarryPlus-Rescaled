@@ -26,7 +26,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 /** Opt-in development smoke test: creates its own disposable world and captures every UI. */
 @SideOnly(Side.CLIENT)
 public final class GuiSmokeTest {
-    private static final int[] IDS = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,100,101,102,103,104,105,120,121,122,123,124,125,140};
+    private static final int[] IDS = Boolean.getBoolean("quarryplus.voidSmokeTest") ? new int[]{17}
+            : new int[]{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,100,101,102,103,104,105,120,121,122,123,124,125,140};
     private int stage;
     private int index;
     private int ticks;
@@ -166,6 +167,10 @@ public final class GuiSmokeTest {
         if (id == 12) {
             player.inventory.currentItem = 0;
             player.inventory.setInventorySlotContents(0, new ItemStack(QuarryPlusI.itemTemplate()));
+        }
+        if (id == 17) {
+            player.inventory.currentItem = 0;
+            player.inventory.setInventorySlotContents(0, new ItemStack(QuarryPlusI.voidModule()));
         }
         if (id == 1) ((TileWorkbench) world.getTileEntity(pos)).setInventorySlotContents(0, new ItemStack(Items.IRON_INGOT, 1500));
         // A newly placed test block must reach the client before MUI constructs its panel.

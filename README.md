@@ -24,8 +24,11 @@ ChunkDestroyer and Advanced Pump will increase the number of old GC and lag.
 - Port to Cleanroom w/ Java 25 + Scala 3.x.
 - Migrate MCP to 39-1.12
 - Replace machine and configuration screens with ModularUI.
+- Backport Void Module: right-click it to register up to 18 item samples without consuming them, then install it in the new QuarryPlus or Chunk Destroyer. Matching items (including metadata and NBT) are discarded as they are collected. Multiple modules combine their filters.
 
 ## Credits
 
 yogpstop - Original Mod 
 kotori316 - Additional Enchanted Miner
+
+Void Module texture from [Additional Enchanted Miner](https://github.com/Kotori316/QuarryPlus/tree/v21.1.165), licensed under LGPL-3.0.

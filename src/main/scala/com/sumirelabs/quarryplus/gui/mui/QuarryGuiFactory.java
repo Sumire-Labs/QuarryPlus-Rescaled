@@ -86,6 +86,10 @@ public final class QuarryGuiFactory implements UIFactory<QuarryGuiData> {
         if (data.guiId == QuarryPlusI.guiIdListTemplate()) {
             return player.inventory.getCurrentItem().getItem() == QuarryPlusI.itemTemplate();
         }
+        if (data.guiId == QuarryPlusI.guiIdVoidModule()) {
+            return player.inventory.getCurrentItem().getItem() == QuarryPlusI.voidModule()
+                    && QuarryPlusI.voidModule().enabled();
+        }
         if (!data.getWorld().isBlockLoaded(data.getBlockPos()) || data.getSquaredDistance(player) > 64) return false;
         if (data.guiId == QuarryPlusI.guiIdMover()) return data.getWorld().getBlockState(data.getBlockPos()).getBlock() == QuarryPlusI.blockMover();
         if (data.guiId == CONTROLLER) return data.getWorld().getBlockState(data.getBlockPos()).getBlock() instanceof BlockController;
