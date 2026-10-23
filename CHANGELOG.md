@@ -1,10 +1,16 @@
 # [13.1.3]
 
-- Update Japanese machine names and related messages for QuarryPlus and Chunk Destroyer.
-- Fix the creative tab showing an untranslated key after the Rescaled rename.
-- Add Mini Quarry with real tool durability/enchantments, redstone pulse control, block filters, range outlines, chunk loading, and a ModularUI screen.
-- Backport Repeat Tick Module: stack up to 64 in one module slot to accelerate QuarryPlus and Chunk Destroyer work while retaining normal energy costs.
-- Backport Void Module for QuarryPlus and Chunk Destroyer, with 18 non-consuming filter slots and support for multiple modules.
+## Added
+
+- **Mini Quarry:** harvest a marker-defined area with real tools, including their enchantments and durability. Supports redstone pulse control, allow/deny filters, range outlines, chunk loading, and a ModularUI screen.
+- **Repeat Tick Module:** stack up to 64 in one module slot to accelerate the new QuarryPlus and Chunk Destroyer. Each additional work pass consumes its normal energy; fuel generation is not accelerated.
+- **Void Module:** discard selected items collected by the new QuarryPlus and Chunk Destroyer. Includes 18 non-consuming filter slots, metadata/NBT matching, and support for combining multiple modules.
+- Workbench recipes and English, Japanese, Russian, and Simplified Chinese translations for the new content.
+
+## Fixed
+
+- Fix the creative tab displaying an untranslated key after the Rescaled rename.
+- Update Japanese machine names and related messages, including the localized Chunk Destroyer name and the old QuarryPlus suffix.
 
 # [13.1.2]
 
