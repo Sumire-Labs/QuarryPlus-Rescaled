@@ -7,6 +7,7 @@ import com.yogpc.qp.block.ADismCBlock
 import com.yogpc.qp.container.ContainerQuarryModule.HasModuleInventory
 import com.yogpc.qp.container.{ContainerQuarryModule, StatusContainer}
 import com.yogpc.qp.gui.TranslationKeys
+import com.yogpc.qp.modules.RepeatTickModule
 import com.yogpc.qp.packet.{PacketHandler, TileMessage}
 import com.yogpc.qp.utils.{BlockData, MarkerUtil, ReflectionHelper}
 import net.minecraft.client.resources.I18n
@@ -75,6 +76,7 @@ class TileQuarry2 extends APowerTile()
       modules.foreach(_.invoke(IModule.Tick(self)))
       // Quarry action
       val faster = Config.content.fastQuarryHeadMove
+      val workLimit = RepeatTickModule.workLimit(if (faster) enchantments.efficiency + 1 else 1, modules)
       var i = 0
       var keepGoing = true
       while (keepGoing) {
@@ -88,7 +90,7 @@ class TileQuarry2 extends APowerTile()
         }
         target = action.nextTarget()
         i += 1
-        keepGoing = i < enchantments.efficiency + 1 && faster
+        keepGoing = i < workLimit && action != QuarryAction.none
       }
       val nowState = world.getBlockState(pos)
       if (nowState.getValue(ADismCBlock.ACTING) ^ isWorking) {

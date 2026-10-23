@@ -80,7 +80,7 @@ gui.removeLiquid=移除流体
 gui.removeWater=移除水
 gui.reset=重置
 gui.silktouchList=精准采集方块列表
-itemGroup.QuarryPlus=增强型采石场
+itemGroup.QuarryPlus=增强型采石场 Rescaled
 key.hover=模式切换键
 key.yoglib=增强型采石场
 nei.handler.qpusage=增强型采石场机器选项
@@ -177,3 +177,27 @@ quarryplus.tooltip.void_module=右键设置。装入新版采石场或区块破�
 quarryplus.tooltip.void_module_match=匹配物品、元数据和 NBT。设置样本不消耗物品。
 quarryplus.tooltip.void_module_count=已设置: %s / %s
 qp.mui.void_module_hint=左键: 设置样本  右键: 清除
+
+# Repeat Tick Module
+item.repeat_tick_module.name=采石场加速模块
+quarryplus.tooltip.repeat_tick_module=装入新版采石场或区块破坏器：此堆叠可使每刻处理次数变为 %s 次。
+quarryplus.tooltip.repeat_tick_energy=单槽最多 64 个。每次处理仍消耗正常能量，不会加速发电。
+
+# Mini Quarry
+tile.mini_quarry.name=小型采石场
+qp.mini.idle=已停止
+qp.mini.running=工作中
+qp.mini.complete=扫描完成
+qp.mini.no_area=请先连接地标以指定范围
+qp.mini.invalid_area=范围无效（最大 256 x 256）
+qp.mini.no_tool=需要合适的工具
+qp.mini.no_energy=能量不足
+qp.mini.protected=方块破坏被拒绝
+qp.mini.unloaded=等待区块加载
+qp.mini.tools=工具 / 燃料模块
+qp.mini.select_area=选择范围
+qp.mini.toggle=启动/停止
+qp.mini.show_area=显示范围
+qp.mini.allow=允许列表（为空则允许全部）
+qp.mini.deny=禁止列表（优先于允许列表）
+qp.mini.energy=能量: %s FE

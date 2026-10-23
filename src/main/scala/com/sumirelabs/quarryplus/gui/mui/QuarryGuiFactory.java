@@ -72,6 +72,7 @@ public final class QuarryGuiFactory implements UIFactory<QuarryGuiData> {
         if (panel == null) panel = InventoryPanels.build(ctx);
         if (panel == null) panel = MachinePanels.build(ctx);
         if (panel == null) panel = FilterPanels.build(ctx);
+        if (panel == null && data.guiId == QuarryPlusI.guiIdMiniQuarry()) panel = MiniQuarryPanel.build(ctx);
         if (panel == null) throw new IllegalArgumentException("No ModularUI panel for GUI " + data.guiId);
         return panel;
     }
@@ -96,6 +97,7 @@ public final class QuarryGuiFactory implements UIFactory<QuarryGuiData> {
         TileEntity tile = data.getTileEntity();
         if (tile == null || tile.isInvalid()) return false;
         int id = data.guiId;
+        if (id == QuarryPlusI.guiIdMiniQuarry()) return tile instanceof TileMiniQuarry;
         if (id == QuarryPlusI.guiIdWorkbench()) return tile instanceof TileWorkbench;
         if (id == QuarryPlusI.guiIdFList() || id == QuarryPlusI.guiIdSList() || id == QuarryPlusI.guiIdQuarryYLevel()) return tile instanceof TileBasic;
         if (id == QuarryPlusI.guiIdPlacer()) return tile instanceof TilePlacer;

@@ -1,0 +1,52 @@
+{
+  "variants": {
+    "acting=true,facing=west": {
+      "model": "quarryplus:mini_quarry_working",
+      "y": 270
+    },
+    "acting=false,facing=north": {
+      "model": "quarryplus:mini_quarry",
+      "y": 0
+    },
+    "acting=false,facing=west": {
+      "model": "quarryplus:mini_quarry",
+      "y": 270
+    },
+    "acting=true,facing=north": {
+      "model": "quarryplus:mini_quarry_working",
+      "y": 0
+    },
+    "acting=false,facing=east": {
+      "model": "quarryplus:mini_quarry",
+      "y": 90
+    },
+    "acting=true,facing=east": {
+      "model": "quarryplus:mini_quarry_working",
+      "y": 90
+    },
+    "acting=true,facing=south": {
+      "model": "quarryplus:mini_quarry_working",
+      "y": 180
+    },
+    "acting=false,facing=south": {
+      "model": "quarryplus:mini_quarry",
+      "y": 180
+    },
+    "acting=false,facing=up": {
+      "x": 270,
+      "model": "quarryplus:mini_quarry"
+    },
+    "acting=false,facing=down": {
+      "x": 90,
+      "model": "quarryplus:mini_quarry"
+    },
+    "acting=true,facing=up": {
+      "x": 270,
+      "model": "quarryplus:mini_quarry_working"
+    },
+    "acting=true,facing=down": {
+      "x": 90,
+      "model": "quarryplus:mini_quarry_working"
+    }
+  }
+}

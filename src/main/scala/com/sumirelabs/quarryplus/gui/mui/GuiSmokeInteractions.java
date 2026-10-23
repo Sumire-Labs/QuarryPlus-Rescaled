@@ -43,6 +43,23 @@ final class GuiSmokeInteractions {
         player.inventory.setInventorySlotContents(9, new ItemStack(Blocks.COBBLESTONE, 16));
         TileEntity tile = player.world.getTileEntity(POS);
         if (id == 1) player.inventory.setInventorySlotContents(9, ItemStack.EMPTY);
+        else if (id == 18) {
+            TileMiniQuarry mini = (TileMiniQuarry) tile;
+            mini.setArea(new MiniQuarryArea(5, 64, 2, 6, 64, 2));
+            player.world.setBlockState(new BlockPos(5, 64, 2), Blocks.STONE.getDefaultState());
+            player.world.setBlockState(new BlockPos(6, 64, 2), Blocks.DIRT.getDefaultState());
+            ItemStack pick = new ItemStack(Items.DIAMOND_PICKAXE);
+            pick.addEnchantment(Enchantments.SILK_TOUCH, 1);
+            player.inventory.setInventorySlotContents(9, pick);
+            player.inventory.setInventorySlotContents(10, new ItemStack(Blocks.STONE, 32));
+            player.inventory.setInventorySlotContents(11, new ItemStack(Blocks.DIRT, 16));
+            mini.setStoredEnergy(10000000000L);
+        }
+        else if (id == 13 && Boolean.getBoolean("quarryplus.repeatSmokeTest")) {
+            player.inventory.setInventorySlotContents(9, new ItemStack(QuarryPlusI.repeatTickModule(), 32));
+            player.inventory.setInventorySlotContents(10, new ItemStack(QuarryPlusI.repeatTickModule(), 32));
+            player.inventory.setInventorySlotContents(11, new ItemStack(QuarryPlusI.torchModule(), 16));
+        }
         else if (id == 2) {
             ContainerMover mover = (ContainerMover) container.original();
             ItemStack pick = new ItemStack(Items.DIAMOND_PICKAXE);
@@ -91,6 +108,16 @@ final class GuiSmokeInteractions {
             check((area != null) == enabled, "Incorrect JEI recipe click area registration");
         }
         if (id == 1) mc.playerController.windowClick(container.windowId, 0, 0, ClickType.QUICK_MOVE, mc.player);
+        else if (id == 18) {
+            mc.playerController.windowClick(container.windowId, playerSlot(container, 9), 0, ClickType.QUICK_MOVE, mc.player);
+            mc.playerController.windowClick(container.windowId, playerSlot(container, 10), 0, ClickType.PICKUP, mc.player);
+            mc.playerController.windowClick(container.windowId, 5, 0, ClickType.PICKUP, mc.player);
+            mc.playerController.windowClick(container.windowId, playerSlot(container, 10), 0, ClickType.PICKUP, mc.player);
+            mc.playerController.windowClick(container.windowId, playerSlot(container, 11), 0, ClickType.PICKUP, mc.player);
+            mc.playerController.windowClick(container.windowId, 14, 0, ClickType.PICKUP, mc.player);
+            mc.playerController.windowClick(container.windowId, playerSlot(container, 11), 0, ClickType.PICKUP, mc.player);
+            press(container, "mini_area"); press(container, "mini_run");
+        }
         else if (id == 2) press(container, "mover_transfer");
         else if (id == 3 || id == 4) {
             press(container, "toggle"); press(container, "blocksSelect0"); press(container, "delete"); press(container, "delete");
@@ -100,6 +127,13 @@ final class GuiSmokeInteractions {
         else if (id == 12) {
             mc.playerController.windowClick(container.windowId, playerSlot(container, 0), 0, ClickType.PICKUP, mc.player);
             press(container, "add"); press(container, "modeToggle");
+        }
+        else if (id == 13 && Boolean.getBoolean("quarryplus.repeatSmokeTest")) {
+            mc.playerController.windowClick(container.windowId, playerSlot(container, 9), 0, ClickType.QUICK_MOVE, mc.player);
+            mc.playerController.windowClick(container.windowId, playerSlot(container, 10), 0, ClickType.QUICK_MOVE, mc.player);
+            mc.playerController.windowClick(container.windowId, 0, 0, ClickType.QUICK_MOVE, mc.player);
+            mc.playerController.windowClick(container.windowId, playerSlot(container, 8), 0, ClickType.QUICK_MOVE, mc.player);
+            mc.playerController.windowClick(container.windowId, playerSlot(container, 11), 0, ClickType.QUICK_MOVE, mc.player);
         }
         else if (id == 17) {
             int source = playerSlot(container, 9);
@@ -138,6 +172,14 @@ final class GuiSmokeInteractions {
             int total = 0;
             for (ItemStack stack : player.inventory.mainInventory) if (stack.getItem() == Items.IRON_INGOT) total += stack.getCount();
             check(total == 1500 && ((TileWorkbench) tile).getStackInSlot(0).isEmpty(), "Large-stack shift transfer lost/duplicated items");
+        } else if (id == 18) {
+            TileMiniQuarry mini = (TileMiniQuarry) tile;
+            check(mini.tools.getStackInSlot(0).getItem() == Items.DIAMOND_PICKAXE, "Mini Quarry tool insertion failed");
+            check(mini.showArea() && mini.filters.getStackInSlot(0).getItem() == net.minecraft.item.Item.getItemFromBlock(Blocks.STONE)
+                    && mini.filters.getStackInSlot(9).getItem() == net.minecraft.item.Item.getItemFromBlock(Blocks.DIRT), "Mini Quarry filter controls failed");
+            check(player.inventory.getStackInSlot(10).getCount() == 32 && player.inventory.getStackInSlot(11).getCount() == 16,
+                    "Mini Quarry filters consumed sample items");
+            MiniQuarrySmokeChecks.verify(player, mini);
         } else if (id == 2) {
             ContainerMover mover = (ContainerMover) container.original();
             check(EnchantmentHelper.getEnchantmentLevel(Enchantments.EFFICIENCY, mover.craftMatrix.getStackInSlot(0)) == 2
@@ -154,6 +196,14 @@ final class GuiSmokeInteractions {
         else if (id == 12) {
             ItemTemplate.Template template = ItemTemplate.getTemplate(player.inventory.getCurrentItem());
             check(template.items().contains(stone()) && !template.include() && player.inventory.getItemStack().isEmpty(), "Template add/toggle/protected slot failed");
+        } else if (id == 13 && Boolean.getBoolean("quarryplus.repeatSmokeTest")) {
+            TileQuarry2 quarry = (TileQuarry2) tile;
+            check(quarry.moduleInv().getStackInSlot(0).getCount() == 64, "Repeat modules did not merge to a full stack");
+            check(quarry.moduleInv().getStackInSlot(1).getCount() == 1
+                    && player.inventory.getStackInSlot(11).getCount() == 15, "Other module limits lost items");
+            check(player.inventory.getStackInSlot(9).isEmpty() && player.inventory.getStackInSlot(10).isEmpty(),
+                    "Repeat module insertion duplicated items");
+            RepeatTickSmokeChecks.verify(player, quarry);
         } else if (id == 17) {
             var samples = com.yogpc.qp.modules.VoidFilter.read(player.inventory.getCurrentItem());
             check(samples.get(0).getItem() == net.minecraft.item.Item.getItemFromBlock(Blocks.COBBLESTONE)

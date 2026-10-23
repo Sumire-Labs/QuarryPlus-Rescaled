@@ -1,5 +1,9 @@
 # [13.1.3]
 
+- Update Japanese machine names and related messages for QuarryPlus and Chunk Destroyer.
+- Fix the creative tab showing an untranslated key after the Rescaled rename.
+- Add Mini Quarry with real tool durability/enchantments, redstone pulse control, block filters, range outlines, chunk loading, and a ModularUI screen.
+- Backport Repeat Tick Module: stack up to 64 in one module slot to accelerate QuarryPlus and Chunk Destroyer work while retaining normal energy costs.
 - Backport Void Module for QuarryPlus and Chunk Destroyer, with 18 non-consuming filter slots and support for multiple modules.
 
 # [13.1.2]

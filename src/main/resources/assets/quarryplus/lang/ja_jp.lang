@@ -1,7 +1,7 @@
 # Japanese lang file.
 
 tile.breakerplus.name=改良型破壊装置
-tile.chunkdestroyer.name=Chunk Destroyer
+tile.chunkdestroyer.name=チャンクデストロイヤー
 tile.exppump.name=採掘機用経験値ポンプ
 tile.enchantmover.name=エンチャント移動機
 tile.InfMJSrc.name=無限電源
@@ -13,7 +13,7 @@ tile.plainpipe.name=改良型採掘機採掘棒
 tile.pumpplus.name=改良型ポンプ
 tile.quarryframe.name=改良型露天採掘機型枠
 tile.quarry.name=改良型露天採掘機
-tile.quarryplus.name=改良型露天採掘機(旧版)
+tile.quarryplus.name=改良型露天採掘機 (旧)
 tile.refineryplus.name=改良型精製機
 tile.spawnercontroller.name=モンスタースポナー制御装置
 tile.standalonepump.name=自立改良型ポンプ
@@ -57,8 +57,8 @@ chat.pump_rtoggle.quarry=現在、この改良型ポンプは改良型採掘機�
 chat.pumpcontain=---- この改良型ポンプは下記の液体を保有しています
 chat.pumpcontainno=---- この改良型ポンプは液体を保有していません
 chat.pumpmapping=---- 方角と液体の関連付けの一覧
-chat.quarrymode=クァーリーモード
-chat.quarry.restart=クァーリーが再開しました
+chat.quarrymode=クアーリーモード
+chat.quarry.restart=クアーリーが再開しました
 chat.ylevel=この機械はy=%sまで採掘します。
 container.yog.basic=入出力バッファ
 FD.down=下
@@ -80,7 +80,7 @@ gui.removeLiquid=液体を除去
 gui.removeWater=水を除去
 gui.reset=元に戻す
 gui.silktouchList=シルクタッチ有効ブロック一覧
-itemGroup.QuarryPlus=QuarryPlus
+itemGroup.QuarryPlus=QuarryPlus Rescaled
 key.hover=ホバリング切り替えキー
 key.yoglib=QuarryPlus
 nei.handler.qpusage=機械使用方法
@@ -173,7 +173,31 @@ qp.mui.config.error.allowed=指定できる値: %s
 
 # Void Module
 item.void_module.name=採掘物破棄モジュール
-quarryplus.tooltip.void_module=右クリックで設定。新版採掘機かChunk Destroyerに装着すると、一致する採掘物を破棄します。
+quarryplus.tooltip.void_module=右クリックで設定。改良型露天採掘機かチャンクデストロイヤーに装着すると、一致する採掘物を破棄します。
 quarryplus.tooltip.void_module_match=アイテム・メタデータ・NBTが一致する物が対象。登録用アイテムは消費しません。
 quarryplus.tooltip.void_module_count=登録数: %s / %s
 qp.mui.void_module_hint=左: 見本登録  右: 登録解除
+
+# Repeat Tick Module
+item.repeat_tick_module.name=採掘処理加速モジュール
+quarryplus.tooltip.repeat_tick_module=改良型露天採掘機かチャンクデストロイヤーに装着。この個数で毎tickの処理を%s回に増やします。
+quarryplus.tooltip.repeat_tick_energy=1スロットに64個まで。各処理は通常どおりエネルギーを消費し、発電量は増えません。
+
+# Mini Quarry
+tile.mini_quarry.name=小型採掘機
+qp.mini.idle=停止中
+qp.mini.running=採掘中
+qp.mini.complete=走査完了
+qp.mini.no_area=マーカーで範囲を指定してください
+qp.mini.invalid_area=無効な範囲です（最大256×256）
+qp.mini.no_tool=対応する道具が必要です
+qp.mini.no_energy=エネルギー不足
+qp.mini.protected=ブロックの破壊が拒否されました
+qp.mini.unloaded=チャンクの読込待ち
+qp.mini.tools=道具／燃料モジュール
+qp.mini.select_area=範囲取得
+qp.mini.toggle=開始/停止
+qp.mini.show_area=範囲表示
+qp.mini.allow=許可リスト（空欄ならすべて）
+qp.mini.deny=禁止リスト（許可より優先）
+qp.mini.energy=エネルギー: %s FE

@@ -101,6 +101,8 @@ object GuiHandler extends IGuiHandler {
         new ContainerListTemplate(p)
       case QuarryPlusI.guiIdVoidModule =>
         new ContainerVoidModule(p)
+      case QuarryPlusI.guiIdMiniQuarry =>
+        new ContainerMiniQuarry(p, w.getTileEntity(pos).asInstanceOf[TileMiniQuarry])
       case QuarryPlusI.guiIdQuarryModule =>
         new ContainerQuarryModule(w.getTileEntity(pos).asInstanceOf[HasModuleInventory], p)
       case QuarryPlusI.guiIdStatus =>

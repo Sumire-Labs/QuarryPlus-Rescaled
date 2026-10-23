@@ -11,6 +11,7 @@ import java.util.stream.IntStream;
 
 import com.yogpc.qp.modules.IModuleItem;
 import com.yogpc.qp.modules.ItemVoidModule;
+import com.yogpc.qp.modules.ItemRepeatTickModule;
 import jp.t2v.lab.syntax.MapStreamSyntax;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.InventoryBasic;
@@ -64,6 +65,7 @@ public class QuarryModuleInventory extends InventoryBasic implements INBTSeriali
             Predicate<Item> equal = Predicate.isEqual(item);
             Predicate<Item> id = item1 -> item1 instanceof IModuleItem && ((IModuleItem) item1).getSymbol().equals(item.getSymbol());
             return IntStream.range(0, getSizeInventory())
+                .filter(slot -> slot != index)
                 .mapToObj(this::getStackInSlot)
                 .map(ItemStack::getItem)
                 .noneMatch(equal.or(id));
@@ -78,7 +80,20 @@ public class QuarryModuleInventory extends InventoryBasic implements INBTSeriali
 
     @Override
     public int getInventoryStackLimit() {
-        return 1;
+        return 64;
+    }
+
+    public int getModuleStackLimit(ItemStack stack) {
+        return stack.getItem() instanceof ItemRepeatTickModule ? 64 : 1;
+    }
+
+    @Override
+    public void setInventorySlotContents(int index, ItemStack stack) {
+        if (!stack.isEmpty() && stack.getCount() > getModuleStackLimit(stack)) {
+            stack = stack.copy();
+            stack.setCount(getModuleStackLimit(stack));
+        }
+        super.setInventorySlotContents(index, stack);
     }
 
     @Override

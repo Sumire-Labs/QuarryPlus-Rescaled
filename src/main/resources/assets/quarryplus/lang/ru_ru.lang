@@ -80,7 +80,7 @@ gui.removeLiquid=Удаление жидкостей
 gui.removeWater=Удаление воды
 gui.reset=Сброс
 gui.silktouchList=Список блоков для шелкового касания
-itemGroup.QuarryPlus=Quarry Plus
+itemGroup.QuarryPlus=QuarryPlus Rescaled
 key.hover=Режим переключения
 key.yoglib=Улучшенный карьер
 nei.handler.qpusage=Использование машины улучшенный карьер
@@ -177,3 +177,27 @@ quarryplus.tooltip.void_module=ПКМ: настройка. Вставьте в �
 quarryplus.tooltip.void_module_match=Учитываются предмет, метаданные и NBT. Образцы не расходуются.
 quarryplus.tooltip.void_module_count=Зарегистрировано: %s / %s
 qp.mui.void_module_hint=ЛКМ: образец. ПКМ: очистить.
+
+# Repeat Tick Module
+item.repeat_tick_module.name=Модуль ускорения карьера
+quarryplus.tooltip.repeat_tick_module=Вставьте в новый карьер или разрушитель чанков: %s проходов за такт с этой стопкой.
+quarryplus.tooltip.repeat_tick_energy=До 64 в одном слоте. Затраты энергии обычные; выработка энергии не ускоряется.
+
+# Mini Quarry
+tile.mini_quarry.name=Малый карьер
+qp.mini.idle=Остановлен
+qp.mini.running=Работает
+qp.mini.complete=Сканирование завершено
+qp.mini.no_area=Сначала соедините маркеры
+qp.mini.invalid_area=Недопустимая область (макс. 256 x 256)
+qp.mini.no_tool=Нужен подходящий инструмент
+qp.mini.no_energy=Недостаточно энергии
+qp.mini.protected=Разрушение блока запрещено
+qp.mini.unloaded=Ожидание чанка
+qp.mini.tools=Инструменты / топливо
+qp.mini.select_area=Маркеры
+qp.mini.toggle=Пуск/Стоп
+qp.mini.show_area=Контур
+qp.mini.allow=Разрешено (пусто = всё)
+qp.mini.deny=Запрещено (приоритет)
+qp.mini.energy=Энергия: %s FE

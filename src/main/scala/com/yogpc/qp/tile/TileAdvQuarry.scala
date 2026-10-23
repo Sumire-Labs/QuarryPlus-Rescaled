@@ -8,7 +8,7 @@ import com.yogpc.qp.block.{ADismCBlock, BlockBookMover}
 import com.yogpc.qp.compat.InvUtils
 import com.yogpc.qp.container.ContainerQuarryModule.HasModuleInventory
 import com.yogpc.qp.gui.TranslationKeys
-import com.yogpc.qp.modules.IModuleItem
+import com.yogpc.qp.modules.{IModuleItem, RepeatTickModule}
 import com.yogpc.qp.packet.PacketHandler
 import com.yogpc.qp.packet.advquarry.{AdvContentMessage, AdvModeMessage}
 import com.yogpc.qp.tile.HasStorage.Storage
@@ -140,7 +140,7 @@ class TileAdvQuarry extends APowerTile
         chunkLoad()
 
         var i = 0
-        while (i < 4 * digRange.timeInTick) {
+        while (i < RepeatTickModule.workLimit(4 * digRange.timeInTick, modules)) {
           if (mode.is(TileAdvQuarry.MAKE_FRAME))
             makeFrame()
           i += 1
@@ -345,7 +345,7 @@ class TileAdvQuarry extends APowerTile
         }
 
         chunkLoad()
-        val n = if (chunks.isEmpty) digRange.timeInTick else 1
+        val n = if (chunks.isEmpty) RepeatTickModule.workLimit(digRange.timeInTick, modules) else 1
         var j = 0
         var notEnoughEnergy = false
         while (j < n && mode.is(TileAdvQuarry.BREAK_BLOCK) && !notEnoughEnergy) {
@@ -423,7 +423,7 @@ class TileAdvQuarry extends APowerTile
         })
         val exp = getWorld.getEntitiesWithinAABB(classOf[EntityXPOrb], aabb).asScala.map { e => QuarryPlus.proxy.removeEntity(e); e.xpValue }.sum
         modules.collectFirst { case module: ExpPumpModule => module }.foreach(_.addXp(exp))
-        nextPoses(digRange, target, inclusive = true).take(32 * digRange.timeInTick).foreach { case (_, p) =>
+        nextPoses(digRange, target, inclusive = true).take(RepeatTickModule.workLimit(32 * digRange.timeInTick, modules)).foreach { case (_, p) =>
           target = p
           if (p == BlockPos.ORIGIN) {
             mode.set(TileAdvQuarry.NONE)

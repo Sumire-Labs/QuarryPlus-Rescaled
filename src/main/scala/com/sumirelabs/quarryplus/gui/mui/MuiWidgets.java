@@ -28,6 +28,8 @@ public final class MuiWidgets {
             if (source.inventory == ctx.player.inventory)
                 adapted.slotGroup(com.cleanroommc.modularui.widgets.slot.PlayerSlotGroup.NAME);
             ItemSlot widget = new ItemSlot().slot(adapted).pos(source.xPos - 1, source.yPos - 1);
+            if (ctx.legacy instanceof com.yogpc.qp.container.ContainerMiniQuarry && index >= 5 && index < 23)
+                widget.tooltipBuilder(tooltip -> tooltip.addLine(IKey.lang("qp.mui.void_module_hint")));
             if (ctx.legacy instanceof com.yogpc.qp.container.ContainerWorkbench && index >= 27 && index < 45)
                 widget.background(InventoryPanels.recipeBackground(ctx, index - 27));
             panel.child(widget);

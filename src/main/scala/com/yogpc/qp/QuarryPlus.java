@@ -212,7 +212,8 @@ public class QuarryPlus {
             dummyBlock().itemBlock(),
             blockReplacer().itemBlock(),
             blockQuarry2().itemBlock(),
-            blockFiller().itemBlock()
+            blockFiller().itemBlock(),
+            QuarryPlusI.blockMiniQuarry().itemBlock()
         );
         event.getRegistry().registerAll(
             itemList().toArray(new Item[0])
@@ -245,6 +246,7 @@ public class QuarryPlus {
         ModelLoader.setCustomModelResourceLocation(blockReplacer().itemBlock(), 0, proxy.fromEntry(blockReplacer()));
         ModelLoader.setCustomModelResourceLocation(blockQuarry2().itemBlock(), 0, proxy.fromEntry(blockQuarry2()));
         ModelLoader.setCustomModelResourceLocation(blockFiller().itemBlock(), 0, proxy.fromEntry(blockFiller()));
+        ModelLoader.setCustomModelResourceLocation(QuarryPlusI.blockMiniQuarry().itemBlock(), 0, proxy.fromEntry(QuarryPlusI.blockMiniQuarry()));
         ModelLoader.setCustomModelResourceLocation(itemTool(), ItemTool.meta_StatusChecker(), ModelLoader.getInventoryVariant(prefix + ItemTool.statuschecker()));
         ModelLoader.setCustomModelResourceLocation(itemTool(), ItemTool.meta_ListEditor(), ModelLoader.getInventoryVariant(prefix + ItemTool.listeditor()));
         ModelLoader.setCustomModelResourceLocation(itemTool(), ItemTool.meta_LiquidSelector(), ModelLoader.getInventoryVariant(prefix + ItemTool.liquidselector()));
@@ -260,6 +262,7 @@ public class QuarryPlus {
         ModelLoader.setCustomModelResourceLocation(replacerModule(), 0, proxy.fromEntry(replacerModule()));
         ModelLoader.setCustomModelResourceLocation(torchModule(), 0, proxy.fromEntry(torchModule()));
         ModelLoader.setCustomModelResourceLocation(QuarryPlusI.voidModule(), 0, proxy.fromEntry(QuarryPlusI.voidModule()));
+        ModelLoader.setCustomModelResourceLocation(QuarryPlusI.repeatTickModule(), 0, proxy.fromEntry(QuarryPlusI.repeatTickModule()));
         ModelLoader.setCustomModelResourceLocation(fuelModuleNormal(), 0, proxy.fromEntry(fuelModuleNormal()));
         ModelLoader.setCustomModelResourceLocation(fuelModuleCreative(), 0, proxy.fromEntry(fuelModuleCreative()));
     }
@@ -330,6 +333,7 @@ public class QuarryPlus {
         public static final String laser = "laserplus";
         public static final String marker = "markerplus";
         public static final String miningwell = "miningwellplus";
+        public static final String miniQuarry = "mini_quarry";
         public static final String mirror = "magicmirror";
         public static final String mover = "enchantmover";
         public static final String moverfrombook = "enchantmoverfrombook";
@@ -348,6 +352,7 @@ public class QuarryPlus {
         public static final String tool = "tool";
         public static final String torchModule = "torch_module";
         public static final String voidModule = "void_module";
+        public static final String repeatTickModule = "repeat_tick_module";
         public static final String workbench = "workbenchplus";
     }
 }

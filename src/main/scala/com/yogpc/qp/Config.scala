@@ -105,6 +105,7 @@ object Config {
     Symbol("SolidFuleQuarry"),
     Symbol("Replacer"),
     Symbol("NewQuarry"),
+    Symbol("MiniQuarry"),
     Symbol("Filler")) ++ QuarryPlusI.itemDisableInfo.map(_.getSymbol)
   private val DisableBC = Map(
     Symbol("LaserPlus") -> QuarryPlus.Optionals.Buildcraft_silicon_modID,

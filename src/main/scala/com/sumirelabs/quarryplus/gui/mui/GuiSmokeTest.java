@@ -27,6 +27,8 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 @SideOnly(Side.CLIENT)
 public final class GuiSmokeTest {
     private static final int[] IDS = Boolean.getBoolean("quarryplus.voidSmokeTest") ? new int[]{17}
+            : Boolean.getBoolean("quarryplus.miniSmokeTest") ? new int[]{18}
+            : Boolean.getBoolean("quarryplus.repeatSmokeTest") ? new int[]{13,17}
             : new int[]{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,100,101,102,103,104,105,120,121,122,123,124,125,140};
     private int stage;
     private int index;
@@ -159,6 +161,7 @@ public final class GuiSmokeTest {
         else if (id == 8) block = QuarryPlusI.blockBookMover();
         else if (id == 9) block = QuarryPlusI.blockSolidQuarry();
         else if (id == 16) block = QuarryPlusI.blockFiller();
+        else if (id == 18) block = QuarryPlusI.blockMiniQuarry();
         else if (id >= 100 && id < 106) block = QuarryPlusI.blockPump();
         else if (id == 140) block = QuarryPlusI.blockController();
         else block = QuarryPlusI.blockQuarry2();

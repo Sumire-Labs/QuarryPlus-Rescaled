@@ -20,7 +20,12 @@ public class ContainerQuarryModule extends Container {
         for (int i = 0; i < allSlots; i++) {
             int verticalFix = i < 5 ? i : i - 5;
             int horizontalFix = i / 5;
-            addSlotToContainer(new SlotTile(moduleInventory, i, 44 + verticalFix * oneBox, 27 + horizontalFix * oneBox));
+            addSlotToContainer(new SlotTile(moduleInventory, i, 44 + verticalFix * oneBox, 27 + horizontalFix * oneBox) {
+                @Override public int getItemStackLimit(ItemStack stack) { return moduleInventory.getModuleStackLimit(stack); }
+                @Override public int getSlotStackLimit() {
+                    return getHasStack() ? moduleInventory.getModuleStackLimit(getStack()) : 64;
+                }
+            });
         }
 
         for (int h = 0; h < 3; h++) {
@@ -51,10 +56,15 @@ public class ContainerQuarryModule extends Container {
             } else {
                 for (int i = 0; i < allSlots; i++) {
                     if (moduleInventory.isItemValidForSlot(i, remain)) {
-                        if (!mergeItemStack(remain, i, i + allSlots, false)) {
-                            return ItemStack.EMPTY;
-                        }
-                        break;
+                        Slot destination = inventorySlots.get(i);
+                        ItemStack current = destination.getStack();
+                        if (!current.isEmpty() && (!ItemStack.areItemsEqual(current, remain)
+                                || !ItemStack.areItemStackTagsEqual(current, remain))) continue;
+                        int amount = Math.min(remain.getCount(), destination.getItemStackLimit(remain) - current.getCount());
+                        if (amount <= 0) continue;
+                        if (current.isEmpty()) destination.putStack(remain.splitStack(amount));
+                        else { current.grow(amount); remain.shrink(amount); destination.onSlotChanged(); }
+                        if (remain.isEmpty()) break;
                     }
                 }
             }

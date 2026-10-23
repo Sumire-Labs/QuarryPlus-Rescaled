@@ -51,6 +51,7 @@ object QuarryPlusI {
   val blockReplacer: BlockReplacer = registerB(new BlockReplacer)
   val blockQuarry2: BlockQuarry2 = registerB(new BlockQuarry2)
   val blockFiller: BlockFiller = registerB(new BlockFiller)
+  val blockMiniQuarry: BlockMiniQuarry = registerB(new BlockMiniQuarry)
   val itemTool = registerI(new ItemTool)
   val itemQuarryPickaxe = registerI(new ItemQuarryPickaxe)
   val magicMirror = registerI(new ItemMirror)
@@ -61,6 +62,7 @@ object QuarryPlusI {
   val replacerModule = registerI(new ItemReplacerModule)
   val torchModule = registerI(new ItemTorchModule)
   val voidModule = registerI(new ItemVoidModule)
+  val repeatTickModule = registerI(new ItemRepeatTickModule)
   val fuelModuleNormal = registerI(new ItemFuelModule(FuelModule.Normal))
   val fuelModuleCreative = registerI(new ItemFuelModule(FuelModule.Creative))
   final val guiIdWorkbench = 1
@@ -80,6 +82,7 @@ object QuarryPlusI {
   final val guiIdStatus = 15
   final val guiIdFiller = 16
   final val guiIdVoidModule = 17
+  final val guiIdMiniQuarry = 18
 
   val tileIdMap: Map[Class[? <: TileEntity], ResourceLocation] = Map(
     classOf[TileWorkbench] -> QuarryPlus.Names.workbench,
@@ -98,7 +101,8 @@ object QuarryPlusI {
     classOf[TileSolidQuarry] -> QuarryPlus.Names.solidquarry,
     classOf[TileReplacer] -> QuarryPlus.Names.replacer,
     classOf[TileQuarry2] -> QuarryPlus.Names.quarry2,
-    classOf[TileFiller] -> QuarryPlus.Names.filler
+    classOf[TileFiller] -> QuarryPlus.Names.filler,
+    classOf[TileMiniQuarry] -> QuarryPlus.Names.miniQuarry
   ).view.mapValues(s => new ResourceLocation(QuarryPlus.modID, s)).toMap
 
   val tileIdSet = tileIdMap.map { case (_, s) => s.toString }.toSet

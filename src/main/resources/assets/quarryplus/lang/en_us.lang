@@ -80,7 +80,7 @@ gui.removeLiquid=RemoveLiquid
 gui.removeWater=RemoveWater
 gui.reset=Reset
 gui.silktouchList=SilktouchBlockList
-itemGroup.QuarryPlus=QuarryPlus
+itemGroup.QuarryPlus=QuarryPlus Rescaled
 key.hover=Mode Switch Key
 key.yoglib=QuarryPlus
 nei.handler.qpusage=QuarryPlus Machine Usage
@@ -177,3 +177,27 @@ quarryplus.tooltip.void_module=Right-click to edit. Install in QuarryPlus or Chu
 quarryplus.tooltip.void_module_match=Matches item, metadata and NBT. Filter samples are not consumed.
 quarryplus.tooltip.void_module_count=Registered: %s / %s
 qp.mui.void_module_hint=Left: copy cursor. Right: clear.
+
+# Repeat Tick Module
+item.repeat_tick_module.name=Quarry Repeat Tick Module
+quarryplus.tooltip.repeat_tick_module=Install in new QuarryPlus or Chunk Destroyer: %s work passes per tick with this stack.
+quarryplus.tooltip.repeat_tick_energy=Up to 64 in one slot. Normal energy costs apply; fuel generation is not accelerated.
+
+# Mini Quarry
+tile.mini_quarry.name=Mini Quarry
+qp.mini.idle=Stopped
+qp.mini.running=Working
+qp.mini.complete=Scan complete
+qp.mini.no_area=Link markers first
+qp.mini.invalid_area=Invalid area (max 256 x 256)
+qp.mini.no_tool=A suitable tool is required
+qp.mini.no_energy=Not enough energy
+qp.mini.protected=Block breaking was denied
+qp.mini.unloaded=Waiting for chunk
+qp.mini.tools=Tools / Fuel Module
+qp.mini.select_area=Markers
+qp.mini.toggle=Start/Stop
+qp.mini.show_area=Outline
+qp.mini.allow=Allowed blocks (empty = all)
+qp.mini.deny=Denied blocks (takes priority)
+qp.mini.energy=Energy: %s FE
