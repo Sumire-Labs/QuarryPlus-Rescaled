@@ -29,7 +29,7 @@ publishing {
             // Remove the 'from components.java' line above
             // Add this line (change the task name):
             // artifacts task_name
-            artifact(tasks.named(project.ext.remapTaskName).flatMap { it.archiveFile })
+            artifact(tasks.named('reobfJar')) { classifier = 'srg' }
             version = project.version
         }
     }

@@ -35,7 +35,6 @@ import com.yogpc.qp.version.VersionUtil;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.launchwrapper.Launch;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.ResourceLocation;
@@ -54,10 +53,12 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLInterModComms;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLServerStartedEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.FMLLaunchHandler;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.ItemHandlerHelper;
 import org.apache.logging.log4j.LogManager;
@@ -163,7 +164,7 @@ public class QuarryPlus {
         MinecraftForge.EVENT_BUS.register(proxy);
         NetworkRegistry.INSTANCE.registerGuiHandler(INSTANCE, GuiHandler.instance());
         com.sumirelabs.quarryplus.gui.mui.QuarryGuiFactory.register();
-        inDev = ((Boolean) Launch.blackboard.getOrDefault("fml.deobfuscatedEnvironment", Boolean.FALSE));
+        inDev = FMLLaunchHandler.isDeobfuscatedEnvironment();
     }
 
     @Mod.EventHandler
@@ -177,6 +178,14 @@ public class QuarryPlus {
             BuildcraftHelper.disableFacade();
         if (Loader.isModLoaded(Optionals.IC2_modID)) {
             MinecraftForge.EVENT_BUS.register(IC2Harvest.class);
+        }
+    }
+
+    @Mod.EventHandler
+    public void serverStarted(final FMLServerStartedEvent event) {
+        if (inDev && Boolean.getBoolean("quarryplus.serverSmokeTest")) {
+            LOGGER.info("Dedicated server smoke test passed: QuarryPlus initialized and the server started.");
+            FMLCommonHandler.instance().getMinecraftServerInstance().initiateShutdown();
         }
     }
 

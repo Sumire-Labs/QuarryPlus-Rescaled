@@ -1,0 +1,64 @@
+import java.util.zip.ZipEntry
+import java.util.zip.ZipFile
+import java.util.zip.ZipOutputStream
+import org.gradle.api.artifacts.transform.CacheableTransform
+import org.gradle.api.artifacts.transform.InputArtifact
+import org.gradle.api.artifacts.transform.TransformAction
+import org.gradle.api.artifacts.transform.TransformOutputs
+import org.gradle.api.artifacts.transform.TransformParameters
+import org.gradle.api.artifacts.type.ArtifactTypeDefinition
+import org.gradle.api.file.FileSystemLocation
+import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
+
+// CG 0.23's deobf transform retains signatures from older signed mods (IC2/RF).
+// Their class bytes have changed, so those signatures no longer authenticate the jar.
+// Sanitize development runtime artifacts without modifying downloaded jars or disabling JVM verification.
+@CacheableTransform
+abstract class UnsignedDevelopmentJar implements TransformAction<TransformParameters.None> {
+    @InputArtifact
+    @PathSensitive(PathSensitivity.NAME_ONLY)
+    abstract Provider<FileSystemLocation> getInputArtifact()
+
+    static boolean signature(String name) {
+        String path = name.toUpperCase(Locale.ROOT)
+        return path.startsWith('META-INF/') && (path.endsWith('.SF') || path.endsWith('.RSA') ||
+                path.endsWith('.DSA') || path.endsWith('.EC') || path.startsWith('META-INF/SIG-'))
+    }
+
+    @Override
+    void transform(TransformOutputs outputs) {
+        File input = inputArtifact.get().asFile
+        if (!input.name.endsWith('-deobf.jar')) {
+            outputs.file(input)
+            return
+        }
+        new ZipFile(input).withCloseable { source ->
+            if (!source.entries().toList().any { UnsignedDevelopmentJar.signature(it.name) }) {
+                outputs.file(input)
+                return
+            }
+            File output = outputs.file(input.name.replaceFirst(/\.jar$/, '-unsigned.jar'))
+            new ZipOutputStream(new FileOutputStream(output)).withCloseable { target ->
+                source.entries().each { original ->
+                    if (!UnsignedDevelopmentJar.signature(original.name)) {
+                        ZipEntry entry = new ZipEntry(original.name)
+                        entry.time = original.time
+                        target.putNextEntry(entry)
+                        if (!original.directory) source.getInputStream(original).withCloseable { it.transferTo(target) }
+                        target.closeEntry()
+                    }
+                }
+            }
+        }
+    }
+}
+
+dependencies.registerTransform(UnsignedDevelopmentJar) {
+    from.attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, ArtifactTypeDefinition.JAR_TYPE)
+    to.attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, 'unsigned-development-jar')
+}
+configurations.named('runtimeClasspath') {
+    attributes.attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, 'unsigned-development-jar')
+}

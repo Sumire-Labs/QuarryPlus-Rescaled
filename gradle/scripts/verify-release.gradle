@@ -1,7 +1,9 @@
 // Verify the remapped distribution artifact before the release workflow uploads it.
 // This script can also be applied externally when rebuilding older, unchanged tags.
-def releaseJarTask = tasks.named(project.ext.remapTaskName)
-def releaseJarFile = releaseJarTask.flatMap { it.archiveFile }
+// Keep the external verifier usable for historical Unimined tags as well.
+def nativeUserdev = tasks.findByName('reobfJar') != null
+def releaseJarTask = tasks.named(nativeUserdev ? 'reobfJar' : project.ext.remapTaskName)
+def releaseJarFile = releaseJarTask.flatMap { nativeUserdev ? it.output : it.archiveFile }
 def computedVersion = versioning.version
 def releaseModId = mod_id.toString()
 def releaseLogoPath = mod_logo_path.toString()

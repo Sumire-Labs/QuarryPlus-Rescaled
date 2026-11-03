@@ -1,6 +1,11 @@
 repositories {
-    // Other repositories described by default:
-    // CleanroomMC: https://maven.cleanroommc.com
+    // The historical Cleanroom JEI artifact has no POM and is outside CG's exclusive com.cleanroommc group.
+    maven {
+        name = 'CleanroomModArtifacts'
+        url = 'https://maven.cleanroommc.com'
+        content { includeGroup 'mezz' }
+        metadataSources { mavenPom(); artifact() }
+    }
     maven {
         name = 'CurseMaven'
         url = 'https://cursemaven.com'
@@ -38,81 +43,47 @@ repositories {
         url = 'https://maven.blamejared.com/'
     }
     mavenCentral()
-    mavenLocal() // Must be last for caching to work
+    if (providers.gradleProperty('cg.repos.enableLocal').orElse('false').get().toBoolean()) mavenLocal()
 }
 
 dependencies {
-    if (enable_lwjglx.toBoolean()) {
-        compileOnly 'com.cleanroommc:lwjglx:1.0.0'
-    }
+    // LWJGL compatibility is supplied by the selected Cleanroom 0.7 userdev.
 
     // Use the real Scala 3.9 provider: the Maven 1.0.0 stub disables its Mod container in development.
-    modRuntimeOnly('curse.maven:scalar-1012168:8800375') {
+    runtimeOnly(deobf("curse.maven:scalar-1012168:${scalar_file}")) {
         transitive = false
     }
 
     // Original CleanroomMC ModularUI, rather than a third-party fork.
-    modImplementation('com.cleanroommc:modularui:3.1.6') {
+    implementation(deobf('com.cleanroommc:modularui:3.1.6')) {
         transitive = false // Cleanroom supplies Mixin; optional UI integrations are not mandatory mods.
     }
     // Zinc inspects ModularContainer's public optional sorting API during Java/Scala joint compilation.
-    modCompileOnly('curse.maven:inventory-bogosorter-632327:7412409') {
+    compileOnly(deobf('curse.maven:inventory-bogosorter-632327:7412409')) {
         transitive = false
     }
-    modCompileOnly('curse.maven:neverenoughanimation-1062347:6533650') {
+    compileOnly(deobf('curse.maven:neverenoughanimation-1062347:6533650')) {
         transitive = false
     }
 
     // Remap the SRG distribution; IC2's dev classifier uses older MCP names (e.g. mcDataDir).
-    modImplementation 'net.industrial-craft:industrialcraft-2:2.8.221-ex112'
-    modImplementation 'cofh:RedstoneFlux:1.12-2.1.0.7:universal'
-    modImplementation('cofh:CoFHCore:1.12.2-4.6.3.27:universal') {
+    implementation deobf('net.industrial-craft:industrialcraft-2:2.8.221-ex112')
+    implementation deobf('cofh:RedstoneFlux:1.12-2.1.0.7:universal')
+    implementation(deobf('cofh:CoFHCore:1.12.2-4.6.3.27:universal')) {
         // Use the Cleanroom JEI declared below instead of CoFHCore's older upstream API.
         exclude group: 'mezz.jei', module: 'jei_1.12.2'
     }
     // Remap the distribution (including its access transformer) instead of injecting the dev jar.
-    modImplementation 'mezz:jei:4.35.0@jar'
-    modImplementation 'com.mod-buildcraft:buildcraft-main:7.99.24.7'
+    implementation deobf('mezz:jei:4.35.0@jar')
+    implementation deobf('com.mod-buildcraft:buildcraft-main:7.99.24.7')
 
-    modCompileOnly 'CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-4.1.20.605'
+    compileOnly deobf('CraftTweaker2:CraftTweaker2-MC1120-Main:1.12-4.1.20.605')
     compileOnly 'CraftTweaker2:CraftTweaker2-API:4.1.20.605'
     compileOnly 'CraftTweaker2:ZenScript:4.1.20.605'
-    modCompileOnly('mekanism:Mekanism:1.12.2-9.4.4.330+0b21085') {
+    compileOnly(deobf('mekanism:Mekanism:1.12.2-9.4.4.330+0b21085')) {
         // Only Mekanism's API is needed; its POM pulls obsolete runtime JEI/CTM/CraftTweaker versions.
         transitive = false
     }
-    modCompileOnly 'curse.maven:bedrockores-275083:2602707'
+    compileOnly deobf('curse.maven:bedrockores-275083:2602707')
 
-    // Example - Dependency descriptor:
-    // 'com.google.code.gson:gson:2.8.6' << group: com.google.code.gson, name:gson, version:2.8.6
-    // 'group:name:version:classifier' where classifier is optional
-
-    // Example - CurseMaven dependencies:
-    // 'curse.maven:had-enough-items-557549:4543375' << had-enough-items = project slug, 557549 = project id, 4543375 = file id
-    // Full documentation: https://cursemaven.com/
-
-    // Example - Modrinth dependencies:
-    // 'maven.modrinth:jei:4.16.1.1000' << jei = project name, 4.16.1.1000 = file version
-    // Full documentation: https://docs.modrinth.com/docs/tutorials/maven/
-
-    // Common dependency types (configuration):
-    // implementation = dependency available at both compile time and runtime
-    // runtimeOnly = runtime dependency
-    // compileOnly = compile time dependency
-    // annotationProcessor = annotation processing dependencies
-    // contain = bundle dependency jars into final artifact, will extract them in mod loading. Can be used it as jar-in-jar
-    // shadow = bundle dependencies into shadow output artifact (relocation configurable in shadowJar task)
-    // modImplementation = mod dependency available at both compile time and runtime
-    // modDevImplementation = development-only mod dependency available at compile time and runtime
-    // modCompileOnly = mod dependency available only at compile time
-    // modRuntimeOnly = mod dependency available only at runtime
-    // modLibrary = won't be remap but will be forced injected into classpath later
-
-    // Transitive dependencies:
-    // (Dependencies that your dependency depends on)
-    // If you wish to exclude transitive dependencies in the described dependencies
-    // Use a closure as such:
-    // implementation ('com.google.code.gson:gson:2.8.6') {
-    //     transitive = false
-    // }
 }

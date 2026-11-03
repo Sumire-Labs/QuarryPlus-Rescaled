@@ -29,7 +29,7 @@ public final class GuiSmokeTest {
     private static final int[] IDS = Boolean.getBoolean("quarryplus.voidSmokeTest") ? new int[]{17}
             : Boolean.getBoolean("quarryplus.miniSmokeTest") ? new int[]{18}
             : Boolean.getBoolean("quarryplus.repeatSmokeTest") ? new int[]{13,17}
-            : new int[]{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,100,101,102,103,104,105,120,121,122,123,124,125,140};
+            : new int[]{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,100,101,102,103,104,105,120,121,122,123,124,125,140};
     private int stage;
     private int index;
     private int ticks;
@@ -40,7 +40,7 @@ public final class GuiSmokeTest {
     private java.util.concurrent.Future<?> worldTask;
 
     public static void install() {
-        if (Boolean.getBoolean("quarryplus.guiSmokeTest") && Boolean.TRUE.equals(net.minecraft.launchwrapper.Launch.blackboard.get("fml.deobfuscatedEnvironment")))
+        if (Boolean.getBoolean("quarryplus.guiSmokeTest") && net.minecraftforge.fml.relauncher.FMLLaunchHandler.isDeobfuscatedEnvironment())
             MinecraftForge.EVENT_BUS.register(new GuiSmokeTest());
     }
 

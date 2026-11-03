@@ -1,3 +1,10 @@
+# [Unreleased]
+
+- Migrate to the CleanroomDevEnv template, CleanroomGradle 0.23.0, and native Cleanroom 0.7.14-alpha userdev.
+- Keep Scala 3.9 joint Java/Scala compilation and the matching Scalar runtime provider.
+- Update dependency deobfuscation, development runs, and release verification for `reobfJar`; exclude MCP development JARs from releases.
+- Remove stale signatures from remapped development dependencies so signed legacy mods such as IC2 and RedstoneFlux can load.
+
 # [13.1.3]
 
 ## Added
