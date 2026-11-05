@@ -58,7 +58,10 @@ def verifyModJar = tasks.register('verifyModJar') {
                 (it.name.endsWith('.class') || it.name in ['mcmod.info', 'pack.mcmeta'] || it.name.endsWith('.mixin.json'))
             }.each { entry ->
                 def text = jar.getInputStream(entry).withCloseable { new String(it.readAllBytes(), 'ISO-8859-1') }
-                if (text.contains('@{')) throw new GradleException("Unresolved token in ${entry.name}")
+                // Class files can contain the opening bytes by chance. Require a complete placeholder.
+                if (text =~ /@\{[A-Za-z_][A-Za-z0-9_]*\}/) {
+                    throw new GradleException("Unresolved token in ${entry.name}")
+                }
             }
             def configs = jar.manifest.mainAttributes.getValue('MixinConfigs')
             if (expected.mixinEnabled) {
