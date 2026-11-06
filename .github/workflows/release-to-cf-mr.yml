@@ -109,8 +109,16 @@ jobs:
           MAVEN_USER: ${{ secrets.MAVEN_USER }}
           MAVEN_PASS: ${{ secrets.MAVEN_PASS }}
         run: |
+          cat > "$RUNNER_TEMP/maven-auth.init.gradle" <<'EOF'
+          gradle.projectsEvaluated {
+              gradle.rootProject.publishing.repositories.named('SumireLabs').configure {
+                  authentication { basic(org.gradle.authentication.http.BasicAuthentication) }
+              }
+          }
+          EOF
           GITHUB_REF="refs/tags/$RELEASE_TAG" GITHUB_REF_TYPE=tag GITHUB_REF_NAME="$RELEASE_TAG" \
-            ./gradlew publishMavenJavaPublicationToSumireLabsRepository -Ppublish_to_maven=true
+            ./gradlew publishMavenJavaPublicationToSumireLabsRepository -Ppublish_to_maven=true \
+              --init-script "$RUNNER_TEMP/maven-auth.init.gradle"
 
       - name: Read release version and stage
         id: version
