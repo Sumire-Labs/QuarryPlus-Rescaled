@@ -1,4 +1,4 @@
-# [12.7.4] (tag `13.1.4`)
+# [12.7.4]
 
 ## Build and compatibility
 

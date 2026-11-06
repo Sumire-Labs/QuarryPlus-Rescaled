@@ -118,11 +118,13 @@ jobs:
 
       - name: Get Changes between Tags
         run: |
-          previous=$(git describe --tags --abbrev=0 "$RELEASE_TAG^" 2>/dev/null || true)
-          if [ -n "$previous" ]; then
-            git log --format='- %s (%h)' "$previous..HEAD" > build/release-changelog.md
-          else
-            git log --format='- %s (%h)' HEAD > build/release-changelog.md
+          awk -v heading="# [$RELEASE_TAG]" '
+            /^# / { if (found) exit; found = ($0 == heading); next }
+            found { print }
+          ' CHANGELOG.md > build/release-changelog.md
+          if [ ! -s build/release-changelog.md ]; then
+            previous=$(git describe --tags --abbrev=0 "$RELEASE_TAG^" 2>/dev/null || true)
+            git log --format='- %s (%h)' "${previous:+$previous..}HEAD" > build/release-changelog.md
           fi
 
       - uses: Kir-Antipov/mc-publish@v3
