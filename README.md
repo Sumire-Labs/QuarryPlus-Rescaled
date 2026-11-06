@@ -2,8 +2,7 @@
 
 ## This mod is a fork of Additional Enchanted Miner, which is a fork of Quarry Plus
 
-This mod targets Cleanroom 0.7.14-alpha or newer on Java 25. It requires Scalar (Scala 3.9) and the original CleanroomMC ModularUI 3.1.6 or newer.
-
+This mod targets Cleanroom 0.7.14-alpha or newer. It requires Scala3 and ModularUI 3.1.6 or newer.
 This mod adds automatic miner. All machines can accept RF, MJ, EU and Forge Energy.
 
 ### Machines:
@@ -23,19 +22,10 @@ ChunkDestroyer and Advanced Pump will increase the number of old GC and lag.
 ## Changes
 
 - Port to Cleanroom w/ Java 25 + Scala 3.x.
-- Native Cleanroom 0.7 userdev development with CleanroomGradle, based on [CleanroomDevEnv](https://github.com/Sumire-Labs/CleanroomDevEnv).
+- Native Cleanroom 0.7.x
 - Migrate MCP to 39-1.12
 - Replace machine and configuration screens with ModularUI.
 - Backported several features from newer versions, including Void Module, Repeat Tick Module, and Mini Quarry.
-
-## Development
-
-Use Java 25 and the included Gradle wrapper. Java and Scala sources in `src/main/scala` are compiled together; `scala_version` and the selected Scalar provider must stay compatible.
-
-- `./gradlew build verifyReleaseJar` runs the tests and verifies the distributable.
-- `./gradlew runClient` / `./gradlew runServer` starts the Cleanroom 0.7 development environment.
-- The normal JAR is the SRG runtime artifact produced by `reobfJar`; `*-mcp.jar` is for development.
-- Remapped signed legacy dependencies are sanitized for development runs; original downloaded artifacts are preserved.
 
 ## Credits
 

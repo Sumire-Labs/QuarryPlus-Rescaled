@@ -1,4 +1,4 @@
-# [Unreleased]
+# [13.1.4]
 
 - Migrate to the CleanroomDevEnv template, CleanroomGradle 0.23.0, and native Cleanroom 0.7.14-alpha userdev.
 - Keep Scala 3.9 joint Java/Scala compilation and the matching Scalar runtime provider.
