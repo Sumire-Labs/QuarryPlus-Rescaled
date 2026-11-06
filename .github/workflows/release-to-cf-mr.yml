@@ -1,4 +1,4 @@
-name: Releases to CurseForge and/or Modrinth
+name: Publish release artifacts
 
 on:
   workflow_dispatch:
@@ -7,21 +7,86 @@ on:
         description: 'Existing release tag to publish (for example 13.0.0-alpha)'
         required: true
         type: string
+      curseforge:
+        description: Publish to CurseForge
+        type: boolean
+        default: false
+      modrinth:
+        description: Publish to Modrinth
+        type: boolean
+        default: false
+      maven:
+        description: Publish to Sumire Labs Maven
+        type: boolean
+        default: false
+
+concurrency:
+  group: publish-${{ inputs.tag }}
+  cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
     env:
       RELEASE_TAG: ${{ inputs.tag }}
     steps:
+      - name: Validate selected destinations
+        env:
+          PUBLISH_CURSEFORGE: ${{ inputs.curseforge }}
+          PUBLISH_MODRINTH: ${{ inputs.modrinth }}
+          PUBLISH_MAVEN: ${{ inputs.maven }}
+          CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+          MAVEN_USER: ${{ secrets.MAVEN_USER }}
+          MAVEN_PASS: ${{ secrets.MAVEN_PASS }}
+        run: |
+          if [[ "$PUBLISH_CURSEFORGE" != true && "$PUBLISH_MODRINTH" != true && "$PUBLISH_MAVEN" != true ]]; then
+            echo 'Select at least one destination.' >&2
+            exit 1
+          fi
+          if [[ "$PUBLISH_CURSEFORGE" == true && -z "$CURSEFORGE_TOKEN" ]]; then
+            echo 'Set the CURSEFORGE_TOKEN secret.' >&2
+            exit 1
+          fi
+          if [[ "$PUBLISH_MODRINTH" == true && -z "$MODRINTH_TOKEN" ]]; then
+            echo 'Set the MODRINTH_TOKEN secret.' >&2
+            exit 1
+          fi
+          if [[ "$PUBLISH_MAVEN" == true && ( -z "$MAVEN_USER" || -z "$MAVEN_PASS" ) ]]; then
+            echo 'Set the MAVEN_USER and MAVEN_PASS secrets.' >&2
+            exit 1
+          fi
+      - name: Resolve Modrinth project ID
+        if: inputs.modrinth
+        id: modrinth
+        env:
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+          MODRINTH_PROJECT_ID: ${{ vars.MODRINTH_PROJECT_ID }}
+        run: |
+          project_id="$MODRINTH_PROJECT_ID"
+          if [[ -z "$project_id" ]]; then
+            if ! project_id=$(curl --fail --silent --show-error \
+              --header "Authorization: $MODRINTH_TOKEN" \
+              --user-agent "$GITHUB_REPOSITORY (GitHub Actions)" \
+              https://api.modrinth.com/v2/project/aem-rescaled | jq -er '.id'); then
+              echo 'Could not resolve the Modrinth project. Set the MODRINTH_PROJECT_ID repository variable.' >&2
+              exit 1
+            fi
+          fi
+          if [[ ! "$project_id" =~ ^[A-Za-z0-9]+$ ]]; then
+            echo 'Invalid Modrinth project ID.' >&2
+            exit 1
+          fi
+          echo "project_id=$project_id" >> "$GITHUB_OUTPUT"
       - name: Checkout
         uses: actions/checkout@v7
         with:
           ref: refs/tags/${{ inputs.tag }}
           fetch-depth: 0
           fetch-tags: true
+          persist-credentials: false
           
       - name: Set up JDK
         uses: actions/setup-java@v5
@@ -36,7 +101,16 @@ jobs:
         run: chmod +x ./gradlew
         
       - name: Execute Gradle build
-        run: GITHUB_REF_TYPE=tag GITHUB_REF_NAME="$RELEASE_TAG" ./gradlew build writeReleaseMetadata
+        run: GITHUB_REF="refs/tags/$RELEASE_TAG" GITHUB_REF_TYPE=tag GITHUB_REF_NAME="$RELEASE_TAG" ./gradlew build writeReleaseMetadata
+
+      - name: Publish to Maven
+        if: inputs.maven
+        env:
+          MAVEN_USER: ${{ secrets.MAVEN_USER }}
+          MAVEN_PASS: ${{ secrets.MAVEN_PASS }}
+        run: |
+          GITHUB_REF="refs/tags/$RELEASE_TAG" GITHUB_REF_TYPE=tag GITHUB_REF_NAME="$RELEASE_TAG" \
+            ./gradlew publishMavenJavaPublicationToSumireLabsRepository -Ppublish_to_maven=true
 
       - name: Read release version and stage
         id: version
@@ -52,16 +126,12 @@ jobs:
           fi
 
       - uses: Kir-Antipov/mc-publish@v3
+        if: inputs.curseforge || inputs.modrinth
         with:
-          # Only include this section if you wish to publish
-          # your assets on Modrinth.
-          modrinth-id: placeholder
-          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
-
-          # Only include this section if you wish to publish
-          # your assets on CurseForge.
-          curseforge-id: placeholder
-          curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+          modrinth-id: ${{ steps.modrinth.outputs.project_id }}
+          modrinth-token: ${{ inputs.modrinth && secrets.MODRINTH_TOKEN || '' }}
+          curseforge-id: ${{ inputs.curseforge && '1736004' || '' }}
+          curseforge-token: ${{ inputs.curseforge && secrets.CURSEFORGE_TOKEN || '' }}
 
           files: |
             build/libs/!(*-@(dev|mcp|shadow|sources|javadoc)).jar
